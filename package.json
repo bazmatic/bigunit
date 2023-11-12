@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "author": "Barry Earsman",
   "scripts": {
     "test": "jest",
     "format": "prettier --write \"**/*.{js,ts}\"",
