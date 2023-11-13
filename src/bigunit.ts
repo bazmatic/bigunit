@@ -25,6 +25,17 @@ export class InvalidValueTypeError extends BigUnitError {
   }
 }
 
+export class MissingPrecisionError extends BigUnitError {
+  constructor() {
+    super("Missing precision");
+  }
+}
+
+export class InvalidPrecisionError extends BigUnitError {
+  constructor(precision: number) {
+    super(`Invalid precision: ${precision}`);
+  }
+}
 
 export class BigUnit {
   constructor(
@@ -34,7 +45,7 @@ export class BigUnit {
   ) {
     // throw if precision is not an integer
     if (precision % 1 !== 0) {
-      throw new Error("precision must be an integer");
+      throw new InvalidPrecisionError(precision);
     }
   }
 
@@ -182,7 +193,7 @@ export class BigUnit {
   public asPrecision(precision: number): BigUnit {
     // Check if precision is an integer
     if (precision % 1 !== 0) {
-      throw new Error("precision must be an integer");
+      throw new InvalidPrecisionError(precision);
     }
   
     // Calculate the scaling factor as a bigint
@@ -324,7 +335,7 @@ export class BigUnit {
 
       // The other constructor methods require a precision
       if (precision === undefined) {
-        throw new Error("precision is required");
+        throw new MissingPrecisionError();
       }
       
       if (typeof value === "number") {
@@ -350,7 +361,7 @@ export class BigUnitFactory {
   ) {
     // throw if precision is not an integer
     if (precision % 1 !== 0) {
-      throw new Error("precision must be an integer");
+      throw new InvalidPrecisionError(precision);
     }
   }
 

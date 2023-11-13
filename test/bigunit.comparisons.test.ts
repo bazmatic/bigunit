@@ -10,7 +10,7 @@ describe('BigUnit Class Comparison Methods', () => {
     const lowerValueUnit = new BigUnit(value - 100n, precision);
   
     describe('eq (equal) method', () => {
-      test.only('should return true for same value and precision', () => {
+      test('should return true for same value and precision', () => {
         expect(bigUnit.eq(sameValueUnit)).toBe(true);
       });
   
