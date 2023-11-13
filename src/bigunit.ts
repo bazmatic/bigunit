@@ -108,6 +108,14 @@ export class BigUnit {
   }
 
   public fraction(numerator: number, denominator: number): BigUnit {
+    if (isNaN(numerator) || isNaN(denominator)) {
+      throw new Error("Numerator and denominator must be valid numbers");
+    }
+    // Check for division by zero
+    if (denominator === 0) {
+      throw new BigUnitError("Denominator cannot be zero");
+    }
+  
     // Calculate the fraction of the value and return a new BigUnit
     const buNumerator =  BigUnit.from(numerator, this.precision)
     const buDenominator = BigUnit.from(denominator, this.precision);
@@ -116,27 +124,39 @@ export class BigUnit {
   }
 
   public eq(other: BigUnitish): boolean {
-    const otherPrecision = (other instanceof BigUnit) ? other.precision : this.precision;
-    const buOther = BigUnit.from(other, otherPrecision);
-    const buOtherWithPrecision = buOther.asPrecision(this.precision);
-
-    return this.value ==  buOtherWithPrecision.value;
+    if (other instanceof BigUnit) {
+      return this.value == other.value;
+    }
+    return this.value == BigUnit.from(other, this.precision).value;
   }
 
   public gt(other: BigUnitish): boolean {
-    return this.value > BigUnit.from(other).asPrecision(this.precision).value;
+    if (other instanceof BigUnit) {
+      return this.value > other.asPrecision(this.precision).value;
+    }
+    return this.value > BigUnit.from(other, this.precision).value;
   }
 
   public lt(other: BigUnitish): boolean {
-    return this.value < BigUnit.from(other).asPrecision(this.precision).value;
+    if (other instanceof BigUnit) {
+      return this.value < other.asPrecision(this.precision).value;
+    }
+    return this.value < BigUnit.from(other, this.precision).value;
   }
 
   public gte(other: BigUnitish): boolean {
-    return this.value >= BigUnit.from(other).asPrecision(this.precision).value;
+    if (other instanceof BigUnit) {
+      return this.value >= other.asPrecision(this.precision).value;
+    }
+    return this.value >= BigUnit.from(other, this.precision).value;
   }
 
   public lte(other: BigUnitish): boolean {
-    return this.value <= BigUnit.from(other).asPrecision(this.precision).value;
+    if (other instanceof BigUnit) {
+      return this.value <= other.asPrecision(this.precision).value;
+    }
+    return this.value <= BigUnit.from(other, this.precision).value;
+    
   }
 
   public isZero(): boolean {

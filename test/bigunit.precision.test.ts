@@ -12,7 +12,7 @@ describe('BigUnit Class Precision Conversion Methods', () => {
         expect(newUnit.value).toBe(initialVal);
       });
   
-      test.only('should return a BigUnit with a higher precision when converted to a higher precision', () => {
+      test('should return a BigUnit with a higher precision when converted to a higher precision', () => {
         const higherPrecision = 4;
         const newUnit = bigUnit.asPrecision(higherPrecision);
         const expectedValue = initialVal * 100n; // Adjusting for the 2 decimal places increase in precision
