@@ -60,12 +60,13 @@ describe('BigUnit Class Static Factory Methods', () => {
     });
 
     test('should handle a decimal string with more precision than BigUnit\'s precision', () => {
-      const decimalString = "123.4567"; // More precision than specified
+      const decimalString = "123.4567"; // More precision than specified 
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementationOnce(() => {});
       const bigUnit = BigUnit.fromDecimalString(decimalString, precision);
-
+      
+      expect(warnSpy).toHaveBeenCalled();  // expect a truncation warning to be logged
       expect(bigUnit).toBeInstanceOf(BigUnit);
-      // The value should be truncated to match the specified precision
-      expect(bigUnit.toString()).toBe("123.45");
+      expect(bigUnit.toString()).toBe("123.45"); // The value should be truncated to match the specified precision
       expect(bigUnit.precision).toBe(precision);
     });
   });
