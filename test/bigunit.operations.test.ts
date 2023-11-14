@@ -49,7 +49,7 @@ describe("BigUnit Class Methods", () => {
     it("should multiply two BigUnit instances of the same precision", () => {
       const result = unit1.mul(unit2);
       expect(result.value).toBe(
-        (unitValue1 * unitValue2) / 10n ** BigInt(precision)
+        (unitValue1 * unitValue2) / 10n ** BigInt(precision),
       );
       expect(result.precision).toBe(precision);
     });
@@ -60,7 +60,7 @@ describe("BigUnit Class Methods", () => {
       const zeroResult = unit1.mul(zeroUnit);
 
       expect(negativeResult.value).toBe(
-        (unitValue1 * unitValue3) / 10n ** BigInt(precision)
+        (unitValue1 * unitValue3) / 10n ** BigInt(precision),
       );
       expect(zeroResult.value).toBe(0n);
     });

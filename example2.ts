@@ -15,12 +15,27 @@ const comparisonNumber = 123.456;
 const comparisonString = "789.012";
 const comparisonBigInt = 123456n;
 
-console.log(`Is BigUnit from number equal to ${comparisonNumber}?`, bigUnitFromNumber.eq(comparisonNumber)); // true
-console.log(`Is BigUnit from string greater than ${comparisonString}?`, bigUnitFromString.gt(comparisonString)); // false, they are equal
-console.log(`Is BigUnit from BigInt less than ${comparisonBigInt}?`, bigUnitFromBigInt.lt(comparisonBigInt)); // false, they are equal
+console.log(
+  `Is BigUnit from number equal to ${comparisonNumber}?`,
+  bigUnitFromNumber.eq(comparisonNumber),
+); // true
+console.log(
+  `Is BigUnit from string greater than ${comparisonString}?`,
+  bigUnitFromString.gt(comparisonString),
+); // false, they are equal
+console.log(
+  `Is BigUnit from BigInt less than ${comparisonBigInt}?`,
+  bigUnitFromBigInt.lt(comparisonBigInt),
+); // false, they are equal
 
 // Comparison with another BigUnit instance
-const anotherBigUnit = BigUnit.from(123.450, 3); // Slightly less due to rounding at precision 3
+const anotherBigUnit = BigUnit.from(123.45, 3); // Slightly less due to rounding at precision 3
 
-console.log(`Is BigUnit from number greater than or equal to another BigUnit?`, bigUnitFromNumber.gte(anotherBigUnit)); // true
-console.log(`Is BigUnit from string less than or equal to another BigUnit?`, bigUnitFromString.lte(anotherBigUnit)); // false
+console.log(
+  `Is BigUnit from number greater than or equal to another BigUnit?`,
+  bigUnitFromNumber.gte(anotherBigUnit),
+); // true
+console.log(
+  `Is BigUnit from string less than or equal to another BigUnit?`,
+  bigUnitFromString.lte(anotherBigUnit),
+); // false

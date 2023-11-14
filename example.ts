@@ -30,6 +30,4 @@ console.log(`ETH Balance in USD: $${ethUsdValue.format(2)}`);
 console.log(`DOT Balance in USD: $${dotUsdValue.format(2)}`);
 
 // Output the total balance in USD
-console.log(
-  `Total Crypto Balance in USD: $${totalUsdBalance.format(2)}`
-);
+console.log(`Total Crypto Balance in USD: $${totalUsdBalance.format(2)}`);

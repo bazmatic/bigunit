@@ -3,7 +3,7 @@ export class BigUnitError extends Error {
   constructor(
     public message: string,
     public cause?: string,
-    public data?: any
+    public data?: any,
   ) {
     super(message);
     this.name = BigUnitError.name;
@@ -14,7 +14,7 @@ export class DifferentPrecisionError extends BigUnitError {
   constructor(operation: string, precisionA: number, precisionB: number) {
     super(
       `Cannot perform ${operation} operation on two units of different precision`,
-      `${precisionA}, ${precisionB}`
+      `${precisionA}, ${precisionB}`,
     );
   }
 }
@@ -41,7 +41,7 @@ export class BigUnit {
   constructor(
     public value: bigint,
     public precision: number,
-    public name: string = ""
+    public name: string = "",
   ) {
     // throw if precision is not an integer
     if (precision % 1 !== 0) {
@@ -52,7 +52,7 @@ export class BigUnit {
   public add(other: BigUnit): BigUnit {
     // Convert the other unit to the same precision as this unit
     other = other.asPrecision(this.precision);
-    
+
     // Add the values
     return new BigUnit(this.value + other.value, this.precision);
   }
@@ -60,7 +60,7 @@ export class BigUnit {
   public sub(other: BigUnit): BigUnit {
     // Convert the other unit to the same precision as this unit
     other = other.asPrecision(this.precision);
-    
+
     // Subtract the values
     return new BigUnit(this.value - other.value, this.precision);
   }
@@ -200,23 +200,27 @@ export class BigUnit {
   public toNumber(): number {
     // Determine the maximum safe integer in JavaScript
     const maxSafeInteger = Number.MAX_SAFE_INTEGER;
-  
+
     // If the value is within the safe range, convert directly
     if (this.value <= maxSafeInteger) {
-      return Number(this.value) / (10 ** this.precision);
+      return Number(this.value) / 10 ** this.precision;
     }
-  
+
     // If the value is larger than the safe range, truncate the bigint before converting
     const valueString = this.value.toString();
-    const safeDigits = valueString.length - (valueString.length - maxSafeInteger.toString().length);
+    const safeDigits =
+      valueString.length -
+      (valueString.length - maxSafeInteger.toString().length);
     const truncatedValueString = valueString.slice(0, safeDigits);
     const truncatedValueBigInt = BigInt(truncatedValueString);
-  
+
     // Convert the truncated bigint to a number and then divide by the precision
     // Adjust the precision accordingly since we truncated the bigint
-    return Number(truncatedValueBigInt) / (10 ** (this.precision - (valueString.length - safeDigits)));
+    return (
+      Number(truncatedValueBigInt) /
+      10 ** (this.precision - (valueString.length - safeDigits))
+    );
   }
-  
 
   /**
    * @dev Convert to a string representation of the value, using fixed-point notation.
@@ -270,7 +274,7 @@ export class BigUnit {
   public static fromBigInt(
     bigintValue: bigint,
     precision: number,
-    name?: string
+    name?: string,
   ): BigUnit {
     return new BigUnit(bigintValue, precision, name);
   }
@@ -282,7 +286,7 @@ export class BigUnit {
   public static fromNumber(
     numberValue: number,
     precision: number,
-    name?: string
+    name?: string,
   ): BigUnit {
     return new BigUnit(BigInt(numberValue * 10 ** precision), precision, name);
   }
@@ -294,7 +298,7 @@ export class BigUnit {
   public static fromDecimalString(
     decimalStringValue: string,
     precision: number,
-    name?: string
+    name?: string,
   ): BigUnit {
     // Split the string into integer and fractional parts
     const [integerPart, fractionalPart] = decimalStringValue.split(".");
@@ -307,7 +311,7 @@ export class BigUnit {
       return new BigUnit(
         integerPartBigInt * BigInt(10 ** precision),
         precision,
-        name
+        name,
       );
     }
 
@@ -330,7 +334,7 @@ export class BigUnit {
   public static from(
     value: BigUnitish,
     precision?: number,
-    name?: string
+    name?: string,
   ): BigUnit {
     // If the value is already a BigUnit, return it. If precision is provided, convert it to the given precision
     if (value instanceof BigUnit) {
@@ -360,7 +364,7 @@ export class BigUnit {
 export class BigUnitFactory {
   constructor(
     public precision: number,
-    public name?: string
+    public name?: string,
   ) {
     // throw if precision is not an integer
     if (precision % 1 !== 0) {
@@ -384,7 +388,7 @@ export class BigUnitFactory {
     return BigUnit.fromDecimalString(
       decimalStringValue,
       this.precision,
-      this.name
+      this.name,
     );
   }
 }

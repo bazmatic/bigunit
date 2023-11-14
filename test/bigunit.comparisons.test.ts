@@ -103,4 +103,3 @@ describe("BigUnit Class Comparison Methods", () => {
     });
   });
 });
-
