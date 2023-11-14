@@ -1,4 +1,4 @@
-import { BigUnit, DifferentPrecisionError } from "../src/bigunit";
+import { BigUnit } from "../src/bigunit";
 
 describe("BigUnit Class Methods", () => {
   const precision = 2;
@@ -15,8 +15,6 @@ describe("BigUnit Class Methods", () => {
       expect(result.value).toBe(unitValue1 + unitValue2);
       expect(result.precision).toBe(precision);
     });
-
-    it.only("should handle adding two BigUnit instances of different precision", () => {});
 
     test("should handle negative values and zero correctly", () => {
       const zeroUnit = new BigUnit(0n, precision);
@@ -35,8 +33,6 @@ describe("BigUnit Class Methods", () => {
       expect(result.value).toBe(unitValue1 - unitValue2);
       expect(result.precision).toBe(precision);
     });
-
-    it("should handle subtracting two BigUnit instances of different precision", () => {});
 
     it("should handle negative values and zero correctly", () => {
       const zeroUnit = new BigUnit(0n, precision);
@@ -57,8 +53,6 @@ describe("BigUnit Class Methods", () => {
       );
       expect(result.precision).toBe(precision);
     });
-
-    it("should handle multiplying two BigUnit instances of different precision", () => {});
 
     it("should handle negative values and zero correctly", () => {
       const zeroUnit = new BigUnit(0n, precision);
@@ -98,8 +92,6 @@ describe("BigUnit Class Methods", () => {
       expect(result.precision).toBe(precision);
     });
 
-    it("should handle dividing two BigUnit instances of different precision", () => {});
-
     it("should handle negative values and zero correctly", () => {
       const zeroUnit = new BigUnit(0n, precision);
       const negativeResult = unit1.div(unit3);
@@ -115,8 +107,6 @@ describe("BigUnit Class Methods", () => {
       expect(result.value).toBe(unitValue1 % unitValue2);
       expect(result.precision).toBe(precision);
     });
-
-    it("should handle modding two BigUnit instances of different precision", () => {});
 
     it("should handle negative values and zero correctly", () => {
       const zeroUnit = new BigUnit(0n, precision);
@@ -205,6 +195,72 @@ describe("BigUnit Class Methods - percent and fraction", () => {
       const expectedValue = -250n; // 1/-4 of 1000n is -250n
 
       expect(result.value).toBe(expectedValue);
+    });
+  });
+});
+
+describe("BigUnit Class Methods with Differing Precision", () => {
+  const precisionHigh = 4; // Higher precision
+  const precisionLow = 2; // Lower precision
+  const unitHighPrecision = new BigUnit(1000n, precisionHigh); // e.g., 0.1000
+  const unitLowPrecision = new BigUnit(500n, precisionLow); // e.g., 5.00
+
+  describe("add method with differing precision", () => {
+    test("should add two BigUnit instances and use the precision of the first instance", () => {
+      const result = unitHighPrecision.add(unitLowPrecision);
+      const expectedValue =
+        unitHighPrecision.value + unitLowPrecision.value * 100n; // Adjusted for precision
+      expect(result.value).toBe(expectedValue);
+      expect(result.precision).toBe(precisionHigh);
+    });
+  });
+
+  describe("sub method with differing precision", () => {
+    test("should subtract two BigUnit instances and use the precision of the first instance", () => {
+      const result = unitHighPrecision.sub(unitLowPrecision);
+      const expectedValue =
+        unitHighPrecision.value - unitLowPrecision.value * 100n; // Adjusted for precision
+      expect(result.value).toBe(expectedValue);
+      expect(result.precision).toBe(precisionHigh);
+    });
+  });
+
+  describe("mul method with differing precision", () => {
+    test("should multiply two BigUnit instances and use the precision of the first instance", () => {
+      const result = unitHighPrecision.mul(unitLowPrecision);
+      // The multiplication of the values themselves should not take precision into account, that's handled after the multiplication
+      const rawProduct =
+        unitHighPrecision.value *
+        (unitLowPrecision.value * BigInt(10 ** (precisionHigh - precisionLow)));
+      // Adjust the raw product by dividing it by 10^precisionHigh to maintain the precision of the first instance
+      const expectedValue = rawProduct / BigInt(10 ** precisionHigh);
+      expect(result.value).toBe(expectedValue);
+      expect(result.precision).toBe(precisionHigh);
+    });
+  });
+
+  describe("div method with differing precision", () => {
+    test("should divide two BigUnit instances and use the precision of the first instance", () => {
+      const result = unitHighPrecision.div(unitLowPrecision);
+      // To divide with precision, the divisor needs to be adjusted to have the same scale as the dividend
+      const divisorScaled =
+        unitLowPrecision.value * BigInt(10 ** (precisionHigh - precisionLow));
+      const expectedValue = unitHighPrecision.value / divisorScaled;
+      expect(result.value).toBe(expectedValue);
+      expect(result.precision).toBe(precisionHigh);
+    });
+  });
+
+  describe("mod method with differing precision", () => {
+    test("should mod two BigUnit instances and use the precision of the first instance", () => {
+      const result = unitHighPrecision.mod(unitLowPrecision);
+      // Mod operation should adjust the second unit to the precision of the first
+      const adjustedUnitLowPrecisionValue =
+        unitLowPrecision.value * BigInt(10 ** (precisionHigh - precisionLow));
+      const expectedValue =
+        unitHighPrecision.value % adjustedUnitLowPrecisionValue;
+      expect(result.value).toBe(expectedValue);
+      expect(result.precision).toBe(precisionHigh);
     });
   });
 });

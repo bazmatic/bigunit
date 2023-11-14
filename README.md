@@ -1,20 +1,23 @@
 # BigUnit: A muscular TypeScript library for arithmetic with numbers of varying precision
+
 ## Overview
+
 BigUnit is a TypeScript library designed to facilitate the handling of large numbers with varying degrees of precision. This is particularly useful in applications involving cryptocurrency, where precise arithmetic with large numbers of various precisions are frequently required. The library offers a suite of tools to perform operations, comparisons and conversions on numbers far beyond the safe integer limits of standard JavaScript.
 
 ## Features
+
 - Precision: Numbers are represented internally as `bigint` types, allowing for values of any size or precision. Convert numbers to other precisions easily without changing their value.
 - Comparison: Easily compare numbers with standard relational operations that work with any number type.
-- Conversion: Convert to/from various formats including numbers, BigInts, and strings with ease.
+- Conversion: Convert to/from various formats including numbers, BigInts, and number strings with ease.
 - Fraction and percentage calculations: Direct methods to work with fractions and percentages without worrying about precision.
-- Error Handling: Custom error classes to handle exceptions specific to precision and arithmetic operations.
 
 ## Installation
+
 To add BigUnit to your project, use the following command:
 
 ```sh
 npm install bigunit
-``````
+```
 
 Or, if you prefer using Yarn:
 
@@ -23,12 +26,13 @@ yarn add bigunit
 ```
 
 ## Usage
+
 Here are some examples of using BigUnit:
 
 ### Work with various number types effortlessly
-```typescript
 
-import { BigUnit } from 'bigunit';
+```typescript
+import { BigUnit } from "bigunit";
 
 // Instantiate BigUnit instances from various types
 const bigUnitFromNumber = BigUnit.from(123.456, 3); // From a number with precision 3
@@ -45,19 +49,34 @@ const comparisonNumber = 123.456;
 const comparisonString = "789.012";
 const comparisonBigInt = 123456n;
 
-console.log(`Is BigUnit from number equal to ${comparisonNumber}?`, bigUnitFromNumber.eq(comparisonNumber)); // true
-console.log(`Is BigUnit from string greater than ${comparisonString}?`, bigUnitFromString.gt(comparisonString)); // false, they are equal
-console.log(`Is BigUnit from BigInt less than ${comparisonBigInt}?`, bigUnitFromBigInt.lt(comparisonBigInt)); // false, they are equal
+console.log(
+  `Is BigUnit from number equal to ${comparisonNumber}?`,
+  bigUnitFromNumber.eq(comparisonNumber)
+); // true
+console.log(
+  `Is BigUnit from string greater than ${comparisonString}?`,
+  bigUnitFromString.gt(comparisonString)
+); // false, they are equal
+console.log(
+  `Is BigUnit from BigInt less than ${comparisonBigInt}?`,
+  bigUnitFromBigInt.lt(comparisonBigInt)
+); // false, they are equal
 
 // Comparison with another BigUnit instance
-const anotherBigUnit = BigUnit.from(123.450, 3); // Slightly less due to rounding at precision 3
+const anotherBigUnit = BigUnit.from(123.45, 3); // Slightly less due to rounding at precision 3
 
-console.log(`Is BigUnit from number greater than or equal to another BigUnit?`, bigUnitFromNumber.gte(anotherBigUnit)); // true
-console.log(`Is BigUnit from string less than or equal to another BigUnit?`, bigUnitFromString.lte(anotherBigUnit)); // false
-
+console.log(
+  `Is BigUnit from number greater than or equal to another BigUnit?`,
+  bigUnitFromNumber.gte(anotherBigUnit)
+); // true
+console.log(
+  `Is BigUnit from string less than or equal to another BigUnit?`,
+  bigUnitFromString.lte(anotherBigUnit)
+); // false
 ```
 
 ### Show the value of various crypto-currencies
+
 ```
 import { BigUnitFactory } from "./src/bigunit";
 
@@ -96,9 +115,10 @@ console.log(
 );
 ```
 
-
 ## Contributing
-Contributions are welcome! 
+
+Contributions are welcome!
 
 ## License
+
 Distributed under the MIT License.
