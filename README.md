@@ -79,7 +79,7 @@ console.log(
 
 ### Show the value of various crypto-currencies
 
-```
+```typescript
 import { BigUnitFactory } from "./src/bigunit";
 
 // Define the BigUnitFactories with the specified precisions for cryptocurrencies and USD
