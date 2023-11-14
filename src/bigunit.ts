@@ -14,8 +14,8 @@ export class DifferentPrecisionError extends BigUnitError {
   constructor(operation: string, precisionA: number, precisionB: number) {
     super(
       `Cannot perform ${operation} operation on two units of different precision`,
-      `${precisionA}, ${precisionB}`  
-      );
+      `${precisionA}, ${precisionB}`
+    );
   }
 }
 
@@ -50,66 +50,47 @@ export class BigUnit {
   }
 
   public add(other: BigUnit): BigUnit {
-    // If the other unit is not the same precision, throw
-    if (this.precision !== other.precision) {
-      throw new DifferentPrecisionError(
-        this.add.name,
-        this.precision,
-        other.precision
-      );
-    }
+    // Convert the other unit to the same precision as this unit
+    other = other.asPrecision(this.precision);
+    
     // Add the values
     return new BigUnit(this.value + other.value, this.precision);
   }
 
   public sub(other: BigUnit): BigUnit {
-    // If the other unit is not the same precision, throw
-    if (this.precision !== other.precision) {
-      throw new DifferentPrecisionError(
-        this.sub.name,
-        this.precision,
-        other.precision
-      );
-    }
+    // Convert the other unit to the same precision as this unit
+    other = other.asPrecision(this.precision);
+    
     // Subtract the values
     return new BigUnit(this.value - other.value, this.precision);
   }
 
   public mul(other: BigUnit): BigUnit {
-    // If the other unit is not the same precision, throw
-    if (this.precision !== other.precision) {
-      throw new DifferentPrecisionError(
-        this.mul.name,
-        this.precision,
-        other.precision
-      );
-    }
-    // Multiply the values
-    return new BigUnit(this.value * other.value, this.precision);
+    // Convert the other unit to the same precision as this unit
+    other = other.asPrecision(this.precision);
+
+    // Multiply the values, taking into account the precision
+    // The result should be divided by the power of 10 of the precision
+    // because the actual values are represented in an integer form scaled by precision
+    const resultValue =
+      (this.value * other.value) / BigInt(10 ** this.precision);
+
+    // Return a new BigUnit with the result value and the same precision
+    return new BigUnit(resultValue, this.precision);
   }
 
   public div(other: BigUnit): BigUnit {
-    // If the other unit is not the same precision, throw
-    if (this.precision !== other.precision) {
-      throw new DifferentPrecisionError(
-        this.div.name,
-        this.precision,
-        other.precision
-      );
-    }
+    // Convert the other unit to the same precision as this unit
+    other = other.asPrecision(this.precision);
+
     // Divide the values
     return new BigUnit(this.value / other.value, this.precision);
   }
 
   public mod(other: BigUnit): BigUnit {
-    // If the other unit is not the same precision, throw
-    if (this.precision !== other.precision) {
-      throw new DifferentPrecisionError(
-        this.mod.name,
-        this.precision,
-        other.precision
-      );
-    }
+    // Convert the other unit to the same precision as this unit
+    other = other.asPrecision(this.precision);
+
     // Mod the values
     return new BigUnit(this.value % other.value, this.precision);
   }
@@ -117,21 +98,24 @@ export class BigUnit {
   public percent(percent: number): BigUnit {
     return this.fraction(percent, 100);
   }
-
   public fraction(numerator: number, denominator: number): BigUnit {
     if (isNaN(numerator) || isNaN(denominator)) {
       throw new Error("Numerator and denominator must be valid numbers");
     }
+
     // Check for division by zero
     if (denominator === 0) {
       throw new BigUnitError("Denominator cannot be zero");
     }
-  
-    // Calculate the fraction of the value and return a new BigUnit
-    const buNumerator =  BigUnit.from(numerator, this.precision)
-    const buDenominator = BigUnit.from(denominator, this.precision);
 
-    return this.mul(buNumerator).div(buDenominator);
+    // Calculate the fraction of the value
+    // The result should be multiplied by the power of 10 of the precision, we don't bother scaling the denominator
+    const bigUnitNumerator = new BigUnit(BigInt(numerator), this.precision);
+    const resultValue =
+      (this.value * bigUnitNumerator.value) / BigInt(denominator);
+
+    // Return a new BigUnit with the result value and the same precision
+    return new BigUnit(resultValue, this.precision);
   }
 
   public eq(other: BigUnitish): boolean {
@@ -167,7 +151,6 @@ export class BigUnit {
       return this.value <= other.asPrecision(this.precision).value;
     }
     return this.value <= BigUnit.from(other, this.precision).value;
-    
   }
 
   public isZero(): boolean {
@@ -186,28 +169,28 @@ export class BigUnit {
   /**
    * @description If the new precision is greater than the current precision, the value needs to be scaled up,
    * which involves multiplying by a factor of 10 raised to the power of the difference in precision.
-   * Conversely, if the new precision is less, the value should be scaled down, and we divide by the scaling factor. 
-   * @param precision 
-   * @returns 
+   * Conversely, if the new precision is less, the value should be scaled down, and we divide by the scaling factor.
+   * @param precision
+   * @returns
    */
   public asPrecision(precision: number): BigUnit {
     // Check if precision is an integer
     if (precision % 1 !== 0) {
       throw new InvalidPrecisionError(precision);
     }
-  
+
     // Calculate the scaling factor as a bigint
     const scalingFactor = 10n ** BigInt(Math.abs(this.precision - precision));
-  
+
     // Scale the value up or down based on the new precision
-    const newValue = this.precision < precision
-      ? this.value * scalingFactor
-      : this.value / scalingFactor;
-  
+    const newValue =
+      this.precision < precision
+        ? this.value * scalingFactor
+        : this.value / scalingFactor;
+
     // Return a new BigUnit with the scaled value and new precision
     return new BigUnit(newValue, precision, this.name);
   }
-  
 
   public asOtherPrecision(other: BigUnit): BigUnit {
     // Express the value as a BigUnit with the given precision
@@ -257,7 +240,7 @@ export class BigUnit {
     return JSON.stringify({
       value: this.value.toString(),
       precision: this.precision,
-      name: this.name
+      name: this.name,
     });
   }
 
@@ -267,7 +250,11 @@ export class BigUnit {
    * @dev Convert a bigint to a BigUnit
    * @param bigintValue
    */
-  public static fromBigInt(bigintValue: bigint, precision: number, name?: string): BigUnit {
+  public static fromBigInt(
+    bigintValue: bigint,
+    precision: number,
+    name?: string
+  ): BigUnit {
     return new BigUnit(bigintValue, precision, name);
   }
 
@@ -275,83 +262,82 @@ export class BigUnit {
    * @dev Convert a number to a BigUnit
    * @param numberValue
    */
-  public static fromNumber(numberValue: number, precision: number, name?: string): BigUnit {
+  public static fromNumber(
+    numberValue: number,
+    precision: number,
+    name?: string
+  ): BigUnit {
     return new BigUnit(BigInt(numberValue * 10 ** precision), precision, name);
   }
 
-    /**
+  /**
    * @dev Convert a decimal string to a BigUnit, eg. "1.23456"
    * @param decimalStringValue
    */
-  public static fromDecimalString(decimalStringValue: string, precision: number, name?: string): BigUnit {
-      // Split the string into integer and fractional parts
-      const [integerPart, fractionalPart] = decimalStringValue.split(".");
-  
-      // Convert the integer part to a bigint
-      const integerPartBigInt = BigInt(integerPart);
-  
-      // If there is no fractional part, return the integer part
-      if (!fractionalPart) {
-        return new BigUnit(integerPartBigInt, precision);
-      }
-  
-      // Convert the fractional part to a bigint
-      let fractionalPartBigInt = BigInt(fractionalPart);
-  
-      // If the fractional part is longer than the precision, truncate it with a warning
-      if (fractionalPartBigInt.toString().length > precision) {
-        console.warn(
-          `Truncating fractional part of ${decimalStringValue} to ${precision} digits`
-        );
-        const fractionalPartString = fractionalPartBigInt.toString();
-        fractionalPartBigInt = BigInt(
-          fractionalPartString.slice(0, precision)
-        );
-      }
-  
-      // Pad the fractional part with zeros if it is shorter than the precision
-      const fractionalPartString = fractionalPartBigInt.toString();
-      const fractionalPartLength = fractionalPartString.length;
-      if (fractionalPartLength < precision) {
-        const padding = "0".repeat(precision - fractionalPartLength);
-        fractionalPartBigInt = BigInt(`${fractionalPartString}${padding}`);
-      }
-  
-      // Combine the integer and fractional parts
-      const valueBigInt = BigInt(`${integerPartBigInt}${fractionalPartBigInt}`);
-  
-      // Return the BigUnit
-      return BigUnit.fromBigInt(valueBigInt, precision);
+  public static fromDecimalString(
+    decimalStringValue: string,
+    precision: number,
+    name?: string
+  ): BigUnit {
+    // Split the string into integer and fractional parts
+    const [integerPart, fractionalPart] = decimalStringValue.split(".");
+
+    // Convert the integer part to a bigint
+    const integerPartBigInt = BigInt(integerPart);
+
+    // If there is no fractional part, return the integer part
+    if (!fractionalPart) {
+      return new BigUnit(
+        integerPartBigInt * BigInt(10 ** precision),
+        precision,
+        name
+      );
     }
 
-    public static from(value: BigUnitish, precision?: number, name?: string): BigUnit {
-      // If the value is already a BigUnit, return it. If precision is provided, convert it to the given precision
-      if (value instanceof BigUnit) {
-        if (precision === undefined|| precision === value.precision) {
-          return value;
-        }
-        return value.asPrecision(precision);
-      }
+    // Prepare the fractional part string by padding it with zeros to match the precision length
+    const paddedFractionalPart = fractionalPart
+      .padEnd(precision, "0")
+      .slice(0, precision);
 
-      // The other constructor methods require a precision
-      if (precision === undefined) {
-        throw new MissingPrecisionError();
+    // Convert the padded fractional part to a bigint
+    const fractionalPartBigInt = BigInt(paddedFractionalPart);
+
+    // Combine the integer and fractional parts
+    const combinedValueBigInt =
+      integerPartBigInt * BigInt(10 ** precision) + fractionalPartBigInt;
+
+    // Return the BigUnit
+    return new BigUnit(combinedValueBigInt, precision, name);
+  }
+
+  public static from(
+    value: BigUnitish,
+    precision?: number,
+    name?: string
+  ): BigUnit {
+    // If the value is already a BigUnit, return it. If precision is provided, convert it to the given precision
+    if (value instanceof BigUnit) {
+      if (precision === undefined || precision === value.precision) {
+        return value;
       }
-      
-      if (typeof value === "number") {
-        return BigUnit.fromNumber(value, precision, name);
-      } 
-      else if (typeof value === "string") {
-        return BigUnit.fromDecimalString(value, precision, name);
-      }  
-      else if (typeof value === "bigint") {
-        return BigUnit.fromBigInt(value, precision, name);
-      }
-      else {
-        throw new InvalidValueTypeError(value);
-      }
+      return value.asPrecision(precision);
     }
-  
+
+    // The other constructor methods require a precision
+    if (precision === undefined) {
+      throw new MissingPrecisionError();
+    }
+
+    if (typeof value === "number") {
+      return BigUnit.fromNumber(value, precision, name);
+    } else if (typeof value === "string") {
+      return BigUnit.fromDecimalString(value, precision, name);
+    } else if (typeof value === "bigint") {
+      return BigUnit.fromBigInt(value, precision, name);
+    } else {
+      throw new InvalidValueTypeError(value);
+    }
+  }
 }
 
 export class BigUnitFactory {
@@ -378,10 +364,12 @@ export class BigUnitFactory {
   }
 
   public fromDecimalString(decimalStringValue: string): BigUnit {
-    return BigUnit.fromDecimalString(decimalStringValue, this.precision, this.name);
+    return BigUnit.fromDecimalString(
+      decimalStringValue,
+      this.precision,
+      this.name
+    );
   }
-
-
 }
 
 export type BigUnitish = number | string | bigint | BigUnit;

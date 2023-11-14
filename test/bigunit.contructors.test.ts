@@ -1,4 +1,9 @@
-import { BigUnit, InvalidPrecisionError, InvalidValueTypeError, MissingPrecisionError } from "../src/bigunit";
+import {
+  BigUnit,
+  InvalidPrecisionError,
+  InvalidValueTypeError,
+  MissingPrecisionError,
+} from "../src/bigunit";
 
 describe("BigUnit Class Constructor", () => {
   test("should create a new BigUnit instance with valid arguments", () => {
@@ -23,12 +28,11 @@ describe("BigUnit Class Constructor", () => {
   });
 });
 
-
-describe('BigUnit Class Static Factory Methods', () => {
+describe("BigUnit Class Static Factory Methods", () => {
   const precision = 2;
-  
-  describe('fromBigInt method', () => {
-    test('should convert BigInt to BigUnit with correct precision', () => {
+
+  describe("fromBigInt method", () => {
+    test("should convert BigInt to BigUnit with correct precision", () => {
       const bigIntValue = 12345n;
       const bigUnit = BigUnit.fromBigInt(bigIntValue, precision);
 
@@ -38,8 +42,8 @@ describe('BigUnit Class Static Factory Methods', () => {
     });
   });
 
-  describe('fromNumber method', () => {
-    test('should convert number to BigUnit with correct precision', () => {
+  describe("fromNumber method", () => {
+    test("should convert number to BigUnit with correct precision", () => {
       const numberValue = 123.45;
       const bigUnit = BigUnit.fromNumber(numberValue, precision);
 
@@ -49,8 +53,8 @@ describe('BigUnit Class Static Factory Methods', () => {
     });
   });
 
-  describe('fromDecimalString method', () => {
-    test('should convert a decimal string to BigUnit with correct precision', () => {
+  describe("fromDecimalString method", () => {
+    test("should convert a decimal string to BigUnit with correct precision", () => {
       const decimalString = "123.45";
       const bigUnit = BigUnit.fromDecimalString(decimalString, precision);
 
@@ -59,20 +63,57 @@ describe('BigUnit Class Static Factory Methods', () => {
       expect(bigUnit.precision).toBe(precision);
     });
 
-    test('should handle a decimal string with more precision than BigUnit\'s precision', () => {
-      const decimalString = "123.4567"; // More precision than specified 
-      const warnSpy = jest.spyOn(console, 'warn').mockImplementationOnce(() => {});
+    test("should handle decimal strings with leading zeros in the fractional part correctly", () => {
+      const decimalString = "100.0123";
+      const precision = 4;
+      const expectedValue = BigInt(1000123); // Expected: 100 * 10^4 + 123
+
       const bigUnit = BigUnit.fromDecimalString(decimalString, precision);
-      
-      expect(warnSpy).toHaveBeenCalled();  // expect a truncation warning to be logged
+
       expect(bigUnit).toBeInstanceOf(BigUnit);
-      expect(bigUnit.toString()).toBe("123.45"); // The value should be truncated to match the specified precision
+      expect(bigUnit.value).toBe(expectedValue);
+      expect(bigUnit.precision).toBe(precision);
+    });
+
+    test("should handle decimal strings without fractional part correctly", () => {
+      const decimalString = "100.";
+      const precision = 4;
+      const expectedValue = BigInt(100 * 10 ** precision); // Expected: 100 * 10^4
+
+      const bigUnit = BigUnit.fromDecimalString(decimalString, precision);
+
+      expect(bigUnit).toBeInstanceOf(BigUnit);
+      expect(bigUnit.value).toBe(expectedValue);
+      expect(bigUnit.precision).toBe(precision);
+    });
+
+    test("should handle decimal strings with fractional part shorter than precision correctly", () => {
+      const decimalString = "100.1";
+      const precision = 4;
+      const expectedValue = BigInt(1001000); // Expected: 100 * 10^4 + 1000
+
+      const bigUnit = BigUnit.fromDecimalString(decimalString, precision);
+
+      expect(bigUnit).toBeInstanceOf(BigUnit);
+      expect(bigUnit.value).toBe(expectedValue);
+      expect(bigUnit.precision).toBe(precision);
+    });
+
+    test("should truncate decimal strings with fractional part longer than precision", () => {
+      const decimalString = "100.12345"; // Extra digit beyond precision
+      const precision = 4;
+      const expectedValue = BigInt(1001234); // Expected: 100 * 10^4 + 1234, last digit truncated
+
+      const bigUnit = BigUnit.fromDecimalString(decimalString, precision);
+
+      expect(bigUnit).toBeInstanceOf(BigUnit);
+      expect(bigUnit.value).toBe(expectedValue);
       expect(bigUnit.precision).toBe(precision);
     });
   });
 
-  describe('from method', () => {
-    test('should convert number to BigUnit with correct precision', () => {
+  describe("from method", () => {
+    test("should convert number to BigUnit with correct precision", () => {
       const numberValue = 123.45;
       const bigUnitFromNumber = BigUnit.from(numberValue, precision);
 
@@ -81,7 +122,7 @@ describe('BigUnit Class Static Factory Methods', () => {
       expect(bigUnitFromNumber.precision).toBe(precision);
     });
 
-    test('should convert a decimal string to BigUnit with correct precision', () => {
+    test("should convert a decimal string to BigUnit with correct precision", () => {
       const decimalString = "123.45";
       const bigUnitFromDecimalString = BigUnit.from(decimalString, precision);
 
@@ -90,7 +131,7 @@ describe('BigUnit Class Static Factory Methods', () => {
       expect(bigUnitFromDecimalString.precision).toBe(precision);
     });
 
-    test('should convert BigInt to BigUnit with correct precision', () => {
+    test("should convert BigInt to BigUnit with correct precision", () => {
       const bigIntValue = 12345n;
       const bigUnitFromBigInt = BigUnit.from(bigIntValue, precision);
 
@@ -99,7 +140,7 @@ describe('BigUnit Class Static Factory Methods', () => {
       expect(bigUnitFromBigInt.precision).toBe(precision);
     });
 
-    test('should convert BigUnit to BigUnit with correct precision', () => {
+    test("should convert BigUnit to BigUnit with correct precision", () => {
       const bigUnitValue = new BigUnit(12345n, 2);
       const bigUnitFromBigUnit = BigUnit.from(bigUnitValue, precision);
 
@@ -108,19 +149,19 @@ describe('BigUnit Class Static Factory Methods', () => {
       expect(bigUnitFromBigUnit.precision).toBe(precision);
     });
 
-    test('should throw error when precision is not provided and input is not a BigUnit', () => {
+    test("should throw error when precision is not provided and input is not a BigUnit", () => {
       const numberValue = 123.45;
       const fromNumberWithoutPrecision = () => BigUnit.from(numberValue);
 
       expect(fromNumberWithoutPrecision).toThrow(MissingPrecisionError);
     });
 
-    test('should handle invalid input types', () => {
+    test("should handle invalid input types", () => {
       const invalidInput = { notANumber: true };
-      const fromInvalidInput = () => BigUnit.from(invalidInput as any, precision);
+      const fromInvalidInput = () =>
+        BigUnit.from(invalidInput as any, precision);
 
       expect(fromInvalidInput).toThrow(InvalidValueTypeError);
     });
   });
-
 });
