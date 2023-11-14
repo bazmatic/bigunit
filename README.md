@@ -44,7 +44,7 @@ const bigUnitFromBigInt = BigUnit.from(123456n, 12); // From BigInt with precisi
 // Output the created instances
 console.log(`BigUnit from number: ${bigUnitFromNumber.toString()}`); // Format as a decimal number
 console.log(`BigUnit from string: ${bigUnitFromString.format(2)}`); // Format as a string with 2 places after the decimal point
-console.log(`BigUnit from BigInt: ${bigUnitFromBigInt.toString()}`);
+console.log(`BigUnit from BigInt: ${bigUnitFromBigInt.toNumber()}`); // Output as a number
 
 // Compare BigUnit instances with various types
 const comparisonNumber = 123.456;

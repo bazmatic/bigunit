@@ -1,7 +1,7 @@
 {
   "name": "bigunit",
-  "version": "1.0.0",
-  "main": "index.js",
+  "version": "1.0.1",
+  "main": "dist/bigunit.js",
   "license": "MIT",
   "author": "Barry Earsman",
   "scripts": {
@@ -14,7 +14,9 @@
     "@types/jest": "^29.5.8",
     "jest": "^29.7.0",
     "prettier": "^3.0.3",
+
     "ts-jest": "^29.1.1",
     "typescript": "^5.2.2"
-  }
+  },
+  "types": "dist/bigunit.d.ts"
 }

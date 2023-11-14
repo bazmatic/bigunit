@@ -198,8 +198,25 @@ export class BigUnit {
   }
 
   public toNumber(): number {
-    return Number(this.value) / 10 ** this.precision;
+    // Determine the maximum safe integer in JavaScript
+    const maxSafeInteger = Number.MAX_SAFE_INTEGER;
+  
+    // If the value is within the safe range, convert directly
+    if (this.value <= maxSafeInteger) {
+      return Number(this.value) / (10 ** this.precision);
+    }
+  
+    // If the value is larger than the safe range, truncate the bigint before converting
+    const valueString = this.value.toString();
+    const safeDigits = valueString.length - (valueString.length - maxSafeInteger.toString().length);
+    const truncatedValueString = valueString.slice(0, safeDigits);
+    const truncatedValueBigInt = BigInt(truncatedValueString);
+  
+    // Convert the truncated bigint to a number and then divide by the precision
+    // Adjust the precision accordingly since we truncated the bigint
+    return Number(truncatedValueBigInt) / (10 ** (this.precision - (valueString.length - safeDigits)));
   }
+  
 
   /**
    * @dev Convert to a string representation of the value, using fixed-point notation.
