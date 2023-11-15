@@ -1,6 +1,7 @@
-# BigUnit: A muscular TypeScript library for arithmetic with numbers of varying precision
+# BigUnit
+## A muscular TypeScript library for arithmetic with numbers of varying precision
 
-![Screenshot 2023-11-15 at 4 36 53 pm](https://github.com/bazmatic/bigunit/assets/1154619/6961c772-8902-4f9e-9a19-ca6750747326)
+![BigUnit](https://github.com/bazmatic/bigunit/assets/1154619/6961c772-8902-4f9e-9a19-ca6750747326)
 
 ## Overview
 
