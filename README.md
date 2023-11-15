@@ -1,6 +1,6 @@
-<img width="256" alt="logo" src="https://github.com/bazmatic/bigunit/assets/1154619/83db1d5c-d955-4d41-ba7a-1e513e671a8b">
-
 # BigUnit: A muscular TypeScript library for arithmetic with numbers of varying precision
+
+![Screenshot 2023-11-15 at 4 36 53 pm](https://github.com/bazmatic/bigunit/assets/1154619/6961c772-8902-4f9e-9a19-ca6750747326)
 
 ## Overview
 
