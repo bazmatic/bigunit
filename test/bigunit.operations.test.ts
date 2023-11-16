@@ -1,4 +1,4 @@
-import { BigUnit } from "../src/bigunit";
+import { BigUnit, DivisionByZeroError } from "../src/bigunit";
 
 describe("BigUnit Class Methods", () => {
   const precision = 2;
@@ -65,7 +65,7 @@ describe("BigUnit Class Methods", () => {
       [5.00, 6, 1.00, 6, 5.00, 6],
     
       // Fraction Multiplication
-      [0.01, 6, 0.01, 6, 0.00, 6],
+      [0.01, 6, 0.01, 6, 0.0001, 6],
       [0.10, 6, 0.10, 6, 0.01, 6],
     
       // Large Number Multiplication
@@ -76,9 +76,6 @@ describe("BigUnit Class Methods", () => {
     
       // Precision Mismatch
       [1.234, 5, 1.2345, 8, 1.523373, 8],
-    
-      // Overflow Handling (assuming BigInt can handle very large numbers)
-      //[Number.MAX_SAFE_INTEGER, 100, 10.0, 100, `${Number.MAX_SAFE_INTEGER}0`, 100],
     
       // Underflow Handling
       [0.0000000001, 10, 0.0000000001, 10, 0.00, 10],
@@ -122,7 +119,7 @@ describe("BigUnit Class Methods", () => {
     it("should handle negative values and zero correctly", () => {
       const zeroUnit = new BigUnit(0n, precision);
       const negativeResult = unit1.div(unit3);
-      expect(() => unit1.div(zeroUnit)).toThrow();
+      expect(() => unit1.div(zeroUnit)).toThrow(DivisionByZeroError);
       expect(negativeResult.value).toBe(unitValue1 / unitValue3);
     });
   });
@@ -212,7 +209,7 @@ describe("BigUnit Class Methods - percent and fraction", () => {
 
       expect(() => {
         bigUnit.fraction(numerator, denominator);
-      }).toThrow();
+      }).toThrow(DivisionByZeroError);
     });
 
     test("should handle negative denominator correctly", () => {

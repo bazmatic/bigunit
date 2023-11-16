@@ -37,6 +37,18 @@ export class InvalidPrecisionError extends BigUnitError {
   }
 }
 
+export class DivisionByZeroError extends BigUnitError {
+  constructor() {
+    super("Division by zero");
+  }
+}
+
+export class InvalidFractionError extends BigUnitError {
+  constructor(message: string) {
+    super(message);
+  }
+}
+
 export class BigUnit {
   constructor(
     public value: bigint,
@@ -49,65 +61,84 @@ export class BigUnit {
     }
   }
 
-  public add(other: BigUnit): BigUnit {
-    // Convert the other unit to the same precision as this unit
-    other = other.asPrecision(this.precision);
+  public add(other: BigUnitish): BigUnit {
+    // Ensure the other value is a BigUnit
+    const otherUnit = (other instanceof BigUnit) ? other : BigUnit.from(other, this.precision);
 
+    // Determine the highest precision of the two units and convert both units to the highest precision
+    const [ thisUnitAtHighestPrecision, otherUnitAtHighestPrecision ] = BigUnit.asLargestPrecision(this, otherUnit);
+  
     // Add the values
-    return new BigUnit(this.value + other.value, this.precision);
+    return new BigUnit(thisUnitAtHighestPrecision.value + otherUnitAtHighestPrecision.value, this.precision);
   }
 
-  public sub(other: BigUnit): BigUnit {
-    // Convert the other unit to the same precision as this unit
-    other = other.asPrecision(this.precision);
+  public sub(other: BigUnitish): BigUnit {
+    // Ensure the other value is a BigUnit
+    const otherUnit = (other instanceof BigUnit) ? other : BigUnit.from(other, this.precision);
+
+    // Determine the highest precision of the two units and convert both units to the highest precision
+    const [ thisUnitAtHighestPrecision, otherUnitAtHighestPrecision ] = BigUnit.asLargestPrecision(this, otherUnit);
 
     // Subtract the values
-    return new BigUnit(this.value - other.value, this.precision);
+    return new BigUnit(thisUnitAtHighestPrecision.value - otherUnitAtHighestPrecision.value, this.precision);
   }
 
-  public mul(other: BigUnit): BigUnit {
-    // Determine the highest precision of the two units
-    const highestPrecision = Math.max(this.precision, other.precision);
-  
-    // Convert both units to the highest precision
-    const thisUnitAtHighestPrecision = this.asPrecision(highestPrecision);
-    const otherUnitAtHighestPrecision = other.asPrecision(highestPrecision);
+  public mul(other: BigUnitish): BigUnit {
+    // Ensure the other value is a BigUnit
+    const otherUnit = (other instanceof BigUnit) ? other : BigUnit.from(other, this.precision);
+
+    // Determine the highest precision of the two units and convert both units to the highest precision
+    const [ thisUnitAtHighestPrecision, otherUnitAtHighestPrecision ] = BigUnit.asLargestPrecision(this, otherUnit);
   
     // Multiply the values and then adjust the result to account for the precision
-    // Since both values are at the same precision now, we just divide once by 10 ** highestPrecision
-    const resultValue = (thisUnitAtHighestPrecision.value * otherUnitAtHighestPrecision.value) / BigInt(10 ** highestPrecision);
+    const resultValue = (thisUnitAtHighestPrecision.value * otherUnitAtHighestPrecision.value) / BigInt(10 ** thisUnitAtHighestPrecision.precision);
   
     // Return a new BigUnit with the result value and the highest precision
-    return new BigUnit(resultValue, highestPrecision);
+    return new BigUnit(resultValue, thisUnitAtHighestPrecision.precision);
   } 
 
-  public div(other: BigUnit): BigUnit {
-    // Convert the other unit to the same precision as this unit
-    other = other.asPrecision(this.precision);
+  public div(other: BigUnitish): BigUnit {
+    // Ensure the other value is a BigUnit
+    const otherUnit = (other instanceof BigUnit) ? other : BigUnit.from(other, this.precision);
+  
+    // Determine the highest precision of the two units and convert both units to the highest precision
+    const [ thisUnitAtHighestPrecision, otherUnitAtHighestPrecision ] = BigUnit.asLargestPrecision(this, otherUnit);
+  
+    // Perform division operation
+    if (otherUnitAtHighestPrecision.isZero()) {
+      throw new DivisionByZeroError();
+    }
+    const resultValue = thisUnitAtHighestPrecision.value / otherUnitAtHighestPrecision.value;
+  
+    // Return a new BigUnit instance with the division result and highest precision
+    return BigUnit.from(resultValue, thisUnitAtHighestPrecision.precision);
+  }
+  
+  public mod(other: BigUnitish): BigUnit {
+    // Ensure the other value is a BigUnit
+    const otherUnit = (other instanceof BigUnit) ? other : BigUnit.from(other, this.precision);
 
-    // Divide the values
-    return new BigUnit(this.value / other.value, this.precision);
+    // Determine the highest precision of the two units and convert both units to the highest precision
+    const [ thisUnitAtHighestPrecision, otherUnitAtHighestPrecision ] = BigUnit.asLargestPrecision(this, otherUnit);
+  
+    // Perform modulo operation
+    if (otherUnitAtHighestPrecision.isZero()){
+      throw new DivisionByZeroError();
+    }
+    const resultValue = thisUnitAtHighestPrecision.value % otherUnitAtHighestPrecision.value;
+  
+    // Return a new BigUnit instance with the modulo result and highest precision
+    return BigUnit.from(resultValue, thisUnitAtHighestPrecision.precision);
   }
 
-  public mod(other: BigUnit): BigUnit {
-    // Convert the other unit to the same precision as this unit
-    other = other.asPrecision(this.precision);
-
-    // Mod the values
-    return new BigUnit(this.value % other.value, this.precision);
-  }
-
-  public percent(percent: number): BigUnit {
-    return this.fraction(percent, 100);
-  }
   public fraction(numerator: number, denominator: number): BigUnit {
     if (isNaN(numerator) || isNaN(denominator)) {
-      throw new Error("Numerator and denominator must be valid numbers");
+      throw new InvalidFractionError("Numerator and denominator must be valid numbers");
     }
 
     // Check for division by zero
     if (denominator === 0) {
-      throw new BigUnitError("Denominator cannot be zero");
+      throw new DivisionByZeroError();
     }
 
     // Calculate the fraction of the value
@@ -118,6 +149,19 @@ export class BigUnit {
 
     // Return a new BigUnit with the result value and the same precision
     return new BigUnit(resultValue, this.precision);
+  }
+
+  public percent(percent: number): BigUnit {
+    return this.fraction(percent, 100);
+  }
+
+  public static asLargestPrecision(unit1: BigUnit, unit2: BigUnit): [BigUnit, BigUnit] {
+    // Determine the highest precision of the two units and convert both units to the highest precision
+    const highestPrecision = Math.max(unit1.precision, unit2.precision);
+    const unit1AtHighestPrecision = unit1.asPrecision(highestPrecision);
+    const unit2AtHighestPrecision = unit2.asPrecision(highestPrecision);
+
+    return [unit1AtHighestPrecision, unit2AtHighestPrecision];
   }
 
   public eq(other: BigUnitish): boolean {
