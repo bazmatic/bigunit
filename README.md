@@ -39,8 +39,8 @@ import { BigUnit, BigUnitFactory } from "../src/bigunit";
 
 // Instantiate BigUnit instances from various types
 const unit1 = BigUnit.from(123.456, 5); // Make a unit with 5 decimals from a number
-const unit2 = BigUnit.from("789.012", 18); // Make a unit with 18 decimals from a number string
-const unit3 = BigUnit.from(1234567n, 5); // Make a unit with 12 decimalsFrom BigInt (12.3456)
+const unit2 = BigUnit.from("789.012483655091331", 18); // Make a unit with 18 decimals from a number string
+const unit3 = BigUnit.from(1234567n, 12); // Make a unit with 12 decimalsFrom BigInt (0.000001234567)
 
 // Output the created instances
 console.log(unit1.toString()); // Format as a decimal number
@@ -53,7 +53,7 @@ console.log(unit3.toJSON()); // Output a JSON representation
 const BTC = new BigUnitFactory(8, "BTC");
 const btc1 = BTC.from(123.456); // 123.45600000 BTC
 const btc2 = BTC.from("0.00000012"); // 0.00000012 BTC
-const btc3 = BTC.from(1234567n); // 12.34567000 BTC
+const btc3 = BTC.from(123456789n); // 12.34567890 BTC
 
 // Comparisons
 console.log(`Is btc1 equal to 10.23}?`, btc1.eq(10.23)); // false

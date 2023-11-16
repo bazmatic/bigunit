@@ -2,8 +2,8 @@ import { BigUnit, BigUnitFactory } from "../src/bigunit";
 
 // Instantiate BigUnit instances from various types
 const unit1 = BigUnit.from(123.456, 5); // Make a unit with 5 decimals from a number
-const unit2 = BigUnit.from("789.012", 18); // Make a unit with 18 decimals from a number string
-const unit3 = BigUnit.from(1234567n, 5); // Make a unit with 12 decimalsFrom BigInt (12.3456)
+const unit2 = BigUnit.from("789.012483655091331", 18); // Make a unit with 18 decimals from a number string
+const unit3 = BigUnit.from(1234567n, 12); // Make a unit with 12 decimalsFrom BigInt (0.000001234567)
 
 // Output the created instances
 console.log(unit1.toString()); // Format as a decimal number
