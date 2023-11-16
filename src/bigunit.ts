@@ -66,18 +66,20 @@ export class BigUnit {
   }
 
   public mul(other: BigUnit): BigUnit {
-    // Convert the other unit to the same precision as this unit
-    other = other.asPrecision(this.precision);
-
-    // Multiply the values, taking into account the precision
-    // The result should be divided by the power of 10 of the precision
-    // because the actual values are represented in an integer form scaled by precision
-    const resultValue =
-      (this.value * other.value) / BigInt(10 ** this.precision);
-
-    // Return a new BigUnit with the result value and the same precision
-    return new BigUnit(resultValue, this.precision);
-  }
+    // Determine the highest precision of the two units
+    const highestPrecision = Math.max(this.precision, other.precision);
+  
+    // Convert both units to the highest precision
+    const thisUnitAtHighestPrecision = this.asPrecision(highestPrecision);
+    const otherUnitAtHighestPrecision = other.asPrecision(highestPrecision);
+  
+    // Multiply the values and then adjust the result to account for the precision
+    // Since both values are at the same precision now, we just divide once by 10 ** highestPrecision
+    const resultValue = (thisUnitAtHighestPrecision.value * otherUnitAtHighestPrecision.value) / BigInt(10 ** highestPrecision);
+  
+    // Return a new BigUnit with the result value and the highest precision
+    return new BigUnit(resultValue, highestPrecision);
+  } 
 
   public div(other: BigUnit): BigUnit {
     // Convert the other unit to the same precision as this unit

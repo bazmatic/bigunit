@@ -45,43 +45,70 @@ describe("BigUnit Class Methods", () => {
   });
 
   describe("mul method", () => {
-    // Repeat the structure of add method tests for mul method
-    it("should multiply two BigUnit instances of the same precision", () => {
-      const result = unit1.mul(unit2);
-      expect(result.value).toBe(
-        (unitValue1 * unitValue2) / 10n ** BigInt(precision),
-      );
-      expect(result.precision).toBe(precision);
-    });
+    // Define test cases as [value1, precision1, value2, precision2, expectedProduct, expectedPrecision]
+    const mulTestCases = [
+      // Basic Multiplication
+      [1.00, 6, 2.00, 6, 2.00, 6],
+      [1.23, 6, 2.34, 6, 2.8782, 6],
+    
+      // Zero Multiplication
+      [0.00, 6, 5.00, 6, 0.00, 6],
+      [5.00, 6, 0.00, 6, 0.00, 6],
+    
+      // Negative Multiplication
+      [-1.00, 6, 5.00, 6, -5.00, 6],
+      [1.00, 6, -5.00, 6, -5.00, 6],
+      [-1.00, 6, -5.00, 6, 5.00, 6],
+    
+      // Multiplying by One
+      [1.00, 6, 5.00, 6, 5.00, 6],
+      [5.00, 6, 1.00, 6, 5.00, 6],
+    
+      // Fraction Multiplication
+      [0.01, 6, 0.01, 6, 0.00, 6],
+      [0.10, 6, 0.10, 6, 0.01, 6],
+    
+      // Large Number Multiplication
+      [10000.00, 2, 10000.00, 2, 100000000.00, 2],
+    
+      // Precision Loss (assuming library truncates)
+      [1.2345, 4, 9.8765, 4, 12.1925, 4],
+    
+      // Precision Mismatch
+      [1.234, 5, 1.2345, 8, 1.523373, 8],
+    
+      // Overflow Handling (assuming BigInt can handle very large numbers)
+      //[Number.MAX_SAFE_INTEGER, 100, 10.0, 100, `${Number.MAX_SAFE_INTEGER}0`, 100],
+    
+      // Underflow Handling
+      [0.0000000001, 10, 0.0000000001, 10, 0.00, 10],
+    
+      // Multiplying with Powers of Ten
+      [1.00, 2, 100.00, 2, 100.00, 2],
+    
+      // Rounding (assuming library truncates)
+      [1.2345, 4, 1.0000, 4, 1.2345, 4],
+    ];
 
-    it("should handle negative values and zero correctly", () => {
-      const zeroUnit = new BigUnit(0n, precision);
-      const negativeResult = unit1.mul(unit3);
-      const zeroResult = unit1.mul(zeroUnit);
+    test.each(mulTestCases)(
+      'given numbers %f with precision %i and %f with precision %i, expect multiplication result %f with precision %i',
+      (num1, precision1, num2, precision2, expectedNum, expectedPrecision) => {
+        // Convert test case numbers to BigUnit instances
 
-      expect(negativeResult.value).toBe(
-        (unitValue1 * unitValue3) / 10n ** BigInt(precision),
-      );
-      expect(zeroResult.value).toBe(0n);
-    });
+        const unit1 = BigUnit.from(num1, +precision1);
+        const unit2 = BigUnit.from(num2, +precision2);
+        const result = unit1.mul(unit2);
+  
+        // Convert expected number to BigInt representation
+        const expectedValue = BigInt(Math.round(+expectedNum * (10 ** +expectedPrecision)));
+  
+        expect(result).toBeInstanceOf(BigUnit);
+        expect(result.value).toBe(expectedValue);
+        expect(result.toNumber()).toBe(+expectedNum);
+        expect(result.precision).toBe(expectedPrecision);
+      },
+    );
 
-    it("should handle multiplying by fractional numbers", () => {
-      const precision = 2; // Precision set to 2 decimal places for this example
-
-      // Create BigUnit instances
-      const fractionUnit = new BigUnit(BigInt(5), precision); // 0.05 as a fraction
-      const largeNumberUnit = new BigUnit(BigInt(100000), precision); // 1000 as a large number
-
-      // Expected value after multiplication
-      // The fraction 0.05 represented as 5 with precision 2, when multiplied by 1000 represented as 100000 with precision 2,
-      // should result in 50 represented as 5000 with precision 2.
-      const expectedValue = BigInt(5000); // 50 with precision 2
-      const result = fractionUnit.mul(largeNumberUnit);
-
-      expect(result).toBeInstanceOf(BigUnit);
-      expect(result.value).toBe(expectedValue);
-      expect(result.precision).toBe(precision);
-    });
   });
 
   describe("div method", () => {
@@ -226,7 +253,7 @@ describe("BigUnit Class Methods with Differing Precision", () => {
   });
 
   describe("mul method with differing precision", () => {
-    test("should multiply two BigUnit instances and use the precision of the first instance", () => {
+    test("should multiply two BigUnit instances and use the highest precision", () => {
       const result = unitHighPrecision.mul(unitLowPrecision);
       // The multiplication of the values themselves should not take precision into account, that's handled after the multiplication
       const rawProduct =

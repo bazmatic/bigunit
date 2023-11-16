@@ -1,4 +1,4 @@
-import { BigUnit } from "./src/bigunit";
+import { BigUnit } from "../src/bigunit";
 
 // Instantiate BigUnit instances from various types
 const bigUnitFromNumber = BigUnit.from(123.456, 3); // From a number with precision 3
