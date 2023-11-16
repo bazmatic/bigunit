@@ -1,4 +1,5 @@
 import { BigUnit } from "../src/bigunit";
+import {  DivisionByZeroError } from "../src/errors";
 describe("BigUnit Class fraction handling methods", () => {
   const precision = 2;
   const value = 10000n; // Represents 100.00 when precision is 2
@@ -57,7 +58,7 @@ describe("BigUnit Class fraction handling methods", () => {
 
       expect(() => {
         bigUnit.fraction(numerator, denominator);
-      }).toThrow("Denominator cannot be zero");
+      }).toThrow(DivisionByZeroError);
     });
 
     test("should handle negative numerator correctly", () => {

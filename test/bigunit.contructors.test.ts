@@ -1,9 +1,9 @@
+import { BigUnit } from "../src/bigunit";
 import {
-  BigUnit,
   InvalidPrecisionError,
   InvalidValueTypeError,
   MissingPrecisionError,
-} from "../src/bigunit";
+} from "../src/errors";
 
 describe("BigUnit Class Constructor", () => {
   test("should create a new BigUnit instance with valid arguments", () => {

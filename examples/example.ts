@@ -1,4 +1,4 @@
-import { BigUnitFactory } from "./src/bigunit";
+import { BigUnitFactory } from "../src/bigunit";
 
 // Define the BigUnitFactories with the specified precisions for cryptocurrencies and USD
 const BTC = new BigUnitFactory(8, "BTC"); // BTC precision
