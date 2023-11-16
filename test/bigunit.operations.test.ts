@@ -1,4 +1,5 @@
-import { BigUnit, DivisionByZeroError } from "../src/bigunit";
+import { BigUnit } from "../src/bigunit";
+import { DivisionByZeroError } from "../src/errors";
 
 describe("BigUnit Class Methods", () => {
   const precision = 2;
@@ -48,64 +49,65 @@ describe("BigUnit Class Methods", () => {
     // Define test cases as [value1, precision1, value2, precision2, expectedProduct, expectedPrecision]
     const mulTestCases = [
       // Basic Multiplication
-      [1.00, 6, 2.00, 6, 2.00, 6],
+      [1.0, 6, 2.0, 6, 2.0, 6],
       [1.23, 6, 2.34, 6, 2.8782, 6],
-    
+
       // Zero Multiplication
-      [0.00, 6, 5.00, 6, 0.00, 6],
-      [5.00, 6, 0.00, 6, 0.00, 6],
-    
+      [0.0, 6, 5.0, 6, 0.0, 6],
+      [5.0, 6, 0.0, 6, 0.0, 6],
+
       // Negative Multiplication
-      [-1.00, 6, 5.00, 6, -5.00, 6],
-      [1.00, 6, -5.00, 6, -5.00, 6],
-      [-1.00, 6, -5.00, 6, 5.00, 6],
-    
+      [-1.0, 6, 5.0, 6, -5.0, 6],
+      [1.0, 6, -5.0, 6, -5.0, 6],
+      [-1.0, 6, -5.0, 6, 5.0, 6],
+
       // Multiplying by One
-      [1.00, 6, 5.00, 6, 5.00, 6],
-      [5.00, 6, 1.00, 6, 5.00, 6],
-    
+      [1.0, 6, 5.0, 6, 5.0, 6],
+      [5.0, 6, 1.0, 6, 5.0, 6],
+
       // Fraction Multiplication
       [0.01, 6, 0.01, 6, 0.0001, 6],
-      [0.10, 6, 0.10, 6, 0.01, 6],
-    
+      [0.1, 6, 0.1, 6, 0.01, 6],
+
       // Large Number Multiplication
-      [10000.00, 2, 10000.00, 2, 100000000.00, 2],
-    
+      [10000.0, 2, 10000.0, 2, 100000000.0, 2],
+
       // Precision Loss (assuming library truncates)
       [1.2345, 4, 9.8765, 4, 12.1925, 4],
-    
+
       // Precision Mismatch
       [1.234, 5, 1.2345, 8, 1.523373, 8],
-    
+
       // Underflow Handling
-      [0.0000000001, 10, 0.0000000001, 10, 0.00, 10],
-    
+      [0.0000000001, 10, 0.0000000001, 10, 0.0, 10],
+
       // Multiplying with Powers of Ten
-      [1.00, 2, 100.00, 2, 100.00, 2],
-    
+      [1.0, 2, 100.0, 2, 100.0, 2],
+
       // Rounding (assuming library truncates)
-      [1.2345, 4, 1.0000, 4, 1.2345, 4],
+      [1.2345, 4, 1.0, 4, 1.2345, 4],
     ];
 
     test.each(mulTestCases)(
-      'given numbers %f with precision %i and %f with precision %i, expect multiplication result %f with precision %i',
+      "given numbers %f with precision %i and %f with precision %i, expect multiplication result %f with precision %i",
       (num1, precision1, num2, precision2, expectedNum, expectedPrecision) => {
         // Convert test case numbers to BigUnit instances
 
         const unit1 = BigUnit.from(num1, +precision1);
         const unit2 = BigUnit.from(num2, +precision2);
         const result = unit1.mul(unit2);
-  
+
         // Convert expected number to BigInt representation
-        const expectedValue = BigInt(Math.round(+expectedNum * (10 ** +expectedPrecision)));
-  
+        const expectedValue = BigInt(
+          Math.round(+expectedNum * 10 ** +expectedPrecision),
+        );
+
         expect(result).toBeInstanceOf(BigUnit);
         expect(result.value).toBe(expectedValue);
         expect(result.toNumber()).toBe(+expectedNum);
         expect(result.precision).toBe(expectedPrecision);
       },
     );
-
   });
 
   describe("div method", () => {

@@ -1,4 +1,5 @@
-import { BigUnit, DivisionByZeroError } from "../src/bigunit";
+import { BigUnit } from "../src/bigunit";
+import {  DivisionByZeroError } from "../src/errors";
 describe("BigUnit Class fraction handling methods", () => {
   const precision = 2;
   const value = 10000n; // Represents 100.00 when precision is 2

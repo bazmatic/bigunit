@@ -1,4 +1,4 @@
-import { BigUnitError } from "../src/bigunit";
+import { BigUnitError } from "../src/errors";
 
 describe("BigUnitError Class", () => {
   test("should instantiate with a message and have the correct properties", () => {

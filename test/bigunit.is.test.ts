@@ -1,4 +1,5 @@
-import { BigUnit, DivisionByZeroError } from "../src/bigunit";
+import { BigUnit } from "../src/bigunit";
+import { DivisionByZeroError } from "../src/errors";
 
 describe("BigUnit Class State Methods", () => {
   const precision = 2;
