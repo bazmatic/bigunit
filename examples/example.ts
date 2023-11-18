@@ -6,15 +6,17 @@ const ETH = new BigUnitFactory(18, "ETH"); // ETH precision
 const DOT = new BigUnitFactory(10, "DOT"); // DOT precision
 const USD = new BigUnitFactory(4, "USD"); // USD precision
 
-// Crypto balances
+// Crypto balances. 
+// You can use .from() to accept any type of number. 
+// In this example, we use different methods demonstrate the different ways to instantiate BigUnit instances.
 const btcBalance = BTC.fromNumber(0.005); // 0.005 BTC
-const ethBalance = ETH.fromNumber(0.5); // 0.5 ETH
-const dotBalance = DOT.fromNumber(10.123456789); // 10.1234567890 DOT
+const ethBalance = ETH.fromBigInt(500000000000000000n); // 0.5 ETH
+const dotBalance = DOT.fromDecimalString("10.123456789"); // 10.1234567890 DOT. fromDecimalString permits any number of digits after the decimal point.
 
 // Exchange rates to USD
-const btcUsdRate = USD.fromNumber(60000); // $60,000 per BTC
-const ethUsdRate = USD.fromNumber(2000); // $2,000 per ETH
-const dotUsdRate = USD.fromNumber(35); // $35 per DOT
+const btcUsdRate = USD.fromNumber(60000.0); // $60,000 per BTC
+const ethUsdRate = USD.fromNumber(2000.0); // $2,000 per ETH
+const dotUsdRate = USD.fromNumber(35.0); // $35 per DOT
 
 // Convert each crypto balance to USD
 const btcUsdValue = btcBalance.mul(btcUsdRate).asPrecision(USD.precision);
