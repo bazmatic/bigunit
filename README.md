@@ -5,7 +5,7 @@
 
 ## Overview
 
-BigUnit is a TypeScript library designed to facilitate the handling of large numbers with varying degrees of precision. This is particularly useful in applications involving cryptocurrency, where precise arithmetic with numbers of various precisions are frequently required. The library offers a suite of tools to perform operations, comparisons and conversions on numbers far beyond the safe integer limits of standard JavaScript.
+BigUnit is a TypeScript library designed to facilitate the handling of large numbers with varying degrees of precision. This is particularly useful in applications involving cryptocurrency, where precise arithmetic with numbers of various precisions are frequently required. The library offers a suite of tools to perform operations, comparisons and conversions on numbers that require representation as specific precision values.
 
 ## Features
 
@@ -13,6 +13,7 @@ BigUnit is a TypeScript library designed to facilitate the handling of large num
 - Comparison: Easily compare numbers with standard relational operations that work with any number type.
 - Conversion: Convert to/from various formats including numbers, BigInts, and number strings with ease.
 - Fraction and percentage calculations: Direct methods to work with fractions and percentages without worrying about precision.
+- No more `**` and `Math.pow()` in your code!
 
 ## Installation
 
