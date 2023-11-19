@@ -6,8 +6,8 @@ const ETH = new BigUnitFactory(18, "ETH"); // ETH precision
 const DOT = new BigUnitFactory(10, "DOT"); // DOT precision
 const USD = new BigUnitFactory(4, "USD"); // USD precision
 
-// Crypto balances. 
-// You can use .from() to accept any type of number. 
+// Crypto balances.
+// You can use .from() to accept any type of number.
 // In this example, we use different methods demonstrate the different ways to instantiate BigUnit instances.
 const btcBalance = BTC.fromNumber(0.005); // 0.005 BTC
 const ethBalance = ETH.fromBigInt(500000000000000000n); // 0.5 ETH

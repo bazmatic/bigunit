@@ -8,6 +8,9 @@
     "type": "git",
     "url": "https://github.com/bazmatic/bigunit.git"
   },
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "test": "jest",
     "format": "prettier --write \"**/*.{js,ts}\"",
