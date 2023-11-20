@@ -87,12 +87,16 @@ export class BigUnit {
     const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
       BigUnit.asHighestPrecision(this, otherUnit);
 
+    const highestPrecision = thisUnitAtHighestPrecision.precision;
+
     // Perform division operation
     if (otherUnitAtHighestPrecision.isZero()) {
       throw new DivisionByZeroError();
     }
+    const scaleFactor = BigInt(10 ** thisUnitAtHighestPrecision.precision);
     const resultValue =
-      thisUnitAtHighestPrecision.value / otherUnitAtHighestPrecision.value;
+      (thisUnitAtHighestPrecision.value * scaleFactor) /
+      otherUnitAtHighestPrecision.value;
 
     // Return a new BigUnit instance with the division result and highest precision
     return BigUnit.from(resultValue, thisUnitAtHighestPrecision.precision);
@@ -346,7 +350,13 @@ export class BigUnit {
     precision: number,
     name?: string,
   ): BigUnit {
-    return new BigUnit(BigInt(numberValue * 10 ** precision), precision, name);
+    // If the precision is not sufficient to represent the number, truncate
+    const truncatedNumberValue = Number(numberValue.toFixed(precision));
+    return new BigUnit(
+      BigInt(truncatedNumberValue * 10 ** precision),
+      precision,
+      name,
+    );
   }
 
   /**
