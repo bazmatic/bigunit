@@ -10,7 +10,7 @@ export class BigUnit {
   constructor(
     public value: bigint,
     public precision: number,
-    public name: string = "",
+    public name: string = ""
   ) {
     // throw if precision is not an integer
     if (precision % 1 !== 0) {
@@ -35,7 +35,7 @@ export class BigUnit {
     // Add the values
     return new BigUnit(
       thisUnitAtHighestPrecision.value + otherUnitAtHighestPrecision.value,
-      this.precision,
+      this.precision
     );
   }
 
@@ -56,7 +56,7 @@ export class BigUnit {
     // Subtract the values
     return new BigUnit(
       thisUnitAtHighestPrecision.value - otherUnitAtHighestPrecision.value,
-      this.precision,
+      this.precision
     );
   }
 
@@ -125,7 +125,7 @@ export class BigUnit {
   public fraction(numerator: number, denominator: number): BigUnit {
     if (isNaN(numerator) || isNaN(denominator)) {
       throw new InvalidFractionError(
-        "Numerator and denominator must be valid numbers",
+        "Numerator and denominator must be valid numbers"
       );
     }
 
@@ -134,14 +134,11 @@ export class BigUnit {
       throw new DivisionByZeroError();
     }
 
-    // Calculate the fraction of the value
-    // The result should be multiplied by the power of 10 of the precision, we don't bother scaling the denominator
-    const bigUnitNumerator = new BigUnit(BigInt(numerator), this.precision);
-    const resultValue =
-      (this.value * bigUnitNumerator.value) / BigInt(denominator);
-
+    const bigUnitNumerator = BigUnit.from(numerator, this.precision);
+    const bigUnitDenominator = BigUnit.from(denominator, this.precision);
+    const resultValue = this.mul(bigUnitNumerator).div(bigUnitDenominator);
     // Return a new BigUnit with the result value and the same precision
-    return new BigUnit(resultValue, this.precision);
+    return resultValue;
   }
 
   public percent(percent: number): BigUnit {
@@ -203,7 +200,7 @@ export class BigUnit {
    */
   public static asHighestPrecision(
     unit1: BigUnit,
-    unit2: BigUnit,
+    unit2: BigUnit
   ): [BigUnit, BigUnit] {
     // Determine the highest precision of the two units and convert both units to the highest precision
     const highestPrecision = Math.max(unit1.precision, unit2.precision);
@@ -336,7 +333,7 @@ export class BigUnit {
   public static fromBigInt(
     bigintValue: bigint,
     precision: number,
-    name?: string,
+    name?: string
   ): BigUnit {
     return new BigUnit(bigintValue, precision, name);
   }
@@ -348,14 +345,14 @@ export class BigUnit {
   public static fromNumber(
     numberValue: number,
     precision: number,
-    name?: string,
+    name?: string
   ): BigUnit {
     // If the precision is not sufficient to represent the number, truncate
     const truncatedNumberValue = Number(numberValue.toFixed(precision));
     return new BigUnit(
       BigInt(truncatedNumberValue * 10 ** precision),
       precision,
-      name,
+      name
     );
   }
 
@@ -366,7 +363,7 @@ export class BigUnit {
   public static fromDecimalString(
     decimalStringValue: string,
     precision: number,
-    name?: string,
+    name?: string
   ): BigUnit {
     // Split the string into integer and fractional parts
     const [integerPart, fractionalPart] = decimalStringValue.split(".");
@@ -379,7 +376,7 @@ export class BigUnit {
       return new BigUnit(
         integerPartBigInt * BigInt(10 ** precision),
         precision,
-        name,
+        name
       );
     }
 
@@ -402,7 +399,7 @@ export class BigUnit {
   public static from(
     value: BigUnitish,
     precision?: number,
-    name?: string,
+    name?: string
   ): BigUnit {
     // If the value is already a BigUnit, return it. If precision is provided, convert it to the given precision
     if (value instanceof BigUnit) {
@@ -432,7 +429,7 @@ export class BigUnit {
 export class BigUnitFactory {
   constructor(
     public precision: number,
-    public name?: string,
+    public name?: string
   ) {
     // throw if precision is not an integer
     if (precision % 1 !== 0) {
@@ -456,7 +453,7 @@ export class BigUnitFactory {
     return BigUnit.fromDecimalString(
       decimalStringValue,
       this.precision,
-      this.name,
+      this.name
     );
   }
 }
