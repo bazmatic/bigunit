@@ -19,7 +19,7 @@ export class BigUnit {
   }
 
   /**
-   * d@escription Add the other value to this value
+   * @description Add the other value to this value
    * @param other
    * @returns BigUnit with the result value in the highest precision
    */
@@ -60,6 +60,11 @@ export class BigUnit {
     );
   }
 
+  /**
+   * @description Multiply the other value by this value
+   * @param other
+   * @returns new BigUnit with the result value in the highest precision
+   */
   public mul(other: BigUnitish): BigUnit {
     // Ensure the other value is a BigUnit
     const otherUnit =
@@ -78,6 +83,11 @@ export class BigUnit {
     return new BigUnit(resultValue, thisUnitAtHighestPrecision.precision);
   }
 
+  /**
+   * @description Divide this value by the other value
+   * @param other
+   * @returns new BigUnit with the result value in the highest precision
+   */
   public div(other: BigUnitish): BigUnit {
     // Ensure the other value is a BigUnit
     const otherUnit =
@@ -102,6 +112,11 @@ export class BigUnit {
     return BigUnit.from(resultValue, thisUnitAtHighestPrecision.precision);
   }
 
+  /**
+   * @description Perform modulo operation on this value by the other value
+   * @param other
+   * @returns new BigUnit with the result value in the highest precision
+   */
   public mod(other: BigUnitish): BigUnit {
     // Ensure the other value is a BigUnit
     const otherUnit =
@@ -122,6 +137,11 @@ export class BigUnit {
     return BigUnit.from(resultValue, thisUnitAtHighestPrecision.precision);
   }
 
+  /**
+   * @description Calculate the percentage of this value
+   * @param percent
+   * @returns new BigUnit with the result value in the same precision
+   */
   public fraction(numerator: number, denominator: number): BigUnit {
     if (isNaN(numerator) || isNaN(denominator)) {
       throw new InvalidFractionError(
@@ -141,10 +161,20 @@ export class BigUnit {
     return resultValue;
   }
 
+  /**
+   * @description Calculate the percentage of this value
+   * @param percent
+   * @returns new BigUnit with the result value in the same precision
+   */
   public percent(percent: number): BigUnit {
     return this.fraction(percent, 100);
   }
 
+  /**
+   * @description Equality check
+   * @param other
+   * @returns True if the values are equal, false otherwise
+   */
   public eq(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
       return this.value == other.value;
@@ -152,6 +182,11 @@ export class BigUnit {
     return this.value == BigUnit.from(other, this.precision).value;
   }
 
+  /**
+   * @description Greater than check
+   * @param other
+   * @returns True if the other value is greater than this value, false otherwise
+   */
   public gt(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
       return this.value > other.asPrecision(this.precision).value;
@@ -159,6 +194,11 @@ export class BigUnit {
     return this.value > BigUnit.from(other, this.precision).value;
   }
 
+  /**
+   * @description Less than check
+   * @param other
+   * @returns True if the other value is less than this value, false otherwise
+   */
   public lt(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
       return this.value < other.asPrecision(this.precision).value;
@@ -166,6 +206,11 @@ export class BigUnit {
     return this.value < BigUnit.from(other, this.precision).value;
   }
 
+  /**
+   * @description Greater than or equal to check
+   * @param other
+   * @returns True if the other value is greater than or equal to this value, false otherwise
+   */
   public gte(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
       return this.value >= other.asPrecision(this.precision).value;
@@ -173,6 +218,11 @@ export class BigUnit {
     return this.value >= BigUnit.from(other, this.precision).value;
   }
 
+  /**
+   * @description Less than or equal to check
+   * @param other
+   * @returns True if the other value is less than or equal to this value, false otherwise
+   */
   public lte(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
       return this.value <= other.asPrecision(this.precision).value;
@@ -180,14 +230,26 @@ export class BigUnit {
     return this.value <= BigUnit.from(other, this.precision).value;
   }
 
+  /**
+   * @description Check if the value is zero
+   * @returns True if the value is zero, false otherwise
+   */
   public isZero(): boolean {
     return this.value === 0n;
   }
 
+  /**
+   * @description Check if the value is positive
+   * @returns True if the value is positive, false otherwise
+   */
   public isPositive(): boolean {
     return this.value > 0n;
   }
 
+  /**
+   * @description Check if the value is negative
+   * @returns True if the value is negative, false otherwise
+   */
   public isNegative(): boolean {
     return this.value < 0n;
   }
@@ -316,6 +378,10 @@ export class BigUnit {
     return this.toNumber().toFixed(precision);
   }
 
+  /**
+   * @description Convert to a JSON representation of the unit
+   * @returns JSON representation of the BigUnit
+   */
   public toJSON(): string {
     return JSON.stringify({
       value: this.value.toString(),
@@ -396,11 +462,23 @@ export class BigUnit {
     return new BigUnit(combinedValueBigInt, precision, name);
   }
 
+  /**
+   * @description Convert a value of various types to a BigUnit.
+   * @param value - The value to convert to a BigUnit.
+   * @param precision - The precision to use for the BigUnit. Unless the input value is BigUnit, a precision must be provided.
+   * If the input is a BigUnit, the precision is optional and if provided, will cause the returned BigUnit to be converted to the given precision.
+   * @param name - The name of the BigUnit
+   * @returns
+   */
   public static from(
     value: BigUnitish,
     precision?: number,
     name?: string,
   ): BigUnit {
+    // throw if precision is not an integer
+    if (precision !== undefined && precision % 1 !== 0) {
+      throw new InvalidPrecisionError(precision);
+    }
     // If the value is already a BigUnit, return it. If precision is provided, convert it to the given precision
     if (value instanceof BigUnit) {
       if (precision === undefined || precision === value.precision) {
@@ -426,6 +504,9 @@ export class BigUnit {
   }
 }
 
+/**
+ * @description BigUnitFactory is a convenience class for creating BigUnit instances with the same name and precision.
+ */
 export class BigUnitFactory {
   constructor(
     public precision: number,
