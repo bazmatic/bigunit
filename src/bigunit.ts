@@ -384,10 +384,18 @@ export class BigUnit {
    */
   public toJSON(): string {
     return JSON.stringify({
-      value: this.value.toString(),
+      value: this.toValueString(),
       precision: this.precision,
       name: this.name,
     });
+  }
+
+  /**
+   * @description Convert to the internal string representation of the unit value
+   * @returns bigint string
+   */
+  public toValueString(): string {
+    return this.value.toString();
   }
 
   //=== Static factory methods
