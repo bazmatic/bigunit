@@ -6,6 +6,12 @@ import {
   MissingPrecisionError,
 } from "./errors";
 
+export interface IBigUnitObject {
+  value: string;
+  precision: number;
+  name: string;
+}
+
 export class BigUnit {
   constructor(
     public value: bigint,
@@ -383,11 +389,26 @@ export class BigUnit {
    * @returns JSON representation of the BigUnit
    */
   public toJSON(): string {
-    return JSON.stringify({
+    return JSON.stringify(this.toObject());
+  }
+
+  /**
+   * @description Convert to an object representation of the unit
+   * @returns object representation of the BigUnit
+   * @example
+   * {
+   *    value: "1000000000000000000",
+   *    precision: 18,
+   *    name: "ETH"
+   * }
+   *
+   */
+  public toObject(): IBigUnitObject {
+    return {
       value: this.toValueString(),
       precision: this.precision,
       name: this.name,
-    });
+    };
   }
 
   /**
@@ -428,6 +449,14 @@ export class BigUnit {
       precision,
       name,
     );
+  }
+
+  /**
+   * @dev Convert a plain object to a BigUnit
+   * @param obj
+   */
+  public static fromObject(obj: IBigUnitObject): BigUnit {
+    return new BigUnit(BigInt(obj.value), obj.precision, obj.name);
   }
 
   /**
