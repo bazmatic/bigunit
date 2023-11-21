@@ -16,7 +16,7 @@ export class BigUnit {
   constructor(
     public value: bigint,
     public precision: number,
-    public name: string = "",
+    public name?: string,
   ) {
     // throw if precision is not an integer
     if (precision % 1 !== 0) {
@@ -449,6 +449,21 @@ export class BigUnit {
       precision,
       name,
     );
+  }
+
+  /**
+   * @description Convert a bigint string to a BigUnit
+   * @param valueString
+   * @param precision
+   * @param name
+   * @returns
+   */
+  public static fromValueString(
+    valueString: string,
+    precision: number,
+    name?: string,
+  ): BigUnit {
+    return new BigUnit(BigInt(valueString), precision, name);
   }
 
   /**
