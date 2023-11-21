@@ -578,6 +578,10 @@ export class BigUnitFactory {
     return BigUnit.fromBigInt(bigintValue, this.precision, this.name);
   }
 
+  public fromValueString(valueString: string): BigUnit {
+    return BigUnit.fromValueString(valueString, this.precision, this.name);
+  }
+
   public fromNumber(numberValue: number): BigUnit {
     return BigUnit.fromNumber(numberValue, this.precision, this.name);
   }
