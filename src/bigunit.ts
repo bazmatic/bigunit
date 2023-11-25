@@ -144,6 +144,26 @@ export class BigUnit {
   }
 
   /**
+   * @description Return the absolute value
+   * @returns new BigUnit with the result value in the same precision
+   */
+  public abs(): BigUnit {
+    return new BigUnit(
+      this.value < 0n ? -this.value : this.value,
+      this.precision,
+      this.name,
+    );
+  }
+
+  /**
+   * @description Negate the value
+   * @returns new BigUnit with the result value in the same precision
+   */
+  public neg(): BigUnit {
+    return new BigUnit(-this.value, this.precision, this.name);
+  }
+
+  /**
    * @description Calculate the percentage of this value
    * @param percent
    * @returns new BigUnit with the result value in the same precision

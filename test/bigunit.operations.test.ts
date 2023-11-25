@@ -111,13 +111,6 @@ describe("BigUnit Class Methods", () => {
   });
 
   describe("div method", () => {
-    // it("should handle negative values and zero correctly", () => {
-    //   const zeroUnit = new BigUnit(0n, precision);
-    //   const negativeResult = unit1.div(unit3);
-    //   expect(() => unit1.div(zeroUnit)).toThrow(DivisionByZeroError);
-    //   expect(negativeResult.value).toBe(unit1.toNumber() / unit2.toNumber());
-    // });
-
     it("should divide various numbers with precision", () => {
       const testData = [
         // Basic Division
@@ -199,6 +192,28 @@ describe("BigUnit Class Methods", () => {
       expect(() => unit1.mod(zeroUnit)).toThrow();
 
       expect(negativeResult.value).toBe(unitValue1 % unitValue3);
+    });
+  });
+
+  describe("abs method", () => {
+    test("should return a new BigUnit with the absolute value", () => {
+      const unit = new BigUnit(-100n, 2);
+
+      const result = unit.abs();
+
+      expect(result.value).toBe(100n);
+      expect(result.precision).toBe(2);
+    });
+  });
+
+  describe("neg method", () => {
+    test("should return a new BigUnit with the negated value", () => {
+      const unit = new BigUnit(100n, 2);
+
+      const result = unit.neg();
+
+      expect(result.value).toBe(-100n);
+      expect(result.precision).toBe(2);
     });
   });
 });
@@ -323,19 +338,6 @@ describe("BigUnit Class Methods with Differing Precision", () => {
       expect(result.precision).toBe(precisionHigh);
     });
   });
-
-  // describe("div method with differing precision", () => {
-  //   test("should divide two BigUnit instances and use the precision of the first instance", () => {
-  //     const result = unitHighPrecision.div(unitLowPrecision);
-  //     // To divide with precision, the divisor needs to be adjusted to have the same scale as the dividend
-  //     const divisorScaled =
-  //       unitLowPrecision.value * BigInt(10 ** (precisionHigh - precisionLow));
-  //     const expectedValue = unitHighPrecision.value / divisorScaled;
-  //     expect(result.value).toBe(expectedValue);
-  //     expect(result.precision).toBe(precisionHigh);
-  //   });
-
-  // });
 
   describe("mod method with differing precision", () => {
     test("should mod two BigUnit instances and use the precision of the first instance", () => {
