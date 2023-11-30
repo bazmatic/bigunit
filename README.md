@@ -33,6 +33,8 @@ yarn add bigunit
 
 ## Usage
 
+Documentation here: [Documentation](documentation.md)
+
 Here are some examples of using BigUnit:
 
 ### Work with various number types effortlessly
@@ -114,6 +116,9 @@ console.log(`DOT Balance in USD: $${dotUsdValue.format(2)}`);
 // Output the total balance in USD
 console.log(`Total Crypto Balance in USD: $${totalUsdBalance.format(2)}`);
 ```
+
+
+
 
 ## Contributing
 
