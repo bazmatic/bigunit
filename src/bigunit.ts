@@ -281,6 +281,22 @@ export class BigUnit {
   }
 
   /**
+   * @description Return the maximum of the two values
+   * @returns BigUnit with the maximum value
+   */
+  public static max(unit1: BigUnit, unit2: BigUnit): BigUnit {
+    return unit1.gt(unit2) ? unit1 : unit2;
+  }
+
+  /**
+   * @description Return the minimum of the two values
+   * @returns BigUnit with the minimum value
+   */
+  public static min(unit1: BigUnit, unit2: BigUnit): BigUnit {
+    return unit1.lt(unit2) ? unit1 : unit2;
+  }
+
+  /**
    * @description Determine the highest precision of the two units and convert both units to the highest precision, returning them in an array
    * @param unit1
    * @param unit2
@@ -339,6 +355,7 @@ export class BigUnit {
    * @description Convert to a number representation
    * @returns number representation of the Unit
    */
+  // TODO: Review
   public toNumber(): number {
     // Determine the maximum safe integer in JavaScript
     const maxSafeInteger = Number.MAX_SAFE_INTEGER;
