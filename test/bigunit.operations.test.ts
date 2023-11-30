@@ -297,6 +297,22 @@ describe("BigUnit Class Methods - percent and fraction", () => {
       expect(result.value).toBe(expectedValue);
     });
   });
+
+  describe("min and max methods", () => {
+    // BigUnit.max(unit1, unit2) should return the larger of the two units
+    // BigUnit.min(unit1, unit2) should return the smaller of the two units
+    const large = new BigUnit(1000n, 2);
+    const small = new BigUnit(500n, 2);
+    test("should return the larger of the two units", () => {
+      const result = BigUnit.max(large, small);
+      expect(result).toBe(large);
+    }
+    );
+    test("should return the smaller of the two units", () => {
+      const result = BigUnit.min(large, small);
+      expect(result).toBe(small);
+    });
+  });
 });
 
 describe("BigUnit Class Methods with Differing Precision", () => {
