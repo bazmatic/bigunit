@@ -1,20 +1,17 @@
-# BigUnit TypeScript Package Documentation
+# BigUnit
 
 ## Overview
-The `BigUnit` package is a TypeScript library designed for handling arithmetic operations with high precision. It is especially useful for financial calculations, scientific computations, and other scenarios where exact decimal operations are crucial.
+The `BigUnit` package is a TypeScript library designed to manage numbers of varying precision, such as cryptocurrencies.
 
-## Classes
+# BigUnitish Type
+Represents a type that can be converted to a `BigUnit` if a precision value is available. It can be a number, string, bigint, or `BigUnit` itself.
 
-### BigUnit
-
-#### Constructor
-
-- `constructor(value: bigint, precision: number, name?: string)`
-  Constructs a new instance of `BigUnit`.
-
-#### Methods
+# BigUnit Class
 
 ## Methods
+
+### constructor(value: bigint, precision: number, name?: string)`
+Constructs a new instance of `BigUnit` from a `bigint`. BigUnit instances can also be instantiated with the static factory methods `from`, `fromBigInt`, `fromNumber`, `fromDecimalString`, `fromValueString`, and `fromObject`.
 
 ### add(other: BigUnitish): BigUnit
 Adds the provided `BigUnitish` value to the current instance.
@@ -123,36 +120,28 @@ Creates a `BigUnit` instance from a decimal string. Optionally accepts a name fo
 ### from(value: BigUnitish, precision?: number, name?: string): BigUnit
 Creates a `BigUnit` instance from a `BigUnitish` value. Optionally accepts a name for the unit.
 
-
-### BigUnitFactory
+# BigUnitFactory
 This class is used to create `BigUnit` instances with the same precision and name.
 
-#### Constructor
+## Methods
 
-- `constructor(precision: number, name?: string)`
-  Constructs a new instance of `BigUnitFactory`. Any `BigUnit` instances created will share the same `precision` and `name` attributes. The `name` attribute is optional.
-
-#### Methods
+### constructor(precision: number, name?: string)`
+Constructs a new instance of `BigUnitFactory`. Any `BigUnit` instances created will share the same `precision` and `name` attributes. The `name` attribute is optional.
 
 ### from(value: BigUnitish): BigUnit
 Creates a `BigUnit` instance from a `BigUnitish` value, using the precision value of the BigUnitFactory instance. Use the name of the BigUnitFactory instance as the name of the created `BigUnit` instance, if it is defined.
 
-## fromBigInt(bigintValue: bigint): BigUnit
+### fromBigInt(bigintValue: bigint): BigUnit
   Creates a `BigUnit` instance from a bigint, using the precision value of the BigUnitFactory instance. Use the name of the BigUnitFactory instance as the name of the created `BigUnit` instance, if it is defined.
 
-## fromValueString(valueString: string): BigUnit
+### fromValueString(valueString: string): BigUnit
   Creates a `BigUnit` instance from a string representing a bigint, using the precision value of the BigUnitFactory instance. Use the name of the BigUnitFactory instance as the name of the created `BigUnit` instance, if it is defined.
 
-## fromNumber(numberValue: number): BigUnit
+### fromNumber(numberValue: number): BigUnit
   Creates a `BigUnit` instance from a number, using the precision value of the BigUnitFactory instance. Use the name of the BigUnitFactory instance as the name of the created `BigUnit` instance, if it is defined.
 
-## fromDecimalString(decimalStringValue: string): BigUnit
+### fromDecimalString(decimalStringValue: string): BigUnit
   Creates a `BigUnit` instance from a decimal string, using the precision value of the BigUnitFactory instance. Use the name of the BigUnitFactory instance as the name of the created `BigUnit` instance, if it is defined.
-
-## Types
-
-### BigUnitish
-Represents a type that can be converted to a `BigUnit` if a precision value is available. It can be a number, string, bigint, or `BigUnit` itself.
 
 ## Errors
 The package defines several custom errors for handling invalid operations and inputs:
