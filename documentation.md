@@ -10,6 +10,8 @@ Represents a type that can be converted to a `BigUnit` if a precision value is a
 
 ## Methods
 
+Arithmetic operations return another BigUnit instance with the precision of the highest of the two numbers. To change to another precision, append `asPrecision(myPrecision)`
+
 ### constructor(value: bigint, precision: number, name?: string)`
 Constructs a new instance of `BigUnit` from a `bigint`. BigUnit instances can also be instantiated with the static factory methods `from`, `fromBigInt`, `fromNumber`, `fromDecimalString`, `fromValueString`, and `fromObject`.
 
