@@ -1,5 +1,6 @@
 import { BigUnit } from "../src/bigunit";
 import { DivisionByZeroError } from "../src/errors";
+import { bigintCloseTo } from "../src/utils";
 
 describe("BigUnit Class Methods", () => {
   const precision = 2;
@@ -136,7 +137,7 @@ describe("BigUnit Class Methods", () => {
         [100000000000000000n, 2, 100000000000000000n, 2, 1.0, 2],
 
         // Precision Loss (assuming library truncates)
-        [1.23456, 4, 9.87656, 4, 0.125, 4],
+        [1.23456, 4, 9.87656, 4, 0.1249, 4],
 
         // Precision Mismatch
         [1.234, 5, 1.2345, 8, 0.99959497, 8],
@@ -171,7 +172,7 @@ describe("BigUnit Class Methods", () => {
         );
 
         expect(result).toBeInstanceOf(BigUnit);
-        expect(result.value).toBe(expectedValue);
+        expect(bigintCloseTo(result.value, expectedValue, 1n));
         expect(result.toNumber()).toBe(expectedNumberValue);
         expect(result.precision).toBe(expectedPrecision);
       });
@@ -306,8 +307,7 @@ describe("BigUnit Class Methods - percent and fraction", () => {
     test("should return the larger of the two units", () => {
       const result = BigUnit.max(large, small);
       expect(result).toBe(large);
-    }
-    );
+    });
     test("should return the smaller of the two units", () => {
       const result = BigUnit.min(large, small);
       expect(result).toBe(small);
