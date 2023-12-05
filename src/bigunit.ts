@@ -5,6 +5,7 @@ import {
   InvalidValueTypeError,
   MissingPrecisionError,
 } from "./errors";
+import { bigintCloseTo, numberToDecimalString } from "./utils";
 
 export interface IBigUnitObject {
   value: string;
@@ -479,13 +480,23 @@ export class BigUnit {
     precision: number,
     name?: string,
   ): BigUnit {
-    // If the precision is not sufficient to represent the number, truncate
-    const truncatedNumberValue = Number(numberValue.toFixed(precision));
-    return new BigUnit(
-      BigInt(truncatedNumberValue * 10 ** precision),
-      precision,
-      name,
-    );
+    // Convert the number to a string to avoid precision loss
+    let numberString = numberToDecimalString(numberValue);
+
+    // Check if there's a decimal point
+    let [integerPart, fractionalPart = ""] = numberString.split(".");
+
+    // Pad or trim the fractional part to match the precision
+    fractionalPart = fractionalPart.padEnd(precision, "0").slice(0, precision);
+
+    // Reconstruct the number string with the adjusted fractional part
+    numberString = integerPart + (fractionalPart ? "." + fractionalPart : "");
+
+    // Convert the string to a bigint representation
+    const bigIntValue = BigInt(numberString.replace(".", ""));
+
+    // Return a new BigUnit with the bigint value and specified precision
+    return new BigUnit(bigIntValue, precision, name);
   }
 
   /**
@@ -631,5 +642,6 @@ export class BigUnitFactory {
     );
   }
 }
+
 
 export type BigUnitish = number | string | bigint | BigUnit;

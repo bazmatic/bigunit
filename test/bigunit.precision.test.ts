@@ -53,4 +53,13 @@ describe("BigUnit Class Precision Conversion Methods", () => {
       expect(newUnit.value).toBe(expectedValue);
     });
   });
+
+  test("Miscellaneous tests", () => {
+    const numberInput = 234.39923;
+    const unit1 = BigUnit.from(numberInput, 18);
+    const val = unit1.toBigInt();
+    expect(val).toEqual(234399230000000000000n);
+    const num = unit1.toNumber();
+    expect(num).toEqual(numberInput);
+  });
 });
