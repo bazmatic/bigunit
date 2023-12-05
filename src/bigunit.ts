@@ -643,5 +643,4 @@ export class BigUnitFactory {
   }
 }
 
-
 export type BigUnitish = number | string | bigint | BigUnit;
