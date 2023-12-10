@@ -42,7 +42,7 @@ export class BigUnit {
     // Add the values
     return new BigUnit(
       thisUnitAtHighestPrecision.value + otherUnitAtHighestPrecision.value,
-      thisUnitAtHighestPrecision.precision,
+      this.precision,
     );
   }
 
@@ -63,7 +63,7 @@ export class BigUnit {
     // Subtract the values
     return new BigUnit(
       thisUnitAtHighestPrecision.value - otherUnitAtHighestPrecision.value,
-      thisUnitAtHighestPrecision.precision,
+      this.precision,
     );
   }
 
@@ -103,6 +103,8 @@ export class BigUnit {
     // Determine the highest precision of the two units and convert both units to the highest precision
     const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
       BigUnit.asHighestPrecision(this, otherUnit);
+
+    const highestPrecision = thisUnitAtHighestPrecision.precision;
 
     // Perform division operation
     if (otherUnitAtHighestPrecision.isZero()) {
@@ -202,8 +204,7 @@ export class BigUnit {
    */
   public eq(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
-      const highestPrecision = Math.max(this.precision, other.precision);
-      return this.asPrecision(highestPrecision).value === other.asPrecision(highestPrecision).value;
+      return this.value == other.value;
     }
     return this.value == BigUnit.from(other, this.precision).value;
   }
@@ -215,8 +216,7 @@ export class BigUnit {
    */
   public gt(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
-      const highestPrecision = Math.max(this.precision, other.precision);
-      return this.asPrecision(highestPrecision).value > other.asPrecision(highestPrecision).value;
+      return this.value > other.asPrecision(this.precision).value;
     }
     return this.value > BigUnit.from(other, this.precision).value;
   }
@@ -228,8 +228,7 @@ export class BigUnit {
    */
   public lt(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
-      const highestPrecision = Math.max(this.precision, other.precision);
-      return this.asPrecision(highestPrecision).value < other.asPrecision(highestPrecision).value;
+      return this.value < other.asPrecision(this.precision).value;
     }
     return this.value < BigUnit.from(other, this.precision).value;
   }
@@ -241,8 +240,7 @@ export class BigUnit {
    */
   public gte(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
-      const highestPrecision = Math.max(this.precision, other.precision);
-      return this.asPrecision(highestPrecision).value >= other.asPrecision(highestPrecision).value;
+      return this.value >= other.asPrecision(this.precision).value;
     }
     return this.value >= BigUnit.from(other, this.precision).value;
   }
@@ -254,8 +252,7 @@ export class BigUnit {
    */
   public lte(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
-      const highestPrecision = Math.max(this.precision, other.precision);
-      return this.asPrecision(highestPrecision).value <= other.asPrecision(highestPrecision).value;
+      return this.value <= other.asPrecision(this.precision).value;
     }
     return this.value <= BigUnit.from(other, this.precision).value;
   }
