@@ -165,8 +165,8 @@ export class BigUnit {
   }
 
   /**
-   * @description Calculate the percentage of this value
-   * @param percent
+   * @description Calculate the fraction of this value
+   * @param fraction
    * @returns new BigUnit with the result value in the same precision
    */
   public fraction(numerator: number, denominator: number): BigUnit {
@@ -204,7 +204,7 @@ export class BigUnit {
    */
   public eq(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
-      return this.value == other.value;
+      return this.value == other.asPrecision(this.precision).value;
     }
     return this.value == BigUnit.from(other, this.precision).value;
   }
