@@ -5,7 +5,7 @@ import {
   MissingPrecisionError,
 } from "../src/errors";
 
-describe.only("BigUnit Class Constructor", () => {
+describe("BigUnit Class Constructor", () => {
   test("should create a new BigUnit instance with valid arguments", () => {
     const value = 1000n; // bigint value
     const precision = 2;
@@ -137,6 +137,11 @@ describe("BigUnit Class Static Factory Methods", () => {
       expect(bigUnitFromDecimalString).toBeInstanceOf(BigUnit);
       expect(bigUnitFromDecimalString.toString()).toBe(decimalString);
       expect(bigUnitFromDecimalString.precision).toBe(precision);
+
+      const bigUnitFromDecimalString2 = BigUnit.from("789.12", 24);
+
+      expect(bigUnitFromDecimalString2).toBeInstanceOf(BigUnit);
+      expect(bigUnitFromDecimalString2.value).toBe(789120000000000000000000000n);
     });
 
     test("should convert BigInt to BigUnit with correct precision", () => {

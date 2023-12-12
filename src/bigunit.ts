@@ -546,24 +546,25 @@ export class BigUnit {
     name?: string,
   ): BigUnit {
 
-
-
     // Split the string into integer and fractional parts
     const [integerPart, fractionalPart] = decimalStringValue.split(".");
-
-    // TAYLOR - if the integer part -0, we lose the negative sign!
 
     // Convert the integer part to a bigint
     const integerPartBigInt = BigInt(integerPart);
 
+    // Calculate the precision factor
+    const precisionFactor = this.bigIntPowerOfTen(precision);
+
     // If there is no fractional part, return the integer part
     if (!fractionalPart) {
       return new BigUnit(
-        integerPartBigInt * BigInt(10 ** precision),
+        integerPartBigInt * precisionFactor,
         precision,
         name,
       );
     }
+
+
 
     // Prepare the fractional part string by padding it with zeros to match the precision length
     const paddedFractionalPart = fractionalPart
@@ -575,7 +576,7 @@ export class BigUnit {
 
     // Combine the integer and fractional parts
     let combinedValueBigInt =
-      integerPartBigInt * BigInt(10 ** precision) + fractionalPartBigInt;
+      integerPartBigInt * precisionFactor + fractionalPartBigInt;
 
     // If the integer part is negative, convert the fractional part to a negative number otherwise it will incorrectly be positive
     if (integerPart.includes("-")) {
@@ -585,6 +586,15 @@ export class BigUnit {
     // Return the BigUnit
     return new BigUnit(combinedValueBigInt, precision, name);
   }
+
+  /**
+   * @description Convert a decimal string to a BigUnit, eg. "1.23456" in an overflow-safe way. This is to avoid BigInt(10 ** precision) which can overflow.
+   * @param decimalStringValue
+   */
+  private static bigIntPowerOfTen(precision): bigint {
+    return BigInt('1' + '0'.repeat(precision));
+  }
+
 
   /**
    * @description Convert a value of various types to a BigUnit.
