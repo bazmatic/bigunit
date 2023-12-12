@@ -281,21 +281,35 @@ export class BigUnit {
     return this.value < 0n;
   }
 
-  /**
+    /**
    * @description Return the maximum of the two values
    * @returns BigUnit with the maximum value
    */
-  public static max(unit1: BigUnit, unit2: BigUnit): BigUnit {
-    return unit1.gt(unit2) ? unit1 : unit2;
-  }
-
-  /**
-   * @description Return the minimum of the two values
-   * @returns BigUnit with the minimum value
-   */
-  public static min(unit1: BigUnit, unit2: BigUnit): BigUnit {
-    return unit1.lt(unit2) ? unit1 : unit2;
-  }
+    public static max(unit1: BigUnit, unit2: BigUnit): BigUnit {
+      return this.compareUnits(unit1, unit2, (u1, u2) => u1.gt(u2));
+    }
+  
+    /**
+     * @description Return the minimum of the two values
+     * @returns BigUnit with the minimum value
+     */
+    public static min(unit1: BigUnit, unit2: BigUnit): BigUnit {
+      return this.compareUnits(unit1, unit2, (u1, u2) => u1.lt(u2));
+    }
+  
+    /**
+     * @description Compares two BigUnit objects based on a comparison function (min or max)
+     * @returns BigUnit based on the comparison function
+     */
+    private static compareUnits(unit1: BigUnit, unit2: BigUnit, comparisonFunc: (u1: BigUnit, u2: BigUnit) => boolean): BigUnit {
+      if (unit1.eq(unit2)) {
+        if (unit1.precision === unit2.precision) {
+          return unit1.name.localeCompare(unit2.name) <= 0 ? unit1 : unit2;
+        }
+        return unit1.precision > unit2.precision ? unit1 : unit2;
+      }
+      return comparisonFunc(unit1, unit2) ? unit1 : unit2;
+    }
 
   /**
    * @description Determine the highest precision of the two units and convert both units to the highest precision, returning them in an array
@@ -414,7 +428,7 @@ export class BigUnit {
   }
 
   /**
-   * @description Format the value as a string with the given precision
+   * @description Format the value as a string with the given precision (Note: this uses standard rounding)
    * @param precision
    * @returns string representation of the unit value
    */
@@ -531,8 +545,13 @@ export class BigUnit {
     precision: number,
     name?: string,
   ): BigUnit {
+
+
+
     // Split the string into integer and fractional parts
     const [integerPart, fractionalPart] = decimalStringValue.split(".");
+
+    // TAYLOR - if the integer part -0, we lose the negative sign!
 
     // Convert the integer part to a bigint
     const integerPartBigInt = BigInt(integerPart);
@@ -555,8 +574,13 @@ export class BigUnit {
     const fractionalPartBigInt = BigInt(paddedFractionalPart);
 
     // Combine the integer and fractional parts
-    const combinedValueBigInt =
+    let combinedValueBigInt =
       integerPartBigInt * BigInt(10 ** precision) + fractionalPartBigInt;
+
+    // If the integer part is negative, convert the fractional part to a negative number otherwise it will incorrectly be positive
+    if (integerPart.includes("-")) {
+      combinedValueBigInt = combinedValueBigInt * BigInt(-1);
+    }
 
     // Return the BigUnit
     return new BigUnit(combinedValueBigInt, precision, name);

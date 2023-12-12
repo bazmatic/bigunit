@@ -18,8 +18,8 @@ describe("BigUnit Class State Methods", () => {
 
   describe("isPositive method", () => {
     test("should return true for a positive value", () => {
-      const positiveUnit = new BigUnit(1000n, precision);
-      expect(positiveUnit.isPositive()).toBe(true);
+      const positiveUnit1 = new BigUnit(1000n, precision);
+      expect(positiveUnit1.isPositive()).toBe(true);
     });
 
     test("should return false for zero value", () => {
@@ -30,6 +30,9 @@ describe("BigUnit Class State Methods", () => {
     test("should return false for a negative value", () => {
       const negativeUnit = new BigUnit(-1000n, precision);
       expect(negativeUnit.isPositive()).toBe(false);
+
+      const negativeUnit2 = BigUnit.from("-0.01", precision);
+      expect(negativeUnit2.isPositive()).toBe(false);
     });
   });
 
@@ -37,6 +40,9 @@ describe("BigUnit Class State Methods", () => {
     test("should return true for a negative value", () => {
       const negativeUnit = new BigUnit(-1000n, precision);
       expect(negativeUnit.isNegative()).toBe(true);
+
+      const negativeUnit2 = BigUnit.from("-0.01", precision);
+      expect(negativeUnit2.isNegative()).toBe(true);
     });
 
     test("should return false for zero value", () => {
@@ -47,6 +53,9 @@ describe("BigUnit Class State Methods", () => {
     test("should return false for a positive value", () => {
       const positiveUnit = new BigUnit(1000n, precision);
       expect(positiveUnit.isNegative()).toBe(false);
+
+      const negativeUnit2 = BigUnit.from("0.01", precision);
+      expect(negativeUnit2.isNegative()).toBe(false);
     });
   });
 });
