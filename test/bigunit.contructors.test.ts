@@ -5,7 +5,7 @@ import {
   MissingPrecisionError,
 } from "../src/errors";
 
-describe("BigUnit Class Constructor", () => {
+describe.only("BigUnit Class Constructor", () => {
   test("should create a new BigUnit instance with valid arguments", () => {
     const value = 1000n; // bigint value
     const precision = 2;
@@ -22,6 +22,14 @@ describe("BigUnit Class Constructor", () => {
   test("should throw an error when non-integer precision is provided", () => {
     const value = 1000n; // bigint value
     const precision = 2.5; // non-integer precision
+    const createUnit = () => new BigUnit(value, precision);
+
+    expect(createUnit).toThrow(InvalidPrecisionError);
+  });
+
+  test("should throw an error when a negative precision is provided", () => {
+    const value = 1000n; // bigint value
+    const precision = -2; // negative precision
     const createUnit = () => new BigUnit(value, precision);
 
     expect(createUnit).toThrow(InvalidPrecisionError);

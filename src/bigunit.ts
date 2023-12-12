@@ -20,7 +20,7 @@ export class BigUnit {
     public name?: string,
   ) {
     // throw if precision is not an integer
-    if (precision % 1 !== 0) {
+    if (precision % 1 !== 0 || precision < 0) {
       throw new InvalidPrecisionError(precision);
     }
   }
@@ -600,7 +600,7 @@ export class BigUnit {
     name?: string,
   ): BigUnit {
     // throw if precision is not an integer
-    if (precision !== undefined && precision % 1 !== 0) {
+    if ((precision !== undefined && precision % 1 !== 0) || precision < 0) {
       throw new InvalidPrecisionError(precision);
     }
     // If the value is already a BigUnit, return it. If precision is provided, convert it to the given precision
@@ -637,7 +637,7 @@ export class BigUnitFactory {
     public name?: string,
   ) {
     // throw if precision is not an integer
-    if (precision % 1 !== 0) {
+    if (precision % 1 !== 0 || precision < 0) {
       throw new InvalidPrecisionError(precision);
     }
   }
