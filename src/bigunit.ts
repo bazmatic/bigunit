@@ -281,35 +281,39 @@ export class BigUnit {
     return this.value < 0n;
   }
 
-    /**
+  /**
    * @description Return the maximum of the two values
    * @returns BigUnit with the maximum value
    */
-    public static max(unit1: BigUnit, unit2: BigUnit): BigUnit {
-      return this.compareUnits(unit1, unit2, (u1, u2) => u1.gt(u2));
-    }
-  
-    /**
-     * @description Return the minimum of the two values
-     * @returns BigUnit with the minimum value
-     */
-    public static min(unit1: BigUnit, unit2: BigUnit): BigUnit {
-      return this.compareUnits(unit1, unit2, (u1, u2) => u1.lt(u2));
-    }
-  
-    /**
-     * @description Compares two BigUnit objects based on a comparison function (min or max)
-     * @returns BigUnit based on the comparison function
-     */
-    private static compareUnits(unit1: BigUnit, unit2: BigUnit, comparisonFunc: (u1: BigUnit, u2: BigUnit) => boolean): BigUnit {
-      if (unit1.eq(unit2)) {
-        if (unit1.precision === unit2.precision) {
-          return unit1.name.localeCompare(unit2.name) <= 0 ? unit1 : unit2;
-        }
-        return unit1.precision > unit2.precision ? unit1 : unit2;
+  public static max(unit1: BigUnit, unit2: BigUnit): BigUnit {
+    return this.compareUnits(unit1, unit2, (u1, u2) => u1.gt(u2));
+  }
+
+  /**
+   * @description Return the minimum of the two values
+   * @returns BigUnit with the minimum value
+   */
+  public static min(unit1: BigUnit, unit2: BigUnit): BigUnit {
+    return this.compareUnits(unit1, unit2, (u1, u2) => u1.lt(u2));
+  }
+
+  /**
+   * @description Compares two BigUnit objects based on a comparison function (min or max)
+   * @returns BigUnit based on the comparison function
+   */
+  private static compareUnits(
+    unit1: BigUnit,
+    unit2: BigUnit,
+    comparisonFunc: (u1: BigUnit, u2: BigUnit) => boolean,
+  ): BigUnit {
+    if (unit1.eq(unit2)) {
+      if (unit1.precision === unit2.precision) {
+        return unit1.name.localeCompare(unit2.name) <= 0 ? unit1 : unit2;
       }
-      return comparisonFunc(unit1, unit2) ? unit1 : unit2;
+      return unit1.precision > unit2.precision ? unit1 : unit2;
     }
+    return comparisonFunc(unit1, unit2) ? unit1 : unit2;
+  }
 
   /**
    * @description Determine the highest precision of the two units and convert both units to the highest precision, returning them in an array
@@ -415,7 +419,9 @@ export class BigUnit {
       const padding = "0".repeat(this.precision - length);
       // If the value is negative, add a negative sign to the padded zeros and remove the negative sign from the value
       // This avoids results like "0.000-1234"
-      return valueString.includes("-") ? `-0.${padding}${valueString.replace("-", "")}` : `0.${padding}${valueString}`;
+      return valueString.includes("-")
+        ? `-0.${padding}${valueString.replace("-", "")}`
+        : `0.${padding}${valueString}`;
     }
 
     // If the length is greater than the precision, slice the string
@@ -453,16 +459,21 @@ export class BigUnit {
     // If the internal value has fewer digits than the required precision,
     // pad with zeros to the left
     if (valueLength < this.precision) {
-      valueStr = '0'.repeat(this.precision - valueLength) + valueStr;
+      valueStr = "0".repeat(this.precision - valueLength) + valueStr;
     }
 
     // Determine the position to split the integer and fractional parts
-    const splitPosition = valueLength > this.precision ? valueLength - this.precision : 0;
-    let integerPart = splitPosition === 0 ? '0' : valueStr.substring(0, splitPosition);
-    let fractionalPart = valueLength > this.precision ? valueStr.substring(splitPosition) : valueStr;
+    const splitPosition =
+      valueLength > this.precision ? valueLength - this.precision : 0;
+    let integerPart =
+      splitPosition === 0 ? "0" : valueStr.substring(0, splitPosition);
+    let fractionalPart =
+      valueLength > this.precision
+        ? valueStr.substring(splitPosition)
+        : valueStr;
 
     // Pad the fractional part with zeros if it's shorter than the desired precision
-    fractionalPart = fractionalPart.padEnd(precision, '0');
+    fractionalPart = fractionalPart.padEnd(precision, "0");
 
     // Rounding
     if (precision > 0 && fractionalPart.length > precision) {
@@ -470,12 +481,14 @@ export class BigUnit {
       fractionalPart = fractionalPart.substring(0, precision);
 
       if (parseInt(roundOffPart, 10) >= 5) {
-        const roundedFractional = (BigInt(fractionalPart) + BigInt(1)).toString().padStart(precision, '0');
+        const roundedFractional = (BigInt(fractionalPart) + BigInt(1))
+          .toString()
+          .padStart(precision, "0");
 
         // Handle carry-over
         if (roundedFractional.length > precision) {
           integerPart = (BigInt(integerPart) + BigInt(1)).toString();
-          fractionalPart = '0'.repeat(precision);
+          fractionalPart = "0".repeat(precision);
         } else {
           fractionalPart = roundedFractional;
         }
@@ -486,12 +499,8 @@ export class BigUnit {
       }
     }
 
-    return precision > 0 ? integerPart + '.' + fractionalPart : integerPart;
+    return precision > 0 ? integerPart + "." + fractionalPart : integerPart;
   }
-
-
-
-
 
   /**
    * @description Convert to a JSON representation of the unit
@@ -602,7 +611,6 @@ export class BigUnit {
     precision: number,
     name?: string,
   ): BigUnit {
-
     // Split the string into integer and fractional parts
     const [integerPart, fractionalPart] = decimalStringValue.split(".");
 
@@ -614,14 +622,8 @@ export class BigUnit {
 
     // If there is no fractional part, return the integer part
     if (!fractionalPart) {
-      return new BigUnit(
-        integerPartBigInt * precisionFactor,
-        precision,
-        name,
-      );
+      return new BigUnit(integerPartBigInt * precisionFactor, precision, name);
     }
-
-
 
     // Prepare the fractional part string by padding it with zeros to match the precision length
     const paddedFractionalPart = fractionalPart
@@ -649,9 +651,8 @@ export class BigUnit {
    * @param decimalStringValue
    */
   private static bigIntPowerOfTen(precision): bigint {
-    return BigInt('1' + '0'.repeat(precision));
+    return BigInt("1" + "0".repeat(precision));
   }
-
 
   /**
    * @description Convert a value of various types to a BigUnit.

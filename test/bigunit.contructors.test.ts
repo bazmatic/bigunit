@@ -141,7 +141,9 @@ describe("BigUnit Class Static Factory Methods", () => {
       const bigUnitFromDecimalString2 = BigUnit.from("789.12", 24);
 
       expect(bigUnitFromDecimalString2).toBeInstanceOf(BigUnit);
-      expect(bigUnitFromDecimalString2.value).toBe(789120000000000000000000000n);
+      expect(bigUnitFromDecimalString2.value).toBe(
+        789120000000000000000000000n,
+      );
     });
 
     test("should convert BigInt to BigUnit with correct precision", () => {
