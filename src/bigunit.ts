@@ -413,28 +413,85 @@ export class BigUnit {
     // If the length is less than the precision, pad with zeros
     if (length < this.precision) {
       const padding = "0".repeat(this.precision - length);
-      return `0.${padding}${valueString}`;
+      // If the value is negative, add a negative sign to the padded zeros and remove the negative sign from the value
+      // This avoids results like "0.000-1234"
+      return valueString.includes("-") ? `-0.${padding}${valueString.replace("-", "")}` : `0.${padding}${valueString}`;
     }
 
     // If the length is greater than the precision, slice the string
     const decimalIndex = length - this.precision;
     const integerPart = valueString.slice(0, decimalIndex);
     const fractionalPart = valueString.slice(decimalIndex);
-    return `${integerPart}.${fractionalPart}`;
+    // If the integer part is empty, return "0" instead of an empty string
+    return `${integerPart === "" ? "0" : integerPart}.${fractionalPart}`;
   }
 
   public toBigInt(): bigint {
     return this.value;
   }
 
+  // /**
+  //  * @description Format the value as a string with the given precision (Note: this uses standard rounding)
+  //  * @param precision
+  //  * @returns string representation of the unit value
+  //  */
+  // public format(precision: number): string {
+  //   // TAYLOR OVERFLOW ERROR HERE!
+  //   return this.toNumber().toFixed(precision);
+  // }
+
   /**
    * @description Format the value as a string with the given precision (Note: this uses standard rounding)
-   * @param precision
+   * @param precision - the number of digits to appear after the decimal point
    * @returns string representation of the unit value
    */
   public format(precision: number): string {
-    return this.toNumber().toFixed(precision);
+    let valueStr = this.toBigInt().toString();
+    const valueLength = valueStr.length;
+
+    // NOTE: We use string manipulation instead of Number.toFixed() to avoid overflow errors
+    // If the internal value has fewer digits than the required precision,
+    // pad with zeros to the left
+    if (valueLength < this.precision) {
+      valueStr = '0'.repeat(this.precision - valueLength) + valueStr;
+    }
+
+    // Determine the position to split the integer and fractional parts
+    const splitPosition = valueLength > this.precision ? valueLength - this.precision : 0;
+    let integerPart = splitPosition === 0 ? '0' : valueStr.substring(0, splitPosition);
+    let fractionalPart = valueLength > this.precision ? valueStr.substring(splitPosition) : valueStr;
+
+    // Pad the fractional part with zeros if it's shorter than the desired precision
+    fractionalPart = fractionalPart.padEnd(precision, '0');
+
+    // Rounding
+    if (precision > 0 && fractionalPart.length > precision) {
+      const roundOffPart = fractionalPart.substring(precision, precision + 1);
+      fractionalPart = fractionalPart.substring(0, precision);
+
+      if (parseInt(roundOffPart, 10) >= 5) {
+        const roundedFractional = (BigInt(fractionalPart) + BigInt(1)).toString().padStart(precision, '0');
+
+        // Handle carry-over
+        if (roundedFractional.length > precision) {
+          integerPart = (BigInt(integerPart) + BigInt(1)).toString();
+          fractionalPart = '0'.repeat(precision);
+        } else {
+          fractionalPart = roundedFractional;
+        }
+      }
+    } else if (precision === 0) {
+      if (parseInt(fractionalPart[0], 10) >= 5) {
+        integerPart = (BigInt(integerPart) + BigInt(1)).toString();
+      }
+    }
+
+    return precision > 0 ? integerPart + '.' + fractionalPart : integerPart;
   }
+
+
+
+
 
   /**
    * @description Convert to a JSON representation of the unit
