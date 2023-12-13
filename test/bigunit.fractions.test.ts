@@ -1,6 +1,8 @@
 import { BigUnit } from "../src/bigunit";
 import { DivisionByZeroError } from "../src/errors";
 describe("BigUnit Class fraction handling methods", () => {
+  //TODO: like the rest, missing tests for negative values
+  //TODO: changes will be made to both these classes so additional tests will be needed once that's implemented
   const precision = 2;
   const value = 10000n; // Represents 100.00 when precision is 2
   const bigUnit = new BigUnit(value, precision);

@@ -26,12 +26,28 @@ describe("BigUnit Class Constructor", () => {
 
     expect(createUnit).toThrow(InvalidPrecisionError);
   });
+
+  //TODO: Also needs a test for when negative precision is provided
+  //TODO: Should we also have a test for when name isn't provided?
 });
 
 describe("BigUnit Class Static Factory Methods", () => {
-  const precision = 2;
+  /*TODO: 
+  All need to be tested with negative values
 
-  describe("fromBigInt method", () => {
+  I think we should also test
+  ints
+  decimals greater than 1
+  decimals less than 1
+  
+  Inputs with greater precision than specified for the BigUnit
+
+  Also should add tests for more levels of precision
+  low precision input to high precision bigint e.g. BigUnit.from(1.123, 24);
+  high precision input to high precision bigint e.g. BigUnit.from(1.123456789012345678901234, 24);
+  */  
+  const precision = 2;
+describe("fromBigInt method", () => {
     test("should convert BigInt to BigUnit with correct precision", () => {
       const bigIntValue = 12345n;
       const bigUnit = BigUnit.fromBigInt(bigIntValue, precision);
@@ -62,6 +78,7 @@ describe("BigUnit Class Static Factory Methods", () => {
       expect(bigUnit.toString()).toBe(decimalString);
       expect(bigUnit.precision).toBe(precision);
     });
+    //TODO test for leading zeros in integer part for fromDecimalString() e.g. 00012.123
 
     test("should handle decimal strings with leading zeros in the fractional part correctly", () => {
       const decimalString = "100.0123";
@@ -86,6 +103,7 @@ describe("BigUnit Class Static Factory Methods", () => {
       expect(bigUnit.value).toBe(expectedValue);
       expect(bigUnit.precision).toBe(precision);
     });
+    //TODO: add test for decimal strings without an integer part e.g. ".1234"
 
     test("should handle decimal strings with fractional part shorter than precision correctly", () => {
       const decimalString = "100.1";
@@ -110,6 +128,11 @@ describe("BigUnit Class Static Factory Methods", () => {
       expect(bigUnit.value).toBe(expectedValue);
       expect(bigUnit.precision).toBe(precision);
     });
+
+    /*TODO missing tests for:
+      fromValueString()
+      fromObject()
+    */
   });
 
   describe("from method", () => {

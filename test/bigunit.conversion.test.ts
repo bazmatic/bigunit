@@ -1,6 +1,10 @@
 import { BigUnit } from "../src/bigunit";
 
 describe("BigUnit Class Conversion and Formatting Methods", () => {
+  /*TODO: All methods should include tests for:
+    Negative numbers
+    Values between 0 and 1. e.g. 12345n with 6 units of precision aka 0.012345
+  */
   describe("toNumber method", () => {
     test("should correctly convert BigUnit instances to numbers for various precisions", () => {
       const unit1 = new BigUnit(12345n, 2); // 123.45
@@ -16,12 +20,14 @@ describe("BigUnit Class Conversion and Formatting Methods", () => {
       const highPrecision = 20; // A precision that would make the value very small
       const verySmallUnit = new BigUnit(verySmallValue, highPrecision);
       const expectedNumber = Number(verySmallValue) / 10 ** highPrecision;
+      //TODO: I think we chose to preference explicitly defining values rather than calculating them like is done here with expectedNumber
 
       expect(verySmallUnit.toNumber()).toBe(expectedNumber);
       expect(verySmallUnit.toNumber()).toBeGreaterThan(0);
     });
 
     test("should correctly convert an unsafe BigUnit value to a number, with truncation", () => {
+      //TODO: because this BigUnit has a precision of 2, both the integer and decimal portions of the number remain below the max_safe_integer limit. I would like to see a test where both integer and decimal portions are above max_safe_integer
       const precision = 2;
       const safeValue = BigInt(Number.MAX_SAFE_INTEGER - 1); // A safe bigint value just below the max safe integer
       const unsafeValue = safeValue * BigInt(10); // An unsafe bigint value above the max safe integer
@@ -36,6 +42,8 @@ describe("BigUnit Class Conversion and Formatting Methods", () => {
       const expectedNumber =
         Number(truncatedValueBigInt) /
         10 ** (precision - (valueString.length - safeDigits));
+      
+      //TODO: I think we chose to preference explicitly defining values rather than calculating them like is done here with expectedNumber
 
       expect(unsafeUnit.toNumber()).toBe(expectedNumber);
     });
@@ -63,6 +71,7 @@ describe("BigUnit Class Conversion and Formatting Methods", () => {
   });
 
   describe("format method", () => {
+    //TODO: Unlikely to cause issues but should probably include a test for formatting to the same number of decimals as the units native precision
     test("should format BigUnit to a string with given precision", () => {
       const unit = new BigUnit(12345n, 2); // 123.45
 

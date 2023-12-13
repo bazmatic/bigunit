@@ -11,12 +11,14 @@ describe("BigUnit Class State Methods", () => {
     });
 
     test("should return false for a non-zero value", () => {
+      //TODO: negative, positive decimal less than one, negative decimal greater than one
       const nonZeroUnit = new BigUnit(1000n, precision);
       expect(nonZeroUnit.isZero()).toBe(false);
     });
   });
 
   describe("isPositive method", () => {
+    //TODO: positive decimal less than one, negative decimal greater than one
     test("should return true for a positive value", () => {
       const positiveUnit = new BigUnit(1000n, precision);
       expect(positiveUnit.isPositive()).toBe(true);
@@ -34,6 +36,7 @@ describe("BigUnit Class State Methods", () => {
   });
 
   describe("isNegative method", () => {
+    //TODO: positive decimal less than one, negative decimal greater than one
     test("should return true for a negative value", () => {
       const negativeUnit = new BigUnit(-1000n, precision);
       expect(negativeUnit.isNegative()).toBe(true);
@@ -51,6 +54,8 @@ describe("BigUnit Class State Methods", () => {
   });
 });
 describe("BigUnit Class percent and fraction Methods", () => {
+  //TODO: Duplicate of tests in bigunit.fractions.test.ts ???
+  
   const precision = 2;
   const value = 10000n; // Represents 100.00 when precision is 2
   const bigUnit = new BigUnit(value, precision);
@@ -83,6 +88,7 @@ describe("BigUnit Class percent and fraction Methods", () => {
   });
 
   describe("fraction method", () => {
+  //TODO: Duplicate of tests in bigunit.fractions.test.ts ???
     test("should calculate the correct fraction with valid numerator and denominator", () => {
       const numerator = 1;
       const denominator = 2; // 1/2

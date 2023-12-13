@@ -12,6 +12,11 @@ describe("BigUnit Class Methods", () => {
   const unit3 = new BigUnit(unitValue3, precision);
 
   describe("add method", () => {
+    /* TODO:
+    Add test:
+    positive + negative, negative + positive, negative + negative
+    different precisions in both orders e.g. high precision + low precision and low precision + high precision
+    */
     test("should add two BigUnit instances of the same precision", () => {
       const result = unit1.add(unit2);
       expect(result.value).toBe(unitValue1 + unitValue2);
@@ -30,6 +35,7 @@ describe("BigUnit Class Methods", () => {
 
   describe("sub method", () => {
     // Repeat the structure of add method tests for sub method
+    //TODO: same as add method
     it("should subtract two BigUnit instances of the same precision", () => {
       const result = unit1.sub(unit2);
       expect(result.value).toBe(unitValue1 - unitValue2);
@@ -66,18 +72,20 @@ describe("BigUnit Class Methods", () => {
       [1.0, 6, 5.0, 6, 5.0, 6],
       [5.0, 6, 1.0, 6, 5.0, 6],
 
-      // Fraction Multiplication
+      // Decimal Multiplication
       [0.01, 6, 0.01, 6, 0.0001, 6],
       [0.1, 6, 0.1, 6, 0.01, 6],
 
       // Large Number Multiplication
       [10000.0, 2, 10000.0, 2, 100000000.0, 2],
 
-      // Precision Loss (assuming library truncates)
+      // Precision Loss (assuming library truncates) 
+      //TODO: This seems wrong. There is no loss of precision here
       [1.2345, 4, 9.8765, 4, 12.1925, 4],
 
       // Precision Mismatch
       [1.234, 5, 1.2345, 8, 1.523373, 8],
+      [1.2345, 8, 1.234, 5, 1.523373, 8],
 
       // Underflow Handling
       [0.0000000001, 10, 0.0000000001, 10, 0.0, 10],
@@ -86,6 +94,7 @@ describe("BigUnit Class Methods", () => {
       [1.0, 2, 100.0, 2, 100.0, 2],
 
       // Rounding (assuming library truncates)
+      //TODO: This seems wrong. There is no rounding here
       [1.2345, 4, 1.0, 4, 1.2345, 4],
     ];
 
@@ -116,10 +125,11 @@ describe("BigUnit Class Methods", () => {
       const testData = [
         // Basic Division
         [1.0, 6, 2.0, 6, 0.5, 6],
-        [1.23, 6, 2.34, 6, 0.525641, 6],
+        [4.65, 6, 8, 6, 0.58125, 6],
 
         // Zero Division
         [0.0, 6, 5.0, 6, 0.0, 6],
+        //TODO: denominator of zero
 
         // Negative Division
         [-1.0, 6, 5.0, 6, -0.2, 6],
@@ -135,14 +145,18 @@ describe("BigUnit Class Methods", () => {
 
         // Large Number Division
         [100000000000000000n, 2, 100000000000000000n, 2, 1.0, 2],
+        [1234567890123456789012n, 2, 1234567890123456789012n, 2, 1.0, 2],
+        [100000000000000000n, 2, 1250n, 2, 8000000000000000n, 2],
 
         // Precision Loss (assuming library truncates)
         [1.23456, 4, 9.87656, 4, 0.1249, 4],
 
         // Precision Mismatch
         [1.234, 5, 1.2345, 8, 0.99959497, 8],
+        [1.2345, 8, 1.234, 5, 1.00040518, 8],
 
         // Underflow Handling
+        // TODO: This isn't testing underflow
         [0.0000000001, 10, 0.0000000001, 10, 1.0, 10],
 
         // Dividing with Powers of Ten
@@ -183,6 +197,7 @@ describe("BigUnit Class Methods", () => {
     // Repeat the structure of add method tests for mod method
     it("should mod two BigUnit instances of the same precision", () => {
       const result = unit1.mod(unit2);
+
       expect(result.value).toBe(unitValue1 % unitValue2);
       expect(result.precision).toBe(precision);
     });
@@ -190,10 +205,10 @@ describe("BigUnit Class Methods", () => {
     it("should handle negative values and zero correctly", () => {
       const zeroUnit = new BigUnit(0n, precision);
       const negativeResult = unit1.mod(unit3);
-      expect(() => unit1.mod(zeroUnit)).toThrow();
 
+      expect(() => unit1.mod(zeroUnit)).toThrow();
       expect(negativeResult.value).toBe(unitValue1 % unitValue3);
-    });
+    }); //TODO: should also test: unit3.mod(unit1) and maybe even unit3.mod(unit3)
   });
 
   describe("abs method", () => {
@@ -205,6 +220,7 @@ describe("BigUnit Class Methods", () => {
       expect(result.value).toBe(100n);
       expect(result.precision).toBe(2);
     });
+    //TODO: also take the absolute value of positive number and check it's still positive
   });
 
   describe("neg method", () => {
@@ -216,10 +232,12 @@ describe("BigUnit Class Methods", () => {
       expect(result.value).toBe(-100n);
       expect(result.precision).toBe(2);
     });
+    //TODO: negate a negative value
   });
 });
 
 describe("BigUnit Class Methods - percent and fraction", () => {
+  //TODO: These seem essentially like duplicate of the tests in bigunit.fractions.test.ts ???
   const precision = 2;
   const unitValue = 1000n; // 10.00 when precision is 2
   const bigUnit = new BigUnit(unitValue, precision);
@@ -312,15 +330,15 @@ describe("BigUnit Class Methods - percent and fraction", () => {
       const result = BigUnit.min(large, small);
       expect(result).toBe(small);
     });
-  });
+  }); //TODO: add tests with varying precisions
 });
 
-describe("BigUnit Class Methods with Differing Precision", () => {
+describe("BigUnit Class Methods with Differing Precision", () => {  //TODO: should these live with the rest of their respective tests?
   const precisionHigh = 4; // Higher precision
   const precisionLow = 2; // Lower precision
   const unitHighPrecision = new BigUnit(1000n, precisionHigh); // e.g., 0.1000
   const unitLowPrecision = new BigUnit(500n, precisionLow); // e.g., 5.00
-
+  
   describe("add method with differing precision", () => {
     test("should add two BigUnit instances and use the precision of the first instance", () => {
       const result = unitHighPrecision.add(unitLowPrecision);
@@ -328,7 +346,7 @@ describe("BigUnit Class Methods with Differing Precision", () => {
         unitHighPrecision.value + unitLowPrecision.value * 100n; // Adjusted for precision
       expect(result.value).toBe(expectedValue);
       expect(result.precision).toBe(precisionHigh);
-    });
+    }); //TODO: should also be done in the opposite direction lowPrecision + highPrecision
   });
 
   describe("sub method with differing precision", () => {
@@ -338,10 +356,10 @@ describe("BigUnit Class Methods with Differing Precision", () => {
         unitHighPrecision.value - unitLowPrecision.value * 100n; // Adjusted for precision
       expect(result.value).toBe(expectedValue);
       expect(result.precision).toBe(precisionHigh);
-    });
+    }); //TODO: should also be done in the opposite direction lowPrecision - highPrecision
   });
 
-  describe("mul method with differing precision", () => {
+  describe("mul method with differing precision", () => { //TODO: this test already exists above
     test("should multiply two BigUnit instances and use the highest precision", () => {
       const result = unitHighPrecision.mul(unitLowPrecision);
       // The multiplication of the values themselves should not take precision into account, that's handled after the multiplication
@@ -365,6 +383,6 @@ describe("BigUnit Class Methods with Differing Precision", () => {
         unitHighPrecision.value % adjustedUnitLowPrecisionValue;
       expect(result.value).toBe(expectedValue);
       expect(result.precision).toBe(precisionHigh);
-    });
+    });//TODO: should also be done in the opposite direction lowPrecision mod highPrecision
   });
 });

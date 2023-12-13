@@ -1,6 +1,24 @@
 import { BigUnit } from "../src/bigunit";
 
 describe("BigUnit Class Comparison Methods", () => {
+  /*
+
+  In both input orders e.g. lowerPrecision.gt(higherPrecision) and higherPrecision.gt(lowerPrecision)
+    Values                        DONE
+      same values                 DONE
+      different values            DONE
+    Precisions
+      same precision              DONE
+      different precisions
+    Positives and negatives
+      both positive               DONE
+      both negative
+      one positive, one negative
+    Value ranges
+      integers                    DONE
+      decimals values greater than one
+      decimals values between one and zero
+  */
   const precision = 2;
   const value = 100.0;
   const bigUnit = BigUnit.from(value, precision);
