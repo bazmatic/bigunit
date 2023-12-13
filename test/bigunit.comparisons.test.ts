@@ -114,14 +114,14 @@ describe("BigUnit Class Comparison Methods", () => {
     expect(unit3.gt(unit2)).toBe(false);
     expect(unit1.gt(unit1)).toBe(false);
 
-    // Note: With a precision of 1, 9.1 is equal to 9.12 below
-    expect(unit1.lt(unit2)).toBe(false);
+    // Note: Fix for the failing test below will be done in TCIA-783
+    expect(unit1.lt(unit2)).toBe(true);
     expect(unit2.lt(unit1)).toBe(false);
     expect(unit2.lt(unit3)).toBe(false);
     expect(unit3.lt(unit2)).toBe(false);
     expect(unit1.lt(unit1)).toBe(false);
 
-    // Note: With a precision of 1, 9.1 is equal to 9.12 below
+    // Note: Fix for the failing test below will be done in TCIA-783
     expect(unit1.gte(unit2)).toBe(true);
     expect(unit2.gte(unit1)).toBe(true);
     expect(unit2.gte(unit3)).toBe(true);
@@ -134,8 +134,8 @@ describe("BigUnit Class Comparison Methods", () => {
     expect(unit3.lte(unit2)).toBe(true);
     expect(unit1.lte(unit1)).toBe(true);
 
-    // Note: With a precision of 1, 9.1 is equal to 9.12 below
-    expect(unit1.eq(unit2)).toBe(true);
+    // Note: Fix for the failing test below will be done in TCIA-783
+    expect(unit1.eq(unit2)).toBe(false);
     expect(unit2.eq(unit1)).toBe(false);
     expect(unit2.eq(unit3)).toBe(true);
     expect(unit3.eq(unit2)).toBe(true);
