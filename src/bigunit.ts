@@ -286,7 +286,13 @@ export class BigUnit {
    * @returns BigUnit with the maximum value
    */
   public static max(unit1: BigUnit, unit2: BigUnit): BigUnit {
-    return this.compareUnits(unit1, unit2, (u1, u2) => u1.gt(u2));
+    if (unit1.eq(unit2)) {
+      if (unit1.precision === unit2.precision) {
+        return unit1.name.localeCompare(unit2.name) <= 0 ? unit1 : unit2;
+      }
+      return unit1.precision > unit2.precision ? unit1 : unit2;
+    }
+    return unit1.gt(unit2) ? unit1 : unit2;
   }
 
   /**
@@ -294,25 +300,13 @@ export class BigUnit {
    * @returns BigUnit with the minimum value
    */
   public static min(unit1: BigUnit, unit2: BigUnit): BigUnit {
-    return this.compareUnits(unit1, unit2, (u1, u2) => u1.lt(u2));
-  }
-
-  /**
-   * @description Compares two BigUnit objects based on a comparison function (min or max)
-   * @returns BigUnit based on the comparison function
-   */
-  private static compareUnits(
-    unit1: BigUnit,
-    unit2: BigUnit,
-    comparisonFunc: (u1: BigUnit, u2: BigUnit) => boolean,
-  ): BigUnit {
     if (unit1.eq(unit2)) {
       if (unit1.precision === unit2.precision) {
         return unit1.name.localeCompare(unit2.name) <= 0 ? unit1 : unit2;
       }
       return unit1.precision > unit2.precision ? unit1 : unit2;
     }
-    return comparisonFunc(unit1, unit2) ? unit1 : unit2;
+    return unit1.lt(unit2) ? unit1 : unit2;
   }
 
   /**
