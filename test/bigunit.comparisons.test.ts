@@ -107,31 +107,31 @@ describe("BigUnit Class Comparison Methods", () => {
     const unit1 = BigUnit.from("9.1", 1);
     const unit2 = BigUnit.from("9.12", 2);
     const unit3 = BigUnit.from("9.12", 3);
-    
+
     expect(unit1.gt(unit2)).toBe(false);
     expect(unit2.gt(unit1)).toBe(true);
     expect(unit2.gt(unit3)).toBe(false);
     expect(unit3.gt(unit2)).toBe(false);
     expect(unit1.gt(unit1)).toBe(false);
-    
-    expect(unit1.lt(unit2)).toBe(true)
-    expect(unit2.lt(unit1)).toBe(false)
-    expect(unit2.lt(unit3)).toBe(false)
-    expect(unit3.lt(unit2)).toBe(false)
-    expect(unit1.lt(unit1)).toBe(false)
-    
+
+    expect(unit1.lt(unit2)).toBe(true);
+    expect(unit2.lt(unit1)).toBe(false);
+    expect(unit2.lt(unit3)).toBe(false);
+    expect(unit3.lt(unit2)).toBe(false);
+    expect(unit1.lt(unit1)).toBe(false);
+
     expect(unit1.gte(unit2)).toBe(false);
     expect(unit2.gte(unit1)).toBe(true);
     expect(unit2.gte(unit3)).toBe(true);
     expect(unit3.gte(unit2)).toBe(true);
     expect(unit1.gte(unit1)).toBe(true);
-    
+
     expect(unit1.lte(unit2)).toBe(true);
     expect(unit2.lte(unit1)).toBe(false);
     expect(unit2.lte(unit3)).toBe(true);
     expect(unit3.lte(unit2)).toBe(true);
     expect(unit1.lte(unit1)).toBe(true);
-    
+
     expect(unit1.eq(unit2)).toBe(false);
     expect(unit2.eq(unit1)).toBe(false);
     expect(unit2.eq(unit3)).toBe(true);
