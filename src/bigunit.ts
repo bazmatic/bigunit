@@ -19,7 +19,7 @@ export class BigUnit {
     public precision: number,
     public name?: string,
   ) {
-    // throw if precision is not an integer
+    // throw if precision is not a positive integer
     if (precision % 1 !== 0 || precision < 0) {
       throw new InvalidPrecisionError(precision);
     }
@@ -430,16 +430,6 @@ export class BigUnit {
     return this.value;
   }
 
-  // /**
-  //  * @description Format the value as a string with the given precision (Note: this uses standard rounding)
-  //  * @param precision
-  //  * @returns string representation of the unit value
-  //  */
-  // public format(precision: number): string {
-  //   // TAYLOR OVERFLOW ERROR HERE!
-  //   return this.toNumber().toFixed(precision);
-  // }
-
   /**
    * @description Format the value as a string with the given precision (Note: this uses standard rounding)
    * @param precision - the number of digits to appear after the decimal point
@@ -612,7 +602,7 @@ export class BigUnit {
     const integerPartBigInt = BigInt(integerPart);
 
     // Calculate the precision factor
-    const precisionFactor = this.bigIntPowerOfTen(precision);
+    const precisionFactor = 10n ** BigInt(precision);
 
     // If there is no fractional part, return the integer part
     if (!fractionalPart) {
@@ -632,20 +622,12 @@ export class BigUnit {
       integerPartBigInt * precisionFactor + fractionalPartBigInt;
 
     // If the integer part is negative, convert the fractional part to a negative number otherwise it will incorrectly be positive
-    if (integerPart.includes("-")) {
-      combinedValueBigInt = combinedValueBigInt * BigInt(-1);
+    if (integerPart[0] === "-") {
+      combinedValueBigInt = -combinedValueBigInt;
     }
 
     // Return the BigUnit
     return new BigUnit(combinedValueBigInt, precision, name);
-  }
-
-  /**
-   * @description Convert a decimal string to a BigUnit, eg. "1.23456" in an overflow-safe way. This is to avoid BigInt(10 ** precision) which can overflow.
-   * @param decimalStringValue
-   */
-  private static bigIntPowerOfTen(precision): bigint {
-    return BigInt("1" + "0".repeat(precision));
   }
 
   /**
@@ -661,7 +643,7 @@ export class BigUnit {
     precision?: number,
     name?: string,
   ): BigUnit {
-    // throw if precision is not an integer
+    // throw if precision is not a positive integer
     if ((precision !== undefined && precision % 1 !== 0) || precision < 0) {
       throw new InvalidPrecisionError(precision);
     }
@@ -698,7 +680,7 @@ export class BigUnitFactory {
     public precision: number,
     public name?: string,
   ) {
-    // throw if precision is not an integer
+    // throw if precision is not a positive integer
     if (precision % 1 !== 0 || precision < 0) {
       throw new InvalidPrecisionError(precision);
     }
