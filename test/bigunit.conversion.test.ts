@@ -55,9 +55,9 @@ describe("BigUnit Class Conversion and Formatting Methods", () => {
     });
 
     test("should correctly represent BigUnit as a string for negative numbers", () => {
-      const unit1 = BigUnit.from(-1234n, 8); // -0.0001234
+      const unit1 = BigUnit.from(-1234n, 8); // -0.00001234
 
-      expect(unit1.toString()).toBe("-0.0001234");
+      expect(unit1.toString()).toBe("-0.00001234");
     });
   });
 

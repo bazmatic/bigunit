@@ -286,12 +286,6 @@ export class BigUnit {
    * @returns BigUnit with the maximum value
    */
   public static max(unit1: BigUnit, unit2: BigUnit): BigUnit {
-    if (unit1.eq(unit2)) {
-      if (unit1.precision === unit2.precision) {
-        return unit1.name.localeCompare(unit2.name) <= 0 ? unit1 : unit2;
-      }
-      return unit1.precision > unit2.precision ? unit1 : unit2;
-    }
     return unit1.gt(unit2) ? unit1 : unit2;
   }
 
@@ -300,12 +294,6 @@ export class BigUnit {
    * @returns BigUnit with the minimum value
    */
   public static min(unit1: BigUnit, unit2: BigUnit): BigUnit {
-    if (unit1.eq(unit2)) {
-      if (unit1.precision === unit2.precision) {
-        return unit1.name.localeCompare(unit2.name) <= 0 ? unit1 : unit2;
-      }
-      return unit1.precision > unit2.precision ? unit1 : unit2;
-    }
     return unit1.lt(unit2) ? unit1 : unit2;
   }
 
@@ -398,11 +386,18 @@ export class BigUnit {
    * @dev Convert to a string representation of the unit, using fixed-point notation.
    */
   public toString(): string {
-    const valueString = this.value.toString();
+    let valueString = this.value.toString();
+    let isNegative = false;
+
+    // Check if the value is negative and handle accordingly
+    if (this.value < 0) {
+      isNegative = true;
+      valueString = valueString.substring(1); // Remove the negative sign for processing
+    }
 
     // If the precision is zero, return the value as a string as there are no decimals
     if (this.precision === 0) {
-      return valueString;
+      return isNegative ? `-${valueString}` : valueString;
     }
 
     // Calculate the index of the decimal point
@@ -411,10 +406,8 @@ export class BigUnit {
     // If the length is less than the precision, pad with zeros
     if (length < this.precision) {
       const padding = "0".repeat(this.precision - length);
-      // If the value is negative, add a negative sign to the padded zeros and remove the negative sign from the value
-      // This avoids results like "0.000-1234"
-      return valueString.includes("-")
-        ? `-0.${padding}${valueString.replace("-", "")}`
+      return isNegative 
+        ? `-0.${padding}${valueString}` 
         : `0.${padding}${valueString}`;
     }
 
@@ -422,8 +415,10 @@ export class BigUnit {
     const decimalIndex = length - this.precision;
     const integerPart = valueString.slice(0, decimalIndex);
     const fractionalPart = valueString.slice(decimalIndex);
-    // If the integer part is empty, return "0" instead of an empty string
-    return `${integerPart === "" ? "0" : integerPart}.${fractionalPart}`;
+
+    // Construct the final string
+    const result = `${integerPart === "" ? "0" : integerPart}.${fractionalPart}`;
+    return isNegative ? `-${result}` : result;
   }
 
   public toBigInt(): bigint {
@@ -436,54 +431,7 @@ export class BigUnit {
    * @returns string representation of the unit value
    */
   public format(precision: number): string {
-    let valueStr = this.toBigInt().toString();
-    const valueLength = valueStr.length;
-
-    // NOTE: We use string manipulation instead of Number.toFixed() to avoid overflow errors
-    // If the internal value has fewer digits than the required precision,
-    // pad with zeros to the left
-    if (valueLength < this.precision) {
-      valueStr = "0".repeat(this.precision - valueLength) + valueStr;
-    }
-
-    // Determine the position to split the integer and fractional parts
-    const splitPosition =
-      valueLength > this.precision ? valueLength - this.precision : 0;
-    let integerPart =
-      splitPosition === 0 ? "0" : valueStr.substring(0, splitPosition);
-    let fractionalPart =
-      valueLength > this.precision
-        ? valueStr.substring(splitPosition)
-        : valueStr;
-
-    // Pad the fractional part with zeros if it's shorter than the desired precision
-    fractionalPart = fractionalPart.padEnd(precision, "0");
-
-    // Rounding
-    if (precision > 0 && fractionalPart.length > precision) {
-      const roundOffPart = fractionalPart.substring(precision, precision + 1);
-      fractionalPart = fractionalPart.substring(0, precision);
-
-      if (parseInt(roundOffPart, 10) >= 5) {
-        const roundedFractional = (BigInt(fractionalPart) + BigInt(1))
-          .toString()
-          .padStart(precision, "0");
-
-        // Handle carry-over
-        if (roundedFractional.length > precision) {
-          integerPart = (BigInt(integerPart) + BigInt(1)).toString();
-          fractionalPart = "0".repeat(precision);
-        } else {
-          fractionalPart = roundedFractional;
-        }
-      }
-    } else if (precision === 0) {
-      if (parseInt(fractionalPart[0], 10) >= 5) {
-        integerPart = (BigInt(integerPart) + BigInt(1)).toString();
-      }
-    }
-
-    return precision > 0 ? integerPart + "." + fractionalPart : integerPart;
+    return this.toNumber().toFixed(precision);
   }
 
   /**
