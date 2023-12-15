@@ -208,9 +208,9 @@ export class BigUnit {
    */
   public eq(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
-      return this.value == other.asPrecision(this.precision).value;
+      return this.value === other.asPrecision(this.precision).value;
     }
-    return this.value == BigUnit.from(other, this.precision).value;
+    return this.value === BigUnit.from(other, this.precision).value;
   }
 
   /**
