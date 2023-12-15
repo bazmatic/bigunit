@@ -20,7 +20,11 @@ export class BigUnit {
     public name?: string,
   ) {
     // throw if precision is not a positive integer
-    if (precision % 1 !== 0 || precision < 0) {
+    BigUnit.validatePrecision(precision);
+  }
+
+  public static validatePrecision(precision: number): void {
+    if ((precision !== undefined && precision % 1 !== 0) || precision < 0) {
       throw new InvalidPrecisionError(precision);
     }
   }
@@ -592,9 +596,7 @@ export class BigUnit {
     name?: string,
   ): BigUnit {
     // throw if precision is not a positive integer
-    if ((precision !== undefined && precision % 1 !== 0) || precision < 0) {
-      throw new InvalidPrecisionError(precision);
-    }
+    this.validatePrecision(precision);
     // If the value is already a BigUnit, return it. If precision is provided, convert it to the given precision
     if (value instanceof BigUnit) {
       if (precision === undefined || precision === value.precision) {
@@ -629,9 +631,7 @@ export class BigUnitFactory {
     public name?: string,
   ) {
     // throw if precision is not a positive integer
-    if (precision % 1 !== 0 || precision < 0) {
-      throw new InvalidPrecisionError(precision);
-    }
+    BigUnit.validatePrecision(precision);
   }
 
   public from(value: BigUnitish): BigUnit {
