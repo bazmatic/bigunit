@@ -10,6 +10,7 @@ import { bigintCloseTo, numberToDecimalString } from "./utils";
 export interface IBigUnitObject {
   value: string;
   precision: number;
+  decimalValue: string;
   name: string;
 }
 
@@ -203,7 +204,10 @@ export class BigUnit {
   public eq(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
       const highestPrecision = Math.max(this.precision, other.precision);
-      return this.asPrecision(highestPrecision).value === other.asPrecision(highestPrecision).value;
+      return (
+        this.asPrecision(highestPrecision).value ===
+        other.asPrecision(highestPrecision).value
+      );
     }
     return this.value == BigUnit.from(other, this.precision).value;
   }
@@ -216,7 +220,10 @@ export class BigUnit {
   public gt(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
       const highestPrecision = Math.max(this.precision, other.precision);
-      return this.asPrecision(highestPrecision).value > other.asPrecision(highestPrecision).value;
+      return (
+        this.asPrecision(highestPrecision).value >
+        other.asPrecision(highestPrecision).value
+      );
     }
     return this.value > BigUnit.from(other, this.precision).value;
   }
@@ -229,7 +236,10 @@ export class BigUnit {
   public lt(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
       const highestPrecision = Math.max(this.precision, other.precision);
-      return this.asPrecision(highestPrecision).value < other.asPrecision(highestPrecision).value;
+      return (
+        this.asPrecision(highestPrecision).value <
+        other.asPrecision(highestPrecision).value
+      );
     }
     return this.value < BigUnit.from(other, this.precision).value;
   }
@@ -242,7 +252,10 @@ export class BigUnit {
   public gte(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
       const highestPrecision = Math.max(this.precision, other.precision);
-      return this.asPrecision(highestPrecision).value >= other.asPrecision(highestPrecision).value;
+      return (
+        this.asPrecision(highestPrecision).value >=
+        other.asPrecision(highestPrecision).value
+      );
     }
     return this.value >= BigUnit.from(other, this.precision).value;
   }
@@ -255,7 +268,10 @@ export class BigUnit {
   public lte(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
       const highestPrecision = Math.max(this.precision, other.precision);
-      return this.asPrecision(highestPrecision).value <= other.asPrecision(highestPrecision).value;
+      return (
+        this.asPrecision(highestPrecision).value <=
+        other.asPrecision(highestPrecision).value
+      );
     }
     return this.value <= BigUnit.from(other, this.precision).value;
   }
@@ -449,7 +465,25 @@ export class BigUnit {
       value: this.toValueString(),
       precision: this.precision,
       name: this.name,
+      decimalValue: this.toString(),
     };
+  }
+
+  /**
+   * @description Convert to a DTO representation of the unit
+   * @returns DTO representation of the BigUnit
+   * @note Same as toObject()
+   * @example
+   * {
+   *    value: "1000000000000000000",
+   *    precision: 18,
+   *    decimalValue: "1.000000000000000000",
+   *    name: "ETH"
+   * }
+   *
+   */
+  public toDTO(): IBigUnitObject {
+    return this.toObject();
   }
 
   /**
