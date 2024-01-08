@@ -75,6 +75,7 @@ describe("BigUnit Class Conversion and Formatting Methods", () => {
       const unit1 = new BigUnit(12345n, 2); // 123.45
       const unit2 = new BigUnit(12345n, 3); // 12.345
       const unit3 = new BigUnit(12345n, 0); // 12345 (zero precision)
+      const unit4 = new BigUnit(-12345n, 1); // -1234.5
 
       expect(unit1.format(1)).toBe("123.5");
       expect(unit1.format(3)).toBe("123.450");
@@ -87,6 +88,10 @@ describe("BigUnit Class Conversion and Formatting Methods", () => {
       expect(unit3.format(0)).toBe("12345");
       expect(unit3.format(5)).toBe("12345.00000");
       expect(unit3.format(8)).toBe("12345.00000000");
+
+      expect(unit4.format(1)).toBe("-1234.5");
+      expect(unit4.format(4)).toBe("-1234.5000");
+      expect(unit4.format(10)).toBe("-1234.5000000000");
     });
 
     test("should handle zero precision in format method", () => {
