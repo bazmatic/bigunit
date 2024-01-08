@@ -430,12 +430,33 @@ export class BigUnit {
   }
 
   /**
-   * @description Format the value as a string with the given precision (Note: this uses standard rounding)
+   * @description Format the value as a string with the given precision (Note: this uses standard rounding and is overflow safe)
    * @param precision - the number of digits to appear after the decimal point
    * @returns string representation of the unit value
    */
-  public format(precision: number): string {
-    return this.toNumber().toFixed(precision);
+  public format(targetPrecision: number): string {
+    let scaledValue = this.value * BigInt(10 ** Math.max(targetPrecision - this.precision, 0));
+
+    // Apply rounding when scaling down
+    if (this.precision > targetPrecision) {
+        const divisor = BigInt(10 ** (this.precision - targetPrecision));
+        const halfDivisor = divisor / BigInt(2);
+        const remainder = scaledValue % divisor;
+        scaledValue = (scaledValue / divisor) + (remainder >= halfDivisor ? BigInt(1) : BigInt(0));
+    }
+
+    let stringValue = scaledValue.toString();
+
+    // Insert decimal point for non-zero target precision
+    if (targetPrecision > 0) {
+        while (stringValue.length <= targetPrecision) {
+            stringValue = '0' + stringValue; // Pad with leading zeros
+        }
+        const insertPosition = stringValue.length - targetPrecision;
+        stringValue = stringValue.substring(0, insertPosition) + '.' + stringValue.substring(insertPosition);
+    }
+
+    return stringValue;
   }
 
   /**
