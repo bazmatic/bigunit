@@ -124,4 +124,20 @@ describe("BigUnit Class Conversion and Formatting Methods", () => {
       expect(unit3.format(3)).toBe("12345.000");
     });
   });
+
+  describe("toObject method", () => {
+    const value = 1000n; // bigint value
+    const precision = 2;
+    const name = "TestUnit";
+    const unit = new BigUnit(value, precision, name);
+    test("should return an object with the correct properties", () => {
+      const expectedObject = {
+        value: unit.toValueString(),
+        precision: unit.precision,
+        name: unit.name,
+      };
+
+      expect(unit.toObject()).toEqual(expectedObject);
+    });
+  });
 });
