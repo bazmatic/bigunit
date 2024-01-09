@@ -192,8 +192,9 @@ export class BigUnit {
       throw new DivisionByZeroError();
     }
 
-    const bigUnitNumerator = BigUnit.from(numerator, this.precision);
-    const bigUnitDenominator = BigUnit.from(denominator, this.precision);
+    const bigUnitNumerator = BigUnit.from(numeratorNumber, this.precision);
+    const bigUnitDenominator = BigUnit.from(denominatorNumber, this.precision);
+
     const resultValue = this.mul(bigUnitNumerator).div(bigUnitDenominator);
     // Return a new BigUnit with the result value and the same precision
     return resultValue;
@@ -204,7 +205,7 @@ export class BigUnit {
    * @param percent
    * @returns new BigUnit with the result value in the same precision
    */
-  public percent(percent: number): BigUnit {
+  public percent(percent: BigUnitish): BigUnit {
     return this.fraction(percent, 100);
   }
 

@@ -6,8 +6,35 @@ describe("BigUnit Class fraction handling methods", () => {
   const bigUnit = new BigUnit(value, precision);
 
   describe("percent method", () => {
-    test("should calculate the correct percent with a valid percentage", () => {
+    test("should calculate the correct percent with a valid number percentage", () => {
       const percentage = 10; // 10%
+      const result = bigUnit.percent(percentage);
+      const expectedValue = 1000n; // 10% of 10000n is 1000n
+
+      expect(result.value).toBe(expectedValue);
+      expect(result.precision).toBe(precision);
+    });
+
+    test("should calculate the correct percent with a valid string percentage", () => {
+      const percentage = "10"; // 10%
+      const result = bigUnit.percent(percentage);
+      const expectedValue = 1000n; // 10% of 10000n is 1000n
+
+      expect(result.value).toBe(expectedValue);
+      expect(result.precision).toBe(precision);
+    });
+
+    test("should calculate the correct percent with a valid BigInt percentage", () => {
+      const percentage = 10n; // 10%
+      const result = bigUnit.percent(percentage);
+      const expectedValue = 1000n; // 10% of 10000n is 1000n
+
+      expect(result.value).toBe(expectedValue);
+      expect(result.precision).toBe(precision);
+    });
+
+    test("should calculate the correct percent with a valid Bigunit percentage", () => {
+      const percentage = new BigUnit(10n, 0); // 10%
       const result = bigUnit.percent(percentage);
       const expectedValue = 1000n; // 10% of 10000n is 1000n
 
@@ -32,7 +59,7 @@ describe("BigUnit Class fraction handling methods", () => {
     });
   });
 
-  describe.only("fraction method", () => {
+  describe("fraction method", () => {
     test("should calculate the correct fraction with valid number type numerator and denominator", () => {
       const numerator = 1;
       const denominator = 2; // 1/2
