@@ -5,9 +5,7 @@ import {
   InvalidValueTypeError,
   MissingPrecisionError,
 } from "./errors";
-import { bigintAbs, numberToDecimalString } from "./utils";
-
-export * as utils from "./utils";
+import { bigintAbs, bigintCloseTo, numberToDecimalString } from "./utils";
 
 export interface IBigUnitObject {
   value: string;
@@ -21,6 +19,7 @@ export interface IBigUnitDTO extends IBigUnitObject {
   decimalValue: string;
   name?: string;
 }
+
 export class BigUnit {
   constructor(
     public value: bigint,
@@ -54,7 +53,7 @@ export class BigUnit {
     // Add the values
     return new BigUnit(
       thisUnitAtHighestPrecision.value + otherUnitAtHighestPrecision.value,
-      thisUnitAtHighestPrecision.precision,
+      this.precision,
     );
   }
 
@@ -75,7 +74,7 @@ export class BigUnit {
     // Subtract the values
     return new BigUnit(
       thisUnitAtHighestPrecision.value - otherUnitAtHighestPrecision.value,
-      thisUnitAtHighestPrecision.precision,
+      this.precision,
     );
   }
 
@@ -115,6 +114,8 @@ export class BigUnit {
     // Determine the highest precision of the two units and convert both units to the highest precision
     const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
       BigUnit.asHighestPrecision(this, otherUnit);
+
+    const highestPrecision = thisUnitAtHighestPrecision.precision;
 
     // Perform division operation
     if (otherUnitAtHighestPrecision.isZero()) {
@@ -214,11 +215,7 @@ export class BigUnit {
    */
   public eq(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
-      const highestPrecision = Math.max(this.precision, other.precision);
-      return (
-        this.asPrecision(highestPrecision).value ===
-        other.asPrecision(highestPrecision).value
-      );
+      return this.value === other.asPrecision(this.precision).value;
     }
     return this.value === BigUnit.from(other, this.precision).value;
   }
@@ -230,11 +227,7 @@ export class BigUnit {
    */
   public gt(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
-      const highestPrecision = Math.max(this.precision, other.precision);
-      return (
-        this.asPrecision(highestPrecision).value >
-        other.asPrecision(highestPrecision).value
-      );
+      return this.value > other.asPrecision(this.precision).value;
     }
     return this.value > BigUnit.from(other, this.precision).value;
   }
@@ -246,11 +239,7 @@ export class BigUnit {
    */
   public lt(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
-      const highestPrecision = Math.max(this.precision, other.precision);
-      return (
-        this.asPrecision(highestPrecision).value <
-        other.asPrecision(highestPrecision).value
-      );
+      return this.value < other.asPrecision(this.precision).value;
     }
     return this.value < BigUnit.from(other, this.precision).value;
   }
@@ -262,11 +251,7 @@ export class BigUnit {
    */
   public gte(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
-      const highestPrecision = Math.max(this.precision, other.precision);
-      return (
-        this.asPrecision(highestPrecision).value >=
-        other.asPrecision(highestPrecision).value
-      );
+      return this.value >= other.asPrecision(this.precision).value;
     }
     return this.value >= BigUnit.from(other, this.precision).value;
   }
@@ -278,11 +263,7 @@ export class BigUnit {
    */
   public lte(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
-      const highestPrecision = Math.max(this.precision, other.precision);
-      return (
-        this.asPrecision(highestPrecision).value <=
-        other.asPrecision(highestPrecision).value
-      );
+      return this.value <= other.asPrecision(this.precision).value;
     }
     return this.value <= BigUnit.from(other, this.precision).value;
   }
@@ -436,8 +417,8 @@ export class BigUnit {
     // If the length is less than the precision, pad with zeros
     if (length < this.precision) {
       const padding = "0".repeat(this.precision - length);
-      return isNegative
-        ? `-0.${padding}${valueString}`
+      return isNegative 
+        ? `-0.${padding}${valueString}` 
         : `0.${padding}${valueString}`;
     }
 
@@ -447,9 +428,7 @@ export class BigUnit {
     const fractionalPart = valueString.slice(decimalIndex);
 
     // Construct the final string
-    const result = `${
-      integerPart === "" ? "0" : integerPart
-    }.${fractionalPart}`;
+    const result = `${integerPart === "" ? "0" : integerPart}.${fractionalPart}`;
     return isNegative ? `-${result}` : result;
   }
 
@@ -465,18 +444,14 @@ export class BigUnit {
   public format(targetPrecision: number): string {
     BigUnit.validatePrecision(targetPrecision);
     // if < 0 absolute value
-    let scaledValue =
-      bigintAbs(this.value) *
-      BigInt(10n ** BigInt(Math.max(targetPrecision - this.precision, 0)));
+    let scaledValue = bigintAbs(this.value) * BigInt(10n ** BigInt((Math.max(targetPrecision - this.precision, 0))));
 
     // Apply rounding when scaling down
     if (this.precision > targetPrecision) {
-      const divisor = BigInt(10 ** (this.precision - targetPrecision));
-      const halfDivisor = divisor / BigInt(2);
-      const remainder = scaledValue % divisor;
-      scaledValue =
-        scaledValue / divisor +
-        (remainder >= halfDivisor ? BigInt(1) : BigInt(0));
+        const divisor = BigInt(10 ** (this.precision - targetPrecision));
+        const halfDivisor = divisor / BigInt(2);
+        const remainder = scaledValue % divisor;
+        scaledValue = (scaledValue / divisor) + (remainder >= halfDivisor ? BigInt(1) : BigInt(0));
     }
 
     let stringValue = scaledValue.toString();
@@ -484,18 +459,15 @@ export class BigUnit {
     if (targetPrecision > 0) {
       // Insert decimal point for non-zero target precision
       while (stringValue.length <= targetPrecision) {
-        stringValue = "0" + stringValue; // Pad with leading zeros
+          stringValue = '0' + stringValue; // Pad with leading zeros
       }
       const insertPosition = stringValue.length - targetPrecision;
-      stringValue =
-        stringValue.substring(0, insertPosition) +
-        "." +
-        stringValue.substring(insertPosition);
-    }
+      stringValue = stringValue.substring(0, insertPosition) + '.' + stringValue.substring(insertPosition);
+  }
 
     // if < 0 prepend '-'
     if (this.value < 0n) {
-      stringValue = "-" + stringValue;
+      stringValue = '-' + stringValue;
     }
 
     return stringValue;
