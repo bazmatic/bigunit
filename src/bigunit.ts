@@ -5,7 +5,7 @@ import {
   InvalidValueTypeError,
   MissingPrecisionError,
 } from "./errors";
-import { bigintCloseTo, numberToDecimalString } from "./utils";
+import { bigintAbs, bigintCloseTo, numberToDecimalString } from "./utils";
 
 export interface IBigUnitObject {
   value: string;
@@ -436,7 +436,8 @@ export class BigUnit {
    */
   public format(targetPrecision: number): string {
     BigUnit.validatePrecision(targetPrecision);
-    let scaledValue = this.value * BigInt(10n ** BigInt((Math.max(targetPrecision - this.precision, 0))));
+    // if < 0 absolute value
+    let scaledValue = bigintAbs(this.value) * BigInt(10n ** BigInt((Math.max(targetPrecision - this.precision, 0))));
 
     // Apply rounding when scaling down
     if (this.precision > targetPrecision) {
@@ -448,14 +449,19 @@ export class BigUnit {
 
     let stringValue = scaledValue.toString();
 
-    // Insert decimal point for non-zero target precision
     if (targetPrecision > 0) {
+      // Insert decimal point for non-zero target precision
       while (stringValue.length <= targetPrecision) {
           stringValue = '0' + stringValue; // Pad with leading zeros
       }
       const insertPosition = stringValue.length - targetPrecision;
       stringValue = stringValue.substring(0, insertPosition) + '.' + stringValue.substring(insertPosition);
   }
+
+    // if < 0 prepend '-'
+    if (this.value < 0n) {
+      stringValue = '-' + stringValue;
+    }
 
     return stringValue;
   }

@@ -89,7 +89,7 @@ describe("BigUnit Class Conversion and Formatting Methods", () => {
       expect(unit3.format(5)).toBe("12345.00000");
       expect(unit3.format(8)).toBe("12345.00000000");
 
-      expect(unit4.format(0)).toBe("-1234");
+      expect(unit4.format(0)).toBe("-1235");
       expect(unit4.format(1)).toBe("-1234.5");
       expect(unit4.format(4)).toBe("-1234.5000");
       expect(unit4.format(10)).toBe("-1234.5000000000");
