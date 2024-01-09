@@ -449,13 +449,11 @@ export class BigUnit {
     let stringValue = scaledValue.toString();
 
     // Insert decimal point for non-zero target precision
-    if (targetPrecision > 0) {
         while (stringValue.length <= targetPrecision) {
             stringValue = '0' + stringValue; // Pad with leading zeros
         }
         const insertPosition = stringValue.length - targetPrecision;
         stringValue = stringValue.substring(0, insertPosition) + '.' + stringValue.substring(insertPosition);
-    }
 
     return stringValue;
   }
