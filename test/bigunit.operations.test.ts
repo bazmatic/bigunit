@@ -299,18 +299,42 @@ describe("BigUnit Class Methods - percent and fraction", () => {
     });
   });
 
-  describe("min and max methods", () => {
-    // BigUnit.max(unit1, unit2) should return the larger of the two units
-    // BigUnit.min(unit1, unit2) should return the smaller of the two units
+  describe("BigUnit Class Methods - min and max", () => {
     const large = new BigUnit(1000n, 2);
     const small = new BigUnit(500n, 2);
+
+    const unit1 = BigUnit.from("9.12", 2, "Coin1");
+    const unit2 = BigUnit.from("9.12", 3, "Coin2");
+    const unit3 = BigUnit.from("9.12", 2, "A_Coin");
+
     test("should return the larger of the two units", () => {
       const result = BigUnit.max(large, small);
       expect(result).toBe(large);
     });
+
+    test("should return the result with the highest precision if the values are the same", () => {
+      const result = BigUnit.max(unit1, unit2);
+      expect(result).toBe(unit2);
+    });
+
+    test("should return the result that is first alphabetically if the values and precision are the same", () => {
+      const result = BigUnit.max(unit1, unit3);
+      expect(result).toBe(unit3);
+    });
+
     test("should return the smaller of the two units", () => {
       const result = BigUnit.min(large, small);
       expect(result).toBe(small);
+    });
+
+    test("should return the result with the highest precision if the values are the same", () => {
+      const result = BigUnit.min(unit1, unit2);
+      expect(result).toBe(unit2);
+    });
+
+    test("should return the result that is first alphabetically if the values and precision are the same", () => {
+      const result = BigUnit.min(unit1, unit3);
+      expect(result).toBe(unit3);
     });
   });
 });
