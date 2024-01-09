@@ -435,7 +435,7 @@ export class BigUnit {
    * @returns string representation of the unit value
    */
   public format(targetPrecision: number): string {
-    BigUnit.validatePrecision(precision);
+    BigUnit.validatePrecision(targetPrecision);
     let scaledValue = this.value * BigInt(10n ** BigInt((Math.max(targetPrecision - this.precision, 0))));
 
     // Apply rounding when scaling down
@@ -449,11 +449,13 @@ export class BigUnit {
     let stringValue = scaledValue.toString();
 
     // Insert decimal point for non-zero target precision
-        while (stringValue.length <= targetPrecision) {
-            stringValue = '0' + stringValue; // Pad with leading zeros
-        }
-        const insertPosition = stringValue.length - targetPrecision;
-        stringValue = stringValue.substring(0, insertPosition) + '.' + stringValue.substring(insertPosition);
+    if (targetPrecision > 0) {
+      while (stringValue.length <= targetPrecision) {
+          stringValue = '0' + stringValue; // Pad with leading zeros
+      }
+      const insertPosition = stringValue.length - targetPrecision;
+      stringValue = stringValue.substring(0, insertPosition) + '.' + stringValue.substring(insertPosition);
+  }
 
     return stringValue;
   }
