@@ -12,7 +12,13 @@ export * as utils from "./utils";
 export interface IBigUnitObject {
   value: string;
   precision: number;
-  decimalValue?: string;
+  name?: string;
+}
+
+export interface IBigUnitDTO extends IBigUnitObject {
+  value: string;
+  precision: number;
+  decimalValue: string;
   name?: string;
 }
 export class BigUnit {
@@ -519,7 +525,6 @@ export class BigUnit {
       value: this.toValueString(),
       precision: this.precision,
       name: this.name,
-      decimalValue: this.toString(),
     };
   }
 
@@ -536,8 +541,13 @@ export class BigUnit {
    * }
    *
    */
-  public toDTO(): IBigUnitObject {
-    return this.toObject();
+  public toDTO(): IBigUnitDTO {
+    return {
+      value: this.toValueString(),
+      precision: this.precision,
+      name: this.name,
+      decimalValue: this.toString(),
+    };
   }
 
   /**
