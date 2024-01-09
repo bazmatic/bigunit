@@ -12,8 +12,8 @@ export * as utils from "./utils";
 export interface IBigUnitObject {
   value: string;
   precision: number;
-  decimalValue: string;
-  name: string;
+  decimalValue?: string;
+  name?: string;
 }
 export class BigUnit {
   constructor(
@@ -610,7 +610,7 @@ export class BigUnit {
    * @param obj
    */
   public static fromObject(obj: IBigUnitObject): BigUnit {
-    return new BigUnit(BigInt(obj.value), obj.precision, obj.name);
+    return new BigUnit(BigInt(obj.value), obj.precision, obj?.name);
   }
 
   /**
