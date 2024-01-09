@@ -5,9 +5,7 @@ import {
   InvalidValueTypeError,
   MissingPrecisionError,
 } from "./errors";
-import { bigintAbs, numberToDecimalString } from "./utils";
-
-export * as utils from "./utils";
+import { bigintAbs, bigintCloseTo, numberToDecimalString } from "./utils";
 
 export interface IBigUnitObject {
   value: string;
@@ -21,6 +19,7 @@ export interface IBigUnitDTO extends IBigUnitObject {
   decimalValue: string;
   name?: string;
 }
+
 export class BigUnit {
   constructor(
     public value: bigint,
@@ -179,8 +178,10 @@ export class BigUnit {
    * @param fraction
    * @returns new BigUnit with the result value in the same precision
    */
-  public fraction(numerator: number, denominator: number): BigUnit {
-    if (isNaN(numerator) || isNaN(denominator)) {
+  public fraction(numerator: BigUnitish, denominator: BigUnitish): BigUnit {
+    const numeratorNumber = Number(numerator);
+    const denominatorNumber = Number(denominator);
+    if (isNaN(numeratorNumber) || isNaN(denominatorNumber)) {
       throw new InvalidFractionError(
         "Numerator and denominator must be valid numbers",
       );

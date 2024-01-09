@@ -32,10 +32,40 @@ describe("BigUnit Class fraction handling methods", () => {
     });
   });
 
-  describe("fraction method", () => {
-    test("should calculate the correct fraction with valid numerator and denominator", () => {
+  describe.only("fraction method", () => {
+    test("should calculate the correct fraction with valid number type numerator and denominator", () => {
       const numerator = 1;
       const denominator = 2; // 1/2
+      const result = bigUnit.fraction(numerator, denominator);
+      const expectedValue = 5000n; // 1/2 of 10000n is 5000n
+
+      expect(result.value).toBe(expectedValue);
+      expect(result.precision).toBe(precision);
+    });
+
+    test("should calculate the correct fraction with valid string type numerator and denominator", () => {
+      const numerator = "1";
+      const denominator = "2"; // 1/2
+      const result = bigUnit.fraction(numerator, denominator);
+      const expectedValue = 5000n; // 1/2 of 10000n is 5000n
+
+      expect(result.value).toBe(expectedValue);
+      expect(result.precision).toBe(precision);
+    });
+
+    test("should calculate the correct fraction with valid BigInt type numerator and denominator", () => {
+      const numerator = 1n;
+      const denominator = 2n; // 1/2
+      const result = bigUnit.fraction(numerator, denominator);
+      const expectedValue = 5000n; // 1/2 of 10000n is 5000n
+
+      expect(result.value).toBe(expectedValue);
+      expect(result.precision).toBe(precision);
+    });
+
+    test("should calculate the correct fraction with valid Bigunit type numerator and denominator", () => {
+      const numerator = new BigUnit(1n, 0);
+      const denominator = new BigUnit(2n, 0); // 1/2
       const result = bigUnit.fraction(numerator, denominator);
       const expectedValue = 5000n; // 1/2 of 10000n is 5000n
 
