@@ -435,6 +435,7 @@ export class BigUnit {
    * @returns string representation of the unit value
    */
   public format(targetPrecision: number): string {
+    BigUnit.validatePrecision(precision);
     let scaledValue = this.value * BigInt(10n ** BigInt((Math.max(targetPrecision - this.precision, 0))));
 
     // Apply rounding when scaling down
