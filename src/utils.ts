@@ -27,3 +27,7 @@ export function bigintCloseTo(
 ): boolean {
   return a >= b - tolerance && a <= b + tolerance;
 }
+
+export function bigintAbs(bigintValue) {
+  return bigintValue < 0n ? -bigintValue : bigintValue;
+}

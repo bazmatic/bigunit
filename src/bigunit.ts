@@ -5,22 +5,34 @@ import {
   InvalidValueTypeError,
   MissingPrecisionError,
 } from "./errors";
-import { bigintCloseTo, numberToDecimalString } from "./utils";
+import { bigintAbs, numberToDecimalString } from "./utils";
+
+export * as utils from "./utils";
 
 export interface IBigUnitObject {
   value: string;
   precision: number;
-  name: string;
+  name?: string;
 }
 
+export interface IBigUnitDTO extends IBigUnitObject {
+  value: string;
+  precision: number;
+  decimalValue: string;
+  name?: string;
+}
 export class BigUnit {
   constructor(
     public value: bigint,
     public precision: number,
     public name?: string,
   ) {
-    // throw if precision is not an integer
-    if (precision % 1 !== 0) {
+    // throw if precision is not a positive integer
+    BigUnit.validatePrecision(precision);
+  }
+
+  public static validatePrecision(precision: number): void {
+    if ((precision !== undefined && precision % 1 !== 0) || precision < 0) {
       throw new InvalidPrecisionError(precision);
     }
   }
@@ -42,7 +54,7 @@ export class BigUnit {
     // Add the values
     return new BigUnit(
       thisUnitAtHighestPrecision.value + otherUnitAtHighestPrecision.value,
-      this.precision,
+      thisUnitAtHighestPrecision.precision,
     );
   }
 
@@ -63,7 +75,7 @@ export class BigUnit {
     // Subtract the values
     return new BigUnit(
       thisUnitAtHighestPrecision.value - otherUnitAtHighestPrecision.value,
-      this.precision,
+      thisUnitAtHighestPrecision.precision,
     );
   }
 
@@ -103,8 +115,6 @@ export class BigUnit {
     // Determine the highest precision of the two units and convert both units to the highest precision
     const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
       BigUnit.asHighestPrecision(this, otherUnit);
-
-    const highestPrecision = thisUnitAtHighestPrecision.precision;
 
     // Perform division operation
     if (otherUnitAtHighestPrecision.isZero()) {
@@ -165,8 +175,8 @@ export class BigUnit {
   }
 
   /**
-   * @description Calculate the percentage of this value
-   * @param percent
+   * @description Calculate the fraction of this value
+   * @param fraction
    * @returns new BigUnit with the result value in the same precision
    */
   public fraction(numerator: number, denominator: number): BigUnit {
@@ -204,9 +214,13 @@ export class BigUnit {
    */
   public eq(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
-      return this.value == other.value;
+      const highestPrecision = Math.max(this.precision, other.precision);
+      return (
+        this.asPrecision(highestPrecision).value ===
+        other.asPrecision(highestPrecision).value
+      );
     }
-    return this.value == BigUnit.from(other, this.precision).value;
+    return this.value === BigUnit.from(other, this.precision).value;
   }
 
   /**
@@ -216,7 +230,11 @@ export class BigUnit {
    */
   public gt(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
-      return this.value > other.asPrecision(this.precision).value;
+      const highestPrecision = Math.max(this.precision, other.precision);
+      return (
+        this.asPrecision(highestPrecision).value >
+        other.asPrecision(highestPrecision).value
+      );
     }
     return this.value > BigUnit.from(other, this.precision).value;
   }
@@ -228,7 +246,11 @@ export class BigUnit {
    */
   public lt(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
-      return this.value < other.asPrecision(this.precision).value;
+      const highestPrecision = Math.max(this.precision, other.precision);
+      return (
+        this.asPrecision(highestPrecision).value <
+        other.asPrecision(highestPrecision).value
+      );
     }
     return this.value < BigUnit.from(other, this.precision).value;
   }
@@ -240,7 +262,11 @@ export class BigUnit {
    */
   public gte(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
-      return this.value >= other.asPrecision(this.precision).value;
+      const highestPrecision = Math.max(this.precision, other.precision);
+      return (
+        this.asPrecision(highestPrecision).value >=
+        other.asPrecision(highestPrecision).value
+      );
     }
     return this.value >= BigUnit.from(other, this.precision).value;
   }
@@ -252,7 +278,11 @@ export class BigUnit {
    */
   public lte(other: BigUnitish): boolean {
     if (other instanceof BigUnit) {
-      return this.value <= other.asPrecision(this.precision).value;
+      const highestPrecision = Math.max(this.precision, other.precision);
+      return (
+        this.asPrecision(highestPrecision).value <=
+        other.asPrecision(highestPrecision).value
+      );
     }
     return this.value <= BigUnit.from(other, this.precision).value;
   }
@@ -386,11 +416,18 @@ export class BigUnit {
    * @dev Convert to a string representation of the unit, using fixed-point notation.
    */
   public toString(): string {
-    const valueString = this.value.toString();
+    let valueString = this.value.toString();
+    let isNegative = false;
+
+    // Check if the value is negative and handle accordingly
+    if (this.value < 0) {
+      isNegative = true;
+      valueString = valueString.substring(1); // Remove the negative sign for processing
+    }
 
     // If the precision is zero, return the value as a string as there are no decimals
     if (this.precision === 0) {
-      return valueString;
+      return isNegative ? `-${valueString}` : valueString;
     }
 
     // Calculate the index of the decimal point
@@ -399,14 +436,21 @@ export class BigUnit {
     // If the length is less than the precision, pad with zeros
     if (length < this.precision) {
       const padding = "0".repeat(this.precision - length);
-      return `0.${padding}${valueString}`;
+      return isNegative
+        ? `-0.${padding}${valueString}`
+        : `0.${padding}${valueString}`;
     }
 
     // If the length is greater than the precision, slice the string
     const decimalIndex = length - this.precision;
     const integerPart = valueString.slice(0, decimalIndex);
     const fractionalPart = valueString.slice(decimalIndex);
-    return `${integerPart}.${fractionalPart}`;
+
+    // Construct the final string
+    const result = `${
+      integerPart === "" ? "0" : integerPart
+    }.${fractionalPart}`;
+    return isNegative ? `-${result}` : result;
   }
 
   public toBigInt(): bigint {
@@ -414,12 +458,47 @@ export class BigUnit {
   }
 
   /**
-   * @description Format the value as a string with the given precision
-   * @param precision
+   * @description Format the value as a string with the given precision (Note: this uses standard rounding and is overflow safe)
+   * @param precision - the number of digits to appear after the decimal point
    * @returns string representation of the unit value
    */
-  public format(precision: number): string {
-    return this.toNumber().toFixed(precision);
+  public format(targetPrecision: number): string {
+    BigUnit.validatePrecision(targetPrecision);
+    // if < 0 absolute value
+    let scaledValue =
+      bigintAbs(this.value) *
+      BigInt(10n ** BigInt(Math.max(targetPrecision - this.precision, 0)));
+
+    // Apply rounding when scaling down
+    if (this.precision > targetPrecision) {
+      const divisor = BigInt(10 ** (this.precision - targetPrecision));
+      const halfDivisor = divisor / BigInt(2);
+      const remainder = scaledValue % divisor;
+      scaledValue =
+        scaledValue / divisor +
+        (remainder >= halfDivisor ? BigInt(1) : BigInt(0));
+    }
+
+    let stringValue = scaledValue.toString();
+
+    if (targetPrecision > 0) {
+      // Insert decimal point for non-zero target precision
+      while (stringValue.length <= targetPrecision) {
+        stringValue = "0" + stringValue; // Pad with leading zeros
+      }
+      const insertPosition = stringValue.length - targetPrecision;
+      stringValue =
+        stringValue.substring(0, insertPosition) +
+        "." +
+        stringValue.substring(insertPosition);
+    }
+
+    // if < 0 prepend '-'
+    if (this.value < 0n) {
+      stringValue = "-" + stringValue;
+    }
+
+    return stringValue;
   }
 
   /**
@@ -446,6 +525,28 @@ export class BigUnit {
       value: this.toValueString(),
       precision: this.precision,
       name: this.name,
+    };
+  }
+
+  /**
+   * @description Convert to a DTO representation of the unit
+   * @returns DTO representation of the BigUnit
+   * @note Same as toObject()
+   * @example
+   * {
+   *    value: "1000000000000000000",
+   *    precision: 18,
+   *    decimalValue: "1.000000000000000000",
+   *    name: "ETH"
+   * }
+   *
+   */
+  public toDTO(): IBigUnitDTO {
+    return {
+      value: this.toValueString(),
+      precision: this.precision,
+      name: this.name,
+      decimalValue: this.toString(),
     };
   }
 
@@ -519,7 +620,7 @@ export class BigUnit {
    * @param obj
    */
   public static fromObject(obj: IBigUnitObject): BigUnit {
-    return new BigUnit(BigInt(obj.value), obj.precision, obj.name);
+    return new BigUnit(BigInt(obj.value), obj.precision, obj?.name);
   }
 
   /**
@@ -537,13 +638,12 @@ export class BigUnit {
     // Convert the integer part to a bigint
     const integerPartBigInt = BigInt(integerPart);
 
+    // Calculate the precision factor
+    const precisionFactor = 10n ** BigInt(precision);
+
     // If there is no fractional part, return the integer part
     if (!fractionalPart) {
-      return new BigUnit(
-        integerPartBigInt * BigInt(10 ** precision),
-        precision,
-        name,
-      );
+      return new BigUnit(integerPartBigInt * precisionFactor, precision, name);
     }
 
     // Prepare the fractional part string by padding it with zeros to match the precision length
@@ -555,8 +655,13 @@ export class BigUnit {
     const fractionalPartBigInt = BigInt(paddedFractionalPart);
 
     // Combine the integer and fractional parts
-    const combinedValueBigInt =
-      integerPartBigInt * BigInt(10 ** precision) + fractionalPartBigInt;
+    let combinedValueBigInt =
+      integerPartBigInt * precisionFactor + fractionalPartBigInt;
+
+    // If the integer part is negative, convert the fractional part to a negative number otherwise it will incorrectly be positive
+    if (integerPart[0] === "-") {
+      combinedValueBigInt = -combinedValueBigInt;
+    }
 
     // Return the BigUnit
     return new BigUnit(combinedValueBigInt, precision, name);
@@ -575,10 +680,8 @@ export class BigUnit {
     precision?: number,
     name?: string,
   ): BigUnit {
-    // throw if precision is not an integer
-    if (precision !== undefined && precision % 1 !== 0) {
-      throw new InvalidPrecisionError(precision);
-    }
+    // throw if precision is not a positive integer
+    this.validatePrecision(precision);
     // If the value is already a BigUnit, return it. If precision is provided, convert it to the given precision
     if (value instanceof BigUnit) {
       if (precision === undefined || precision === value.precision) {
@@ -612,10 +715,8 @@ export class BigUnitFactory {
     public precision: number,
     public name?: string,
   ) {
-    // throw if precision is not an integer
-    if (precision % 1 !== 0) {
-      throw new InvalidPrecisionError(precision);
-    }
+    // throw if precision is not a positive integer
+    BigUnit.validatePrecision(precision);
   }
 
   public from(value: BigUnitish): BigUnit {

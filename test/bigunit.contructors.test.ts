@@ -27,7 +27,14 @@ describe("BigUnit Class Constructor", () => {
     expect(createUnit).toThrow(InvalidPrecisionError);
   });
 
-  //TODO: Also needs a test for when negative precision is provided
+  test("should throw an error when a negative precision is provided", () => {
+    const value = 1000n; // bigint value
+    const precision = -2; // negative precision
+    const createUnit = () => new BigUnit(value, precision);
+
+    expect(createUnit).toThrow(InvalidPrecisionError);
+  });
+  
   //TODO: Should we also have a test for when name isn't provided?
 });
 
@@ -131,7 +138,6 @@ describe("fromBigInt method", () => {
 
     /*TODO missing tests for:
       fromValueString()
-      fromObject()
     */
   });
 
@@ -152,6 +158,13 @@ describe("fromBigInt method", () => {
       expect(bigUnitFromDecimalString).toBeInstanceOf(BigUnit);
       expect(bigUnitFromDecimalString.toString()).toBe(decimalString);
       expect(bigUnitFromDecimalString.precision).toBe(precision);
+
+      const bigUnitFromDecimalString2 = BigUnit.from("789.12", 24);
+
+      expect(bigUnitFromDecimalString2).toBeInstanceOf(BigUnit);
+      expect(bigUnitFromDecimalString2.value).toBe(
+        789120000000000000000000000n,
+      );
     });
 
     test("should convert BigInt to BigUnit with correct precision", () => {
@@ -185,6 +198,35 @@ describe("fromBigInt method", () => {
         BigUnit.from(invalidInput as any, precision);
 
       expect(fromInvalidInput).toThrow(InvalidValueTypeError);
+    });
+  });
+
+  describe("fromObject method", () => {
+    test("should create a new BigUnit instance from an object", () => {
+      const obj1 = {
+        value: "1000",
+        precision: 2,
+        name: "TestUnit",
+      };
+
+      const obj2 = {
+        value: "100000000000000000",
+        precision: 18
+      };
+
+      const unit = BigUnit.fromObject(obj1);
+
+      expect(unit).toBeInstanceOf(BigUnit);
+      expect(unit.value).toBe(BigInt(obj1.value));
+      expect(unit.precision).toBe(obj1.precision);
+      expect(unit.name).toBe(obj1.name);
+
+      const unit2 = BigUnit.fromObject(obj2);
+
+      expect(unit2).toBeInstanceOf(BigUnit);
+      expect(unit2.value).toBe(BigInt(obj2.value));
+      expect(unit2.precision).toBe(obj2.precision);
+      expect(unit2.name).toBeUndefined();
     });
   });
 });

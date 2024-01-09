@@ -54,10 +54,18 @@ describe("BigUnit Class Conversion and Formatting Methods", () => {
       const unit1 = new BigUnit(12345n, 2); // "123.45"
       const unit2 = new BigUnit(12345n, 3); // "12.345"
       const unit3 = new BigUnit(12345n, 0); // "12345" (zero precision)
+      const unit4 = new BigUnit(12345n, 5); // "0.12345"
 
       expect(unit1.toString()).toBe("123.45");
       expect(unit2.toString()).toBe("12.345");
       expect(unit3.toString()).toBe("12345");
+      expect(unit4.toString()).toBe("0.12345");
+    });
+
+    test("should correctly represent BigUnit as a string for negative numbers", () => {
+      const unit1 = BigUnit.from(-1234n, 8); // -0.00001234
+
+      expect(unit1.toString()).toBe("-0.00001234");
     });
   });
 
@@ -71,18 +79,73 @@ describe("BigUnit Class Conversion and Formatting Methods", () => {
   });
 
   describe("format method", () => {
-    //TODO: Unlikely to cause issues but should probably include a test for formatting to the same number of decimals as the units native precision
     test("should format BigUnit to a string with given precision", () => {
-      const unit = new BigUnit(12345n, 2); // 123.45
+      const unit1 = new BigUnit(12345n, 2); // 123.45
+      const unit2 = new BigUnit(12345n, 3); // 12.345
+      const unit3 = new BigUnit(12345n, 0); // 12345 (zero precision)
+      const unit4 = new BigUnit(-12345n, 1); // -1234.5
 
-      expect(unit.format(1)).toBe("123.5");
-      expect(unit.format(3)).toBe("123.450");
+      expect(unit1.format(1)).toBe("123.5"); //NOTE: I thought we always truncated but in this case it is rounding up
+      expect(unit1.format(3)).toBe("123.450");
+      expect(unit1.format(18)).toBe("123.450000000000000000");
+
+      expect(unit2.format(1)).toBe("12.3");
+      expect(unit2.format(4)).toBe("12.3450");
+      expect(unit2.format(10)).toBe("12.3450000000");
+
+      expect(unit3.format(0)).toBe("12345");
+      expect(unit3.format(5)).toBe("12345.00000");
+      expect(unit3.format(8)).toBe("12345.00000000");
+
+      expect(unit4.format(0)).toBe("-1235");
+      expect(unit4.format(1)).toBe("-1234.5");
+      expect(unit4.format(4)).toBe("-1234.5000");
+      expect(unit4.format(10)).toBe("-1234.5000000000");
+      expect(unit4.format(18)).toBe("-1234.500000000000000000");
+      expect(unit4.format(24)).toBe("-1234.500000000000000000000000");
     });
 
     test("should handle zero precision in format method", () => {
       const unit = new BigUnit(12345n, 2); // 123.45
 
       expect(unit.format(0)).toBe("123");
+    });
+
+    test("should handle rounding correctly", () => {
+      const unit1 = new BigUnit(12345n, 2); // 123.45
+      const unit2 = new BigUnit(12345n, 3); // 12.345
+      const unit3 = new BigUnit(12345n, 0); // 12345 (zero precision)
+
+      expect(unit1.format(1)).toBe("123.5");
+      expect(unit1.format(2)).toBe("123.45");
+      expect(unit1.format(3)).toBe("123.450");
+      expect(unit1.format(4)).toBe("123.4500");
+
+      expect(unit2.format(1)).toBe("12.3");
+      expect(unit2.format(2)).toBe("12.35");
+      expect(unit2.format(3)).toBe("12.345");
+      expect(unit2.format(4)).toBe("12.3450");
+
+      expect(unit3.format(0)).toBe("12345");
+      expect(unit3.format(1)).toBe("12345.0");
+      expect(unit3.format(2)).toBe("12345.00");
+      expect(unit3.format(3)).toBe("12345.000");
+    });
+  });
+
+  describe("toObject method", () => {
+    const value = 1000n; // bigint value
+    const precision = 2;
+    const name = "TestUnit";
+    const unit = new BigUnit(value, precision, name);
+    test("should return an object with the correct properties", () => {
+      const expectedObject = {
+        value: unit.toValueString(),
+        precision: unit.precision,
+        name: unit.name,
+      };
+
+      expect(unit.toObject()).toEqual(expectedObject);
     });
   });
 });

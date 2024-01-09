@@ -52,7 +52,8 @@ console.log(unit1.toString()); // Format as a decimal number
 console.log(unit2.format(2)); // Format as a string with 2 places after the decimal point
 console.log(unit3.toNumber()); // Output as a number
 console.log(unit3.toBigInt()); // Output the underlying bigint representation
-console.log(unit3.toJSON()); // Output a JSON representation
+console.log(unit3.toJSON()); // Output a serialised representation
+console.log(unit3.toObject()); // Output a DTO representation, useful for web services
 
 // Make several numbers of the same precision
 const BTC = new BigUnitFactory(8, "BTC");
