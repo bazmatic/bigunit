@@ -5,7 +5,9 @@ import {
   InvalidValueTypeError,
   MissingPrecisionError,
 } from "./errors";
-import { bigintAbs, bigintCloseTo, numberToDecimalString } from "./utils";
+import { bigintAbs, numberToDecimalString } from "./utils";
+
+export * as utils from "./utils";
 
 export interface IBigUnitObject {
   value: string;
