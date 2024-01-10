@@ -16,9 +16,6 @@ describe("BigUnit Class Methods", () => {
 
   const unit5 = new BigUnit(unitValue1, highPrecision);
   const unit6 = new BigUnit(unitValue2, highPrecision);
-  const unit7 = new BigUnit(unitValue3, highPrecision);
-  const unit8 = new BigUnit(unitValue4, highPrecision);
-
 
   describe("add method", () => {
     test("should add two BigUnit instances of the same precision", () => {
