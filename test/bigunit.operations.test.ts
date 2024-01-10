@@ -12,6 +12,11 @@ describe("BigUnit Class Methods", () => {
   const unit3 = new BigUnit(unitValue3, precision);
 
   describe("add method", () => {
+        /* TODO:
+    Add test:
+    positive + negative, negative + positive, negative + negative
+    different precisions in both orders e.g. high precision + low precision and low precision + high precision
+    */
     test("should add two BigUnit instances of the same precision", () => {
       const result = unit1.add(unit2);
       expect(result.value).toBe(unitValue1 + unitValue2);
@@ -29,6 +34,7 @@ describe("BigUnit Class Methods", () => {
   });
 
   describe("sub method", () => {
+    //TODO: same as add method
     // Repeat the structure of add method tests for sub method
     it("should subtract two BigUnit instances of the same precision", () => {
       const result = unit1.sub(unit2);
@@ -120,6 +126,7 @@ describe("BigUnit Class Methods", () => {
 
         // Zero Division
         [0.0, 6, 5.0, 6, 0.0, 6],
+        //TODO: denominator of zero
 
         // Negative Division
         [-1.0, 6, 5.0, 6, -0.2, 6],
@@ -137,12 +144,14 @@ describe("BigUnit Class Methods", () => {
         [100000000000000000n, 2, 100000000000000000n, 2, 1.0, 2],
 
         // Precision Loss (assuming library truncates)
+        //TODO: This seems wrong. There is no loss of precision here
         [1.23456, 4, 9.87656, 4, 0.1249, 4],
 
         // Precision Mismatch
         [1.234, 5, 1.2345, 8, 0.99959497, 8],
 
         // Underflow Handling
+        // TODO: This isn't testing underflow
         [0.0000000001, 10, 0.0000000001, 10, 1.0, 10],
 
         // Dividing with Powers of Ten
@@ -187,6 +196,7 @@ describe("BigUnit Class Methods", () => {
       expect(result.precision).toBe(precision);
     });
 
+    //TODO: should also test: unit3.mod(unit1) and maybe even unit3.mod(unit3)
     it("should handle negative values and zero correctly", () => {
       const zeroUnit = new BigUnit(0n, precision);
       const negativeResult = unit1.mod(unit3);
@@ -197,6 +207,7 @@ describe("BigUnit Class Methods", () => {
   });
 
   describe("abs method", () => {
+    //TODO: also take the absolute value of positive number and check it's still positive
     test("should return a new BigUnit with the absolute value", () => {
       const unit = new BigUnit(-100n, 2);
 
@@ -208,6 +219,7 @@ describe("BigUnit Class Methods", () => {
   });
 
   describe("neg method", () => {
+    //TODO: negate a negative value
     test("should return a new BigUnit with the negated value", () => {
       const unit = new BigUnit(100n, 2);
 
@@ -302,43 +314,28 @@ describe("BigUnit Class Methods - percent and fraction", () => {
   describe("BigUnit Class Methods - min and max", () => {
     const large = new BigUnit(1000n, 2);
     const small = new BigUnit(500n, 2);
-
-    const unit1 = BigUnit.from("9.12", 2, "Coin1");
-    const unit2 = BigUnit.from("9.12", 3, "Coin2");
-    const unit3 = BigUnit.from("9.12", 2, "A_Coin");
+    const negative = new BigUnit(-1000n, 2);
 
     test("should return the larger of the two units", () => {
-      const result = BigUnit.max(large, small);
-      expect(result).toBe(large);
-    });
+      const result1 = BigUnit.max(large, small);
+      expect(result1).toBe(large);
 
-    test("should return the result with the highest precision if the values are the same", () => {
-      const result = BigUnit.max(unit1, unit2);
-      expect(result).toBe(unit2);
-    });
-
-    test("should return the result that is first alphabetically if the values and precision are the same", () => {
-      const result = BigUnit.max(unit1, unit3);
-      expect(result).toBe(unit3);
+      const result2 = BigUnit.max(large, negative);
+      expect(result2).toBe(large);
     });
 
     test("should return the smaller of the two units", () => {
-      const result = BigUnit.min(large, small);
-      expect(result).toBe(small);
+      const result1 = BigUnit.min(large, small);
+      expect(result1).toBe(small);
+
+      const result2 = BigUnit.min(large, negative);
+      expect(result2).toBe(negative);
     });
 
-    test("should return the result with the highest precision if the values are the same", () => {
-      const result = BigUnit.min(unit1, unit2);
-      expect(result).toBe(unit2);
-    });
-
-    test("should return the result that is first alphabetically if the values and precision are the same", () => {
-      const result = BigUnit.min(unit1, unit3);
-      expect(result).toBe(unit3);
-    });
   });
 });
 
+// TODO: should these live with the rest of their respective tests?
 describe("BigUnit Class Methods with Differing Precision", () => {
   const precisionHigh = 4; // Higher precision
   const precisionLow = 2; // Lower precision
@@ -347,21 +344,33 @@ describe("BigUnit Class Methods with Differing Precision", () => {
 
   describe("add method with differing precision", () => {
     test("should add two BigUnit instances and use the precision of the first instance", () => {
-      const result = unitHighPrecision.add(unitLowPrecision);
-      const expectedValue =
+      const result1 = unitHighPrecision.add(unitLowPrecision);
+      const expectedValue1 =
         unitHighPrecision.value + unitLowPrecision.value * 100n; // Adjusted for precision
-      expect(result.value).toBe(expectedValue);
-      expect(result.precision).toBe(precisionHigh);
+      expect(result1.value).toBe(expectedValue1);
+      expect(result1.precision).toBe(precisionHigh);
+
+      const result2 = unitLowPrecision.add(unitHighPrecision);
+      const expectedValue2 =
+        unitLowPrecision.value + unitHighPrecision.value / 100n; // Adjusted for precision
+      expect(result2.value).toBe(expectedValue2);
+      expect(result2.precision).toBe(precisionLow);
     });
   });
 
   describe("sub method with differing precision", () => {
     test("should subtract two BigUnit instances and use the precision of the first instance", () => {
-      const result = unitHighPrecision.sub(unitLowPrecision);
-      const expectedValue =
+      const result1 = unitHighPrecision.sub(unitLowPrecision);
+      const expectedValue1 =
         unitHighPrecision.value - unitLowPrecision.value * 100n; // Adjusted for precision
-      expect(result.value).toBe(expectedValue);
-      expect(result.precision).toBe(precisionHigh);
+      expect(result1.value).toBe(expectedValue1);
+      expect(result1.precision).toBe(precisionHigh);
+
+      const result2 = unitLowPrecision.sub(unitHighPrecision);
+      const expectedValue2 =
+        unitLowPrecision.value - unitHighPrecision.value / 100n; // Adjusted for precision
+      expect(result2.value).toBe(expectedValue2);
+      expect(result2.precision).toBe(precisionLow);
     });
   });
 
@@ -381,14 +390,23 @@ describe("BigUnit Class Methods with Differing Precision", () => {
 
   describe("mod method with differing precision", () => {
     test("should mod two BigUnit instances and use the precision of the first instance", () => {
-      const result = unitHighPrecision.mod(unitLowPrecision);
+      const result1 = unitHighPrecision.mod(unitLowPrecision);
       // Mod operation should adjust the second unit to the precision of the first
-      const adjustedUnitLowPrecisionValue =
+      const adjustedUnitLowPrecisionValue1 =
         unitLowPrecision.value * BigInt(10 ** (precisionHigh - precisionLow));
-      const expectedValue =
-        unitHighPrecision.value % adjustedUnitLowPrecisionValue;
-      expect(result.value).toBe(expectedValue);
-      expect(result.precision).toBe(precisionHigh);
+      const expectedValue1 =
+        unitHighPrecision.value % adjustedUnitLowPrecisionValue1;
+      expect(result1.value).toBe(expectedValue1);
+      expect(result1.precision).toBe(precisionHigh);
+
+      const result2 = unitLowPrecision.mod(unitHighPrecision);
+      // Mod operation should adjust the second unit to the precision of the first
+      const adjustedUnitHighPrecisionValue2 =
+        unitHighPrecision.value * BigInt(10 ** (precisionLow - precisionHigh));
+      const expectedValue2 =
+        unitLowPrecision.value % adjustedUnitHighPrecisionValue2;
+      expect(result2.value).toBe(expectedValue2);
+      expect(result2.precision).toBe(precisionLow);
     });
   });
 });

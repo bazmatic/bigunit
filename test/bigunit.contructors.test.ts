@@ -17,6 +17,13 @@ describe("BigUnit Class Constructor", () => {
     expect(unit.value).toBe(value);
     expect(unit.precision).toBe(precision);
     expect(unit.name).toBe(name);
+
+    const namelessUnit = new BigUnit(value, precision);
+
+    expect(namelessUnit).toBeInstanceOf(BigUnit);
+    expect(namelessUnit.value).toBe(value);
+    expect(namelessUnit.precision).toBe(precision);
+    expect(namelessUnit.name).toBeUndefined();
   });
 
   test("should throw an error when non-integer precision is provided", () => {
@@ -34,41 +41,152 @@ describe("BigUnit Class Constructor", () => {
 
     expect(createUnit).toThrow(InvalidPrecisionError);
   });
+
+
 });
 
 describe("BigUnit Class Static Factory Methods", () => {
   const precision = 2;
+  const highPrecision = 24;
 
   describe("fromBigInt method", () => {
     test("should convert BigInt to BigUnit with correct precision", () => {
-      const bigIntValue = 12345n;
-      const bigUnit = BigUnit.fromBigInt(bigIntValue, precision);
+      const bigIntValue1 = 12345n;
+      const bigUnit1 = BigUnit.fromBigInt(bigIntValue1, precision);
 
-      expect(bigUnit).toBeInstanceOf(BigUnit);
-      expect(bigUnit.value).toBe(bigIntValue);
-      expect(bigUnit.precision).toBe(precision);
+      expect(bigUnit1).toBeInstanceOf(BigUnit);
+      expect(bigUnit1.value).toBe(bigIntValue1);
+      expect(bigUnit1.precision).toBe(precision);
+
+      const bigIntValue2 = -12345n;
+      const bigUnit2 = BigUnit.fromBigInt(bigIntValue2, precision);
+
+      expect(bigUnit2).toBeInstanceOf(BigUnit);
+      expect(bigUnit2.value).toBe(bigIntValue2);
+      expect(bigUnit2.precision).toBe(precision);
+
+      const bigIntValue3 = 12345n;
+      const bigUnit3 = BigUnit.fromBigInt(bigIntValue3, highPrecision);
+
+      expect(bigUnit3).toBeInstanceOf(BigUnit);
+      expect(bigUnit3.value).toBe(bigIntValue3);
+      expect(bigUnit3.precision).toBe(highPrecision);
     });
   });
 
   describe("fromNumber method", () => {
     test("should convert number to BigUnit with correct precision", () => {
-      const numberValue = 123.45;
-      const bigUnit = BigUnit.fromNumber(numberValue, precision);
+      const numberValue1 = 123.45;
+      const bigUnit1 = BigUnit.fromNumber(numberValue1, precision);
 
-      expect(bigUnit).toBeInstanceOf(BigUnit);
-      expect(bigUnit.toNumber()).toBeCloseTo(numberValue);
-      expect(bigUnit.precision).toBe(precision);
+      expect(bigUnit1).toBeInstanceOf(BigUnit);
+      expect(bigUnit1.toNumber()).toBeCloseTo(numberValue1);
+      expect(bigUnit1.precision).toBe(precision);
+
+      const numberValue2 = -123.45;
+      const bigUnit2 = BigUnit.fromNumber(numberValue2, precision);
+
+      expect(bigUnit2).toBeInstanceOf(BigUnit);
+      expect(bigUnit2.toNumber()).toBeCloseTo(numberValue2);
+      expect(bigUnit2.precision).toBe(precision);
+
+      const numberValue3 = 123;
+      const bigUnit3 = BigUnit.fromNumber(numberValue3, precision);
+
+      expect(bigUnit3).toBeInstanceOf(BigUnit);
+      expect(bigUnit3.toNumber()).toBeCloseTo(numberValue3);
+      expect(bigUnit3.precision).toBe(precision);
+
+      const numberValue4 = 0.12;
+      const bigUnit4 = BigUnit.fromNumber(numberValue4, precision);
+
+      expect(bigUnit4).toBeInstanceOf(BigUnit);
+      expect(bigUnit4.toNumber()).toBeCloseTo(numberValue4);
+      expect(bigUnit4.precision).toBe(precision);
+
+      const numberValue5 = 123.456789;
+      const bigUnit5 = BigUnit.fromNumber(numberValue5, precision);
+
+      expect(bigUnit5).toBeInstanceOf(BigUnit);
+      // Note numberValue5 exceeds precision, so it is truncated
+      expect(bigUnit5.toNumber()).toBe(123.45);
+      expect(bigUnit5.precision).toBe(precision);
+
+      const numberValue6 = 123.45;
+      const bigUnit6 = BigUnit.fromNumber(numberValue6, highPrecision);
+
+      expect(bigUnit6).toBeInstanceOf(BigUnit);
+      expect(bigUnit6.toNumber()).toBeCloseTo(numberValue6);
+      expect(bigUnit6.precision).toBe(highPrecision);
+
+      const numberValue7 = 1.123456789012345678901234;
+      const bigUnit7 = BigUnit.fromNumber(numberValue7, highPrecision);
+
+      expect(bigUnit7).toBeInstanceOf(BigUnit);
+      expect(bigUnit7.toNumber()).toBeCloseTo(numberValue7);
+      expect(bigUnit7.precision).toBe(highPrecision);
     });
   });
 
   describe("fromDecimalString method", () => {
     test("should convert a decimal string to BigUnit with correct precision", () => {
-      const decimalString = "123.45";
-      const bigUnit = BigUnit.fromDecimalString(decimalString, precision);
+      const decimalString1 = "123.45";
+      const bigUnit1 = BigUnit.fromDecimalString(decimalString1, precision);
 
-      expect(bigUnit).toBeInstanceOf(BigUnit);
-      expect(bigUnit.toString()).toBe(decimalString);
-      expect(bigUnit.precision).toBe(precision);
+      expect(bigUnit1).toBeInstanceOf(BigUnit);
+      expect(bigUnit1.toString()).toBe(decimalString1);
+      expect(bigUnit1.precision).toBe(precision);
+
+      const decimalString2 = "-123.45";
+      const bigUnit2 = BigUnit.fromDecimalString(decimalString2, precision);
+
+      expect(bigUnit2).toBeInstanceOf(BigUnit);
+      expect(bigUnit2.toString()).toBe(decimalString2);
+      expect(bigUnit2.precision).toBe(precision);
+
+      const decimalString3 = "123";
+      const bigUnit3 = BigUnit.fromDecimalString(decimalString3, precision);
+
+      expect(bigUnit3).toBeInstanceOf(BigUnit);
+      expect(bigUnit3.toString()).toBe("123.00");
+      expect(bigUnit3.precision).toBe(precision);
+
+      const decimalString4 = "0.12";
+      const bigUnit4 = BigUnit.fromDecimalString(decimalString4, precision);
+
+      expect(bigUnit4).toBeInstanceOf(BigUnit);
+      expect(bigUnit4.toString()).toBe(decimalString4);
+      expect(bigUnit4.precision).toBe(precision);
+
+      const decimalString5 = "123.456789";
+      const bigUnit5 = BigUnit.fromDecimalString(decimalString5, precision);
+
+      expect(bigUnit5).toBeInstanceOf(BigUnit);
+      // Note decimalString5 exceeds precision, so it is truncated
+      expect(bigUnit5.toString()).toBe("123.45");
+      expect(bigUnit5.precision).toBe(precision);
+
+      const decimalString6 = "123.45";
+      const bigUnit6 = BigUnit.fromDecimalString(decimalString6, highPrecision);
+
+      expect(bigUnit6).toBeInstanceOf(BigUnit);
+      // Note the high precision
+      expect(bigUnit6.toString()).toBe("123.450000000000000000000000");
+      expect(bigUnit6.precision).toBe(highPrecision);
+
+      const decimalString7 = "1.123456789012345678901234";
+      const bigUnit7 = BigUnit.fromDecimalString(decimalString7, highPrecision);
+
+      expect(bigUnit7).toBeInstanceOf(BigUnit);
+      expect(bigUnit7.toString()).toBe(decimalString7);
+      expect(bigUnit7.precision).toBe(highPrecision);
+
+      const decimalString8 = "00012.123";
+      const bigUnit8 = BigUnit.fromDecimalString(decimalString8, precision);
+
+      expect(bigUnit8).toBeInstanceOf(BigUnit);
+      expect(bigUnit8.toString()).toBe("12.12");
+      expect(bigUnit8.precision).toBe(precision);
     });
 
     test("should handle decimal strings with leading zeros in the fractional part correctly", () => {
@@ -84,15 +202,25 @@ describe("BigUnit Class Static Factory Methods", () => {
     });
 
     test("should handle decimal strings without fractional part correctly", () => {
-      const decimalString = "100.";
       const precision = 4;
-      const expectedValue = BigInt(100 * 10 ** precision); // Expected: 100 * 10^4
 
-      const bigUnit = BigUnit.fromDecimalString(decimalString, precision);
+      const decimalString1 = "100.";
+      const expectedValue1 = BigInt(100 * 10 ** precision); // Expected: 100 * 10^4
 
-      expect(bigUnit).toBeInstanceOf(BigUnit);
-      expect(bigUnit.value).toBe(expectedValue);
-      expect(bigUnit.precision).toBe(precision);
+      const bigUnit1 = BigUnit.fromDecimalString(decimalString1, precision);
+
+      expect(bigUnit1).toBeInstanceOf(BigUnit);
+      expect(bigUnit1.value).toBe(expectedValue1);
+      expect(bigUnit1.precision).toBe(precision);
+
+      const decimalString2 = ".1234";
+      const expectedValue2 = BigInt(1234); // Expected: 1234
+
+      const bigUnit2 = BigUnit.fromDecimalString(decimalString2, precision);
+
+      expect(bigUnit2).toBeInstanceOf(BigUnit);
+      expect(bigUnit2.value).toBe(expectedValue2);
+      expect(bigUnit2.precision).toBe(precision);
     });
 
     test("should handle decimal strings with fractional part shorter than precision correctly", () => {
@@ -117,6 +245,31 @@ describe("BigUnit Class Static Factory Methods", () => {
       expect(bigUnit).toBeInstanceOf(BigUnit);
       expect(bigUnit.value).toBe(expectedValue);
       expect(bigUnit.precision).toBe(precision);
+    });
+
+    describe("fromValueString method", () => {
+      test("should create a BigUnit instance with the correct value and precision", () => {
+        const valueString = "10000";
+        const precision = 2;
+        const name = "Test";
+        const result = BigUnit.fromValueString(valueString, precision, name);
+        const expectedValue = 10000n;
+  
+        expect(result.value).toBe(expectedValue);
+        expect(result.precision).toBe(precision);
+        expect(result.name).toBe(name);
+      });
+  
+      test("should create a BigUnit instance with the default name if name is not provided", () => {
+        const valueString = "10000";
+        const precision = 2;
+        const result = BigUnit.fromValueString(valueString, precision);
+        const expectedValue = 10000n;
+  
+        expect(result.value).toBe(expectedValue);
+        expect(result.precision).toBe(precision);
+        expect(result.name).toBeUndefined();
+      });
     });
   });
 
