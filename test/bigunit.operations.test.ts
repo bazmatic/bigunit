@@ -12,7 +12,7 @@ describe("BigUnit Class Methods", () => {
   const unit3 = new BigUnit(unitValue3, precision);
 
   describe("add method", () => {
-        /* TODO:
+    /* TODO:
     Add test:
     positive + negative, negative + positive, negative + negative
     different precisions in both orders e.g. high precision + low precision and low precision + high precision
@@ -331,7 +331,6 @@ describe("BigUnit Class Methods - percent and fraction", () => {
       const result2 = BigUnit.min(large, negative);
       expect(result2).toBe(negative);
     });
-
   });
 });
 
@@ -345,7 +344,7 @@ describe("BigUnit Class Methods with Differing Precision", () => {
   describe("add method with differing precision", () => {
     test("should add two BigUnit instances and use the precision of the first instance", () => {
       const expectedValue =
-      unitHighPrecision.value + unitLowPrecision.value * 100n; // Adjusted for precision
+        unitHighPrecision.value + unitLowPrecision.value * 100n; // Adjusted for precision
 
       const result1 = unitHighPrecision.add(unitLowPrecision);
       expect(result1.value).toBe(expectedValue);
@@ -360,7 +359,7 @@ describe("BigUnit Class Methods with Differing Precision", () => {
   describe("sub method with differing precision", () => {
     test("should subtract two BigUnit instances and use the precision of the first instance", () => {
       const expectedValue =
-      unitHighPrecision.value - unitLowPrecision.value * 100n; // Adjusted for precision
+        unitHighPrecision.value - unitLowPrecision.value * 100n; // Adjusted for precision
 
       const result1 = unitHighPrecision.sub(unitLowPrecision);
       expect(result1.value).toBe(expectedValue);

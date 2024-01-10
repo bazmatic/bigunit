@@ -41,8 +41,6 @@ describe("BigUnit Class Constructor", () => {
 
     expect(createUnit).toThrow(InvalidPrecisionError);
   });
-
-
 });
 
 describe("BigUnit Class Static Factory Methods", () => {
@@ -254,18 +252,18 @@ describe("BigUnit Class Static Factory Methods", () => {
         const name = "Test";
         const result = BigUnit.fromValueString(valueString, precision, name);
         const expectedValue = 10000n;
-  
+
         expect(result.value).toBe(expectedValue);
         expect(result.precision).toBe(precision);
         expect(result.name).toBe(name);
       });
-  
+
       test("should create a BigUnit instance with the default name if name is not provided", () => {
         const valueString = "10000";
         const precision = 2;
         const result = BigUnit.fromValueString(valueString, precision);
         const expectedValue = 10000n;
-  
+
         expect(result.value).toBe(expectedValue);
         expect(result.precision).toBe(precision);
         expect(result.name).toBeUndefined();
@@ -343,7 +341,7 @@ describe("BigUnit Class Static Factory Methods", () => {
 
       const obj2 = {
         value: "100000000000000000",
-        precision: 18
+        precision: 18,
       };
 
       const unit = BigUnit.fromObject(obj1);

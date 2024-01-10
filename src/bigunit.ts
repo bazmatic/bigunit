@@ -660,7 +660,7 @@ export class BigUnit {
     if (integerPart[0] === "-") {
       // Combine the integer and fractional parts
       let combinedValueBigInt =
-      integerPartBigInt * precisionFactor - fractionalPartBigInt;
+        integerPartBigInt * precisionFactor - fractionalPartBigInt;
 
       // Return the BigUnit
       return new BigUnit(combinedValueBigInt, precision, name);

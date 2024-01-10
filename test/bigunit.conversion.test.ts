@@ -45,8 +45,8 @@ describe("BigUnit Class Conversion and Formatting Methods", () => {
 
       // Here both integer and decimal portions are above max_safe_integer
       const precision2 = 18;
-      const unsafeValue2 = safeValue * BigInt(1000000000000000000000000000000000000); // An unsafe bigint value above the max safe integer
-
+      const unsafeValue2 =
+        safeValue * BigInt(1000000000000000000000000000000000000); // An unsafe bigint value above the max safe integer
 
       const unsafeUnit2 = new BigUnit(unsafeValue2, precision2);
       const valueString2 = unsafeValue2.toString();
@@ -60,9 +60,6 @@ describe("BigUnit Class Conversion and Formatting Methods", () => {
         10 ** (precision2 - (valueString2.length - safeDigits2));
 
       expect(unsafeUnit2.toNumber()).toBe(expectedNumber2);
-
-
-
     });
   });
 
