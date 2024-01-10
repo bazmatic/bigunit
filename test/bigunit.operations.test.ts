@@ -4,42 +4,71 @@ import { bigintCloseTo } from "../src/utils";
 
 describe("BigUnit Class Methods", () => {
   const precision = 2;
+  const highPrecision = 10;
   const unitValue1 = 1000n;
   const unitValue2 = 500n;
   const unitValue3 = -500n;
+  const unitValue4 = -1000n;
   const unit1 = new BigUnit(unitValue1, precision);
   const unit2 = new BigUnit(unitValue2, precision);
   const unit3 = new BigUnit(unitValue3, precision);
+  const unit4 = new BigUnit(unitValue4, precision);
+
+  const unit5 = new BigUnit(unitValue1, highPrecision);
+  const unit6 = new BigUnit(unitValue2, highPrecision);
+  const unit7 = new BigUnit(unitValue3, highPrecision);
+  const unit8 = new BigUnit(unitValue4, highPrecision);
+
 
   describe("add method", () => {
-    /* TODO:
-    Add test:
-    positive + negative, negative + positive, negative + negative
-    different precisions in both orders e.g. high precision + low precision and low precision + high precision
-    */
     test("should add two BigUnit instances of the same precision", () => {
-      const result = unit1.add(unit2);
-      expect(result.value).toBe(unitValue1 + unitValue2);
-      expect(result.precision).toBe(precision);
+      const result1 = unit1.add(unit2);
+      expect(result1.value).toBe(unitValue1 + unitValue2);
+      expect(result1.precision).toBe(precision);
+    });
+
+    test("should add two BigUnit instances of differing precision", () => {
+      const result1 = unit5.add(unit6);
+      expect(result1.value).toBe(unitValue1 + unitValue2);
+      expect(result1.precision).toBe(highPrecision);
+
+      const result2 = unit6.add(unit5);
+      expect(result2.value).toBe(unitValue2 + unitValue1);
+      expect(result2.precision).toBe(highPrecision);
     });
 
     test("should handle negative values and zero correctly", () => {
       const zeroUnit = new BigUnit(0n, precision);
-      const negativeResult = unit1.add(unit3);
+      const negativeResult1 = unit1.add(unit3);
       const zeroResult = unit1.add(zeroUnit);
 
-      expect(negativeResult.value).toBe(unitValue1 + unitValue3);
+      expect(negativeResult1.value).toBe(unitValue1 + unitValue3);
       expect(zeroResult.value).toBe(unitValue1);
+
+      const negativeResult2 = unit3.add(unit4)
+      expect(negativeResult2.value).toBe(unitValue3 + unitValue4);
+
+      const negativeResult3 = unit3.add(unit1)
+      expect(negativeResult3.value).toBe(unitValue3 + unitValue1);
     });
   });
 
   describe("sub method", () => {
-    //TODO: same as add method
     // Repeat the structure of add method tests for sub method
     it("should subtract two BigUnit instances of the same precision", () => {
       const result = unit1.sub(unit2);
       expect(result.value).toBe(unitValue1 - unitValue2);
       expect(result.precision).toBe(precision);
+    });
+
+    it("should subtract two BigUnit instances of the differing precision", () => {
+      const result1 = unit5.sub(unit6);
+      expect(result1.value).toBe(unitValue1 - unitValue2);
+      expect(result1.precision).toBe(highPrecision);
+
+      const result2 = unit6.sub(unit5);
+      expect(result2.value).toBe(unitValue2 - unitValue1);
+      expect(result2.precision).toBe(highPrecision);
     });
 
     it("should handle negative values and zero correctly", () => {
@@ -49,6 +78,12 @@ describe("BigUnit Class Methods", () => {
 
       expect(negativeResult.value).toBe(unitValue1 - unitValue3);
       expect(zeroResult.value).toBe(unitValue1);
+
+      const negativeResult2 = unit3.sub(unit4)
+      expect(negativeResult2.value).toBe(unitValue3 - unitValue4);
+
+      const negativeResult3 = unit3.sub(unit1)
+      expect(negativeResult3.value).toBe(unitValue3 - unitValue1);
     });
   });
 
@@ -126,7 +161,6 @@ describe("BigUnit Class Methods", () => {
 
         // Zero Division
         [0.0, 6, 5.0, 6, 0.0, 6],
-        //TODO: denominator of zero
 
         // Negative Division
         [-1.0, 6, 5.0, 6, -0.2, 6],
@@ -144,14 +178,14 @@ describe("BigUnit Class Methods", () => {
         [100000000000000000n, 2, 100000000000000000n, 2, 1.0, 2],
 
         // Precision Loss (assuming library truncates)
-        //TODO: This seems wrong. There is no loss of precision here
+        // 1.23456 ÷ 9.87656 = 0.124998988
         [1.23456, 4, 9.87656, 4, 0.1249, 4],
 
         // Precision Mismatch
         [1.234, 5, 1.2345, 8, 0.99959497, 8],
 
-        // Underflow Handling
-        // TODO: This isn't testing underflow
+        // JS math underflow handling
+        // This ensures we do not lose precision when dividing very small numbers
         [0.0000000001, 10, 0.0000000001, 10, 1.0, 10],
 
         // Dividing with Powers of Ten
@@ -196,37 +230,51 @@ describe("BigUnit Class Methods", () => {
       expect(result.precision).toBe(precision);
     });
 
-    //TODO: should also test: unit3.mod(unit1) and maybe even unit3.mod(unit3)
     it("should handle negative values and zero correctly", () => {
       const zeroUnit = new BigUnit(0n, precision);
       const negativeResult = unit1.mod(unit3);
       expect(() => unit1.mod(zeroUnit)).toThrow();
 
       expect(negativeResult.value).toBe(unitValue1 % unitValue3);
+
+      const negativeResult2 = unit3.mod(unit1)
+      expect(negativeResult2.value).toBe(unitValue3 % unitValue1);
     });
   });
 
   describe("abs method", () => {
-    //TODO: also take the absolute value of positive number and check it's still positive
     test("should return a new BigUnit with the absolute value", () => {
-      const unit = new BigUnit(-100n, 2);
+      const unit1 = new BigUnit(-100n, 2);
 
-      const result = unit.abs();
+      const result1 = unit1.abs();
 
-      expect(result.value).toBe(100n);
-      expect(result.precision).toBe(2);
+      expect(result1.value).toBe(100n);
+      expect(result1.precision).toBe(2);
+
+      const unit2 = new BigUnit(100n, 2);
+
+      const result2 = unit2.abs();
+
+      expect(result2.value).toBe(100n);
+      expect(result2.precision).toBe(2);
     });
   });
 
   describe("neg method", () => {
-    //TODO: negate a negative value
     test("should return a new BigUnit with the negated value", () => {
-      const unit = new BigUnit(100n, 2);
+      const unit1 = new BigUnit(100n, 2);
 
-      const result = unit.neg();
+      const result1 = unit1.neg();
 
-      expect(result.value).toBe(-100n);
-      expect(result.precision).toBe(2);
+      expect(result1.value).toBe(-100n);
+      expect(result1.precision).toBe(2);
+
+      const unit2 = new BigUnit(-100n, 2);
+
+      const result2 = unit2.neg();
+
+      expect(result2.value).toBe(100n);
+      expect(result2.precision).toBe(2);
     });
   });
 });
