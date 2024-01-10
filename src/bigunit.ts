@@ -654,14 +654,21 @@ export class BigUnit {
     // Convert the padded fractional part to a bigint
     const fractionalPartBigInt = BigInt(paddedFractionalPart);
 
+    // If the integer part is negative, subtract the fractional part from the integer part otherwise it will incorrectly be positive
+    // NOTE: We use string comparison here rather then something like "integerPartBigInt < 0" because the integerPart for negative greater then "-1.00" will be "-0" (eg -0.123)
+    // which will miss the negative check
+    if (integerPart[0] === "-") {
+      // Combine the integer and fractional parts
+      let combinedValueBigInt =
+      integerPartBigInt * precisionFactor - fractionalPartBigInt;
+
+      // Return the BigUnit
+      return new BigUnit(combinedValueBigInt, precision, name);
+    }
+
     // Combine the integer and fractional parts
     let combinedValueBigInt =
       integerPartBigInt * precisionFactor + fractionalPartBigInt;
-
-    // If the integer part is negative, convert the fractional part to a negative number otherwise it will incorrectly be positive
-    if (integerPart[0] === "-") {
-      combinedValueBigInt = -combinedValueBigInt;
-    }
 
     // Return the BigUnit
     return new BigUnit(combinedValueBigInt, precision, name);

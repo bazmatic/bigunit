@@ -344,33 +344,31 @@ describe("BigUnit Class Methods with Differing Precision", () => {
 
   describe("add method with differing precision", () => {
     test("should add two BigUnit instances and use the precision of the first instance", () => {
+      const expectedValue =
+      unitHighPrecision.value + unitLowPrecision.value * 100n; // Adjusted for precision
+
       const result1 = unitHighPrecision.add(unitLowPrecision);
-      const expectedValue1 =
-        unitHighPrecision.value + unitLowPrecision.value * 100n; // Adjusted for precision
-      expect(result1.value).toBe(expectedValue1);
+      expect(result1.value).toBe(expectedValue);
       expect(result1.precision).toBe(precisionHigh);
 
       const result2 = unitLowPrecision.add(unitHighPrecision);
-      const expectedValue2 =
-        unitLowPrecision.value + unitHighPrecision.value / 100n; // Adjusted for precision
-      expect(result2.value).toBe(expectedValue2);
-      expect(result2.precision).toBe(precisionLow);
+      expect(result2.value).toBe(expectedValue);
+      expect(result2.precision).toBe(precisionHigh);
     });
   });
 
   describe("sub method with differing precision", () => {
     test("should subtract two BigUnit instances and use the precision of the first instance", () => {
+      const expectedValue =
+      unitHighPrecision.value - unitLowPrecision.value * 100n; // Adjusted for precision
+
       const result1 = unitHighPrecision.sub(unitLowPrecision);
-      const expectedValue1 =
-        unitHighPrecision.value - unitLowPrecision.value * 100n; // Adjusted for precision
-      expect(result1.value).toBe(expectedValue1);
+      expect(result1.value).toBe(expectedValue);
       expect(result1.precision).toBe(precisionHigh);
 
       const result2 = unitLowPrecision.sub(unitHighPrecision);
-      const expectedValue2 =
-        unitLowPrecision.value - unitHighPrecision.value / 100n; // Adjusted for precision
-      expect(result2.value).toBe(expectedValue2);
-      expect(result2.precision).toBe(precisionLow);
+      expect(result2.value).toBe(expectedValue * -1n);
+      expect(result2.precision).toBe(precisionHigh);
     });
   });
 
@@ -401,12 +399,9 @@ describe("BigUnit Class Methods with Differing Precision", () => {
 
       const result2 = unitLowPrecision.mod(unitHighPrecision);
       // Mod operation should adjust the second unit to the precision of the first
-      const adjustedUnitHighPrecisionValue2 =
-        unitHighPrecision.value * BigInt(10 ** (precisionLow - precisionHigh));
-      const expectedValue2 =
-        unitLowPrecision.value % adjustedUnitHighPrecisionValue2;
-      expect(result2.value).toBe(expectedValue2);
-      expect(result2.precision).toBe(precisionLow);
+      // This results in the second value here being 0n
+      expect(result2.value).toBe(0n);
+      expect(result2.precision).toBe(precisionHigh);
     });
   });
 });

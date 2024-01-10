@@ -1,10 +1,6 @@
 import { BigUnit } from "../src/bigunit";
 
 describe("BigUnit Class Conversion and Formatting Methods", () => {
-    /*TODO: All methods should include tests for:
-    Negative numbers
-    Values between 0 and 1. e.g. 12345n with 6 units of precision aka 0.012345
-  */
   describe("toNumber method", () => {
     test("should correctly convert BigUnit instances to numbers for various precisions", () => {
       const unit1 = new BigUnit(12345n, 2); // 123.45
