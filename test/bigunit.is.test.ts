@@ -11,8 +11,20 @@ describe("BigUnit Class State Methods", () => {
     });
 
     test("should return false for a non-zero value", () => {
-      const nonZeroUnit = new BigUnit(1000n, precision);
-      expect(nonZeroUnit.isZero()).toBe(false);
+      const nonZeroUnit1 = new BigUnit(1000n, precision);
+      expect(nonZeroUnit1.isZero()).toBe(false);
+
+      const nonZeroUnit2 = new BigUnit(-1000n, precision);
+      expect(nonZeroUnit2.isZero()).toBe(false);
+
+      const nonZeroUnit3 = BigUnit.from("0.01", precision);
+      expect(nonZeroUnit3.isZero()).toBe(false);
+
+      const nonZeroUnit4 = BigUnit.from("-0.01", precision);
+      expect(nonZeroUnit4.isZero()).toBe(false);
+
+      const nonZeroUnit5 = BigUnit.from("-1.01", precision);
+      expect(nonZeroUnit5.isZero()).toBe(false);
     });
   });
 
@@ -20,6 +32,9 @@ describe("BigUnit Class State Methods", () => {
     test("should return true for a positive value", () => {
       const positiveUnit1 = new BigUnit(1000n, precision);
       expect(positiveUnit1.isPositive()).toBe(true);
+
+      const positiveUnit2 = BigUnit.from("0.01", precision);
+      expect(positiveUnit2.isPositive()).toBe(true);
     });
 
     test("should return false for zero value", () => {
