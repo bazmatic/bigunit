@@ -41,8 +41,6 @@ describe("BigUnit Class Constructor", () => {
 
     expect(createUnit).toThrow(InvalidPrecisionError);
   });
-  
-  //TODO: Should we also have a test for when name isn't provided?
 });
 
 describe("BigUnit Class Static Factory Methods", () => {
@@ -202,7 +200,6 @@ describe("BigUnit Class Static Factory Methods", () => {
       expect(bigUnit8.toString()).toBe("12.12");
       expect(bigUnit8.precision).toBe(precision);
     });
-    //TODO test for leading zeros in integer part for fromDecimalString() e.g. 00012.123
 
     test("should handle decimal strings with leading zeros in the fractional part correctly", () => {
       const decimalString = "100.0123";
@@ -237,7 +234,6 @@ describe("BigUnit Class Static Factory Methods", () => {
       expect(bigUnit2.value).toBe(expectedValue2);
       expect(bigUnit2.precision).toBe(precision);
     });
-    //TODO: add test for decimal strings without an integer part e.g. ".1234"
 
     test("should handle decimal strings with fractional part shorter than precision correctly", () => {
       const decimalString = "100.1";
@@ -262,10 +258,6 @@ describe("BigUnit Class Static Factory Methods", () => {
       expect(bigUnit.value).toBe(expectedValue);
       expect(bigUnit.precision).toBe(precision);
     });
-
-    /*TODO missing tests for:
-      fromValueString()
-    */
 
     describe("fromValueString method", () => {
       test("should create a BigUnit instance with the correct value and precision", () => {

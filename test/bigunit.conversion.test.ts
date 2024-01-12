@@ -24,14 +24,12 @@ describe("BigUnit Class Conversion and Formatting Methods", () => {
       const highPrecision = 20; // A precision that would make the value very small
       const verySmallUnit = new BigUnit(verySmallValue, highPrecision);
       const expectedNumber = Number(verySmallValue) / 10 ** highPrecision;
-      //TODO: I think we chose to preference explicitly defining values rather than calculating them like is done here with expectedNumber
 
       expect(verySmallUnit.toNumber()).toBe(expectedNumber);
       expect(verySmallUnit.toNumber()).toBeGreaterThan(0);
     });
 
     test("should correctly convert an unsafe BigUnit value to a number, with truncation", () => {
-      //TODO: because this BigUnit has a precision of 2, both the integer and decimal portions of the number remain below the max_safe_integer limit. I would like to see a test where both integer and decimal portions are above max_safe_integer
       const precision1 = 2;
       const safeValue = BigInt(Number.MAX_SAFE_INTEGER - 1); // A safe bigint value just below the max safe integer
       const unsafeValue1 = safeValue * BigInt(10); // An unsafe bigint value above the max safe integer
@@ -107,7 +105,7 @@ describe("BigUnit Class Conversion and Formatting Methods", () => {
       const unit3 = new BigUnit(12345n, 0); // 12345 (zero precision)
       const unit4 = new BigUnit(-12345n, 1); // -1234.5
 
-      expect(unit1.format(1)).toBe("123.5"); //NOTE: I thought we always truncated but in this case it is rounding up
+      expect(unit1.format(1)).toBe("123.5");
       expect(unit1.format(3)).toBe("123.450");
       expect(unit1.format(18)).toBe("123.450000000000000000");
 

@@ -18,18 +18,13 @@ describe("BigUnit Class Methods", () => {
   const unit6 = new BigUnit(unitValue2, highPrecision);
 
   describe("add method", () => {
-    /* TODO:
-    Add test:
-    positive + negative, negative + positive, negative + negative
-    different precisions in both orders e.g. high precision + low precision and low precision + high precision
-    */
     test("should add two BigUnit instances of the same precision", () => {
       const result1 = unit1.add(unit2);
       expect(result1.value).toBe(unitValue1 + unitValue2);
       expect(result1.precision).toBe(precision);
     });
 
-    test("should add two BigUnit instances of differing precision", () => {
+    test("should add two BigUnit instances of differing precision", () => {//TODO: unit5 and unit6 both have the same precision...
       const result1 = unit5.add(unit6);
       expect(result1.value).toBe(unitValue1 + unitValue2);
       expect(result1.precision).toBe(highPrecision);
@@ -57,14 +52,13 @@ describe("BigUnit Class Methods", () => {
 
   describe("sub method", () => {
     // Repeat the structure of add method tests for sub method
-    //TODO: same as add method
     it("should subtract two BigUnit instances of the same precision", () => {
       const result = unit1.sub(unit2);
       expect(result.value).toBe(unitValue1 - unitValue2);
       expect(result.precision).toBe(precision);
     });
 
-    it("should subtract two BigUnit instances of the differing precision", () => {
+    it("should subtract two BigUnit instances of the differing precision", () => {//TODO: unit5 and unit6 both have the same precision...
       const result1 = unit5.sub(unit6);
       expect(result1.value).toBe(unitValue1 - unitValue2);
       expect(result1.precision).toBe(highPrecision);
@@ -233,15 +227,15 @@ describe("BigUnit Class Methods", () => {
   });
 
   describe("mod method", () => {
-    // Repeat the structure of add method tests for mod method
-    it("should mod two BigUnit instances of the same precision", () => {
+    // Repeat the structure of add method tests for mod method  TODO: missing new tests that were added to add and sub methods
+    it("should mod two BigUnit instances of the same precision", () => {//TODO: TBH these values are really bad for testing moduli. I would strongly advocate for using values that better test these functions
       const result = unit1.mod(unit2);
 
       expect(result.value).toBe(unitValue1 % unitValue2);
       expect(result.precision).toBe(precision);
     });
 
-    it("should handle negative values and zero correctly", () => {
+    it("should handle negative values and zero correctly", () => {//TODO: not technically wrong but the statements in this test should be rearranged
       const zeroUnit = new BigUnit(0n, precision);
       const negativeResult = unit1.mod(unit3);
 
@@ -269,7 +263,6 @@ describe("BigUnit Class Methods", () => {
       expect(result2.value).toBe(100n);
       expect(result2.precision).toBe(2);
     });
-    //TODO: also take the absolute value of positive number and check it's still positive
   });
 
   describe("neg method", () => {
@@ -288,7 +281,6 @@ describe("BigUnit Class Methods", () => {
       expect(result2.value).toBe(100n);
       expect(result2.precision).toBe(2);
     });
-    //TODO: negate a negative value
   });
 });
 

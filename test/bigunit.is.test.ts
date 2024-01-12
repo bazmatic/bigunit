@@ -11,7 +11,6 @@ describe("BigUnit Class State Methods", () => {
     });
 
     test("should return false for a non-zero value", () => {
-      //TODO: negative, positive decimal less than one, negative decimal greater than one
       const nonZeroUnit1 = new BigUnit(1000n, precision);
       expect(nonZeroUnit1.isZero()).toBe(false);
 
@@ -30,7 +29,6 @@ describe("BigUnit Class State Methods", () => {
   });
 
   describe("isPositive method", () => {
-    //TODO: positive decimal less than one
     test("should return true for a positive value", () => {
       const positiveUnit1 = new BigUnit(1000n, precision);
       expect(positiveUnit1.isPositive()).toBe(true);
