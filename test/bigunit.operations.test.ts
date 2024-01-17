@@ -16,6 +16,7 @@ describe("BigUnit Class Methods", () => {
 
   const unit5 = new BigUnit(unitValue1, highPrecision);
   const unit6 = new BigUnit(unitValue2, highPrecision);
+  const unit7 = new BigUnit(unitValue2, precision);
 
   describe("add method", () => {
     test("should add two BigUnit instances of the same precision", () => {
@@ -25,12 +26,12 @@ describe("BigUnit Class Methods", () => {
     });
 
     test("should add two BigUnit instances of differing precision", () => {
-      const result1 = unit5.add(unit6);
-      expect(result1.value).toBe(unitValue1 + unitValue2);
+      const result1 = unit5.add(unit7);
+      expect(result1.value).toBe(50000001000n);
       expect(result1.precision).toBe(highPrecision);
 
-      const result2 = unit6.add(unit5);
-      expect(result2.value).toBe(unitValue2 + unitValue1);
+      const result2 = unit7.add(unit6);
+      expect(result2.value).toBe(50000000500n);
       expect(result2.precision).toBe(highPrecision);
     });
 
@@ -59,12 +60,12 @@ describe("BigUnit Class Methods", () => {
     });
 
     it("should subtract two BigUnit instances of the differing precision", () => {
-      const result1 = unit5.sub(unit6);
-      expect(result1.value).toBe(unitValue1 - unitValue2);
+      const result1 = unit5.sub(unit7);
+      expect(result1.value).toBe(-49999999000n);
       expect(result1.precision).toBe(highPrecision);
 
-      const result2 = unit6.sub(unit5);
-      expect(result2.value).toBe(unitValue2 - unitValue1);
+      const result2 = unit7.sub(unit6);
+      expect(result2.value).toBe(49999999500n);
       expect(result2.precision).toBe(highPrecision);
     });
 
@@ -220,7 +221,6 @@ describe("BigUnit Class Methods", () => {
   });
 
   describe("mod method", () => {
-    // Repeat the structure of add method tests for mod method
     it("should mod two BigUnit instances of the same precision", () => {
       const result = unit1.mod(unit2);
       expect(result.value).toBe(unitValue1 % unitValue2);
@@ -236,6 +236,16 @@ describe("BigUnit Class Methods", () => {
 
       const negativeResult2 = unit3.mod(unit1)
       expect(negativeResult2.value).toBe(unitValue3 % unitValue1);
+    });
+
+    it("should mod two BigUnit instances of the differing precision", () => {
+      const result1 = unit5.mod(unit7);
+      expect(result1.value).toBe(1000n);
+      expect(result1.precision).toBe(highPrecision);
+
+      const result2 = unit7.mod(unit6);
+      expect(result2.value).toBe(0n);
+      expect(result2.precision).toBe(highPrecision);
     });
   });
 
