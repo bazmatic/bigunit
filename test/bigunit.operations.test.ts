@@ -43,10 +43,10 @@ describe("BigUnit Class Methods", () => {
       expect(negativeResult1.value).toBe(unitValue1 + unitValue3);
       expect(zeroResult.value).toBe(unitValue1);
 
-      const negativeResult2 = unit3.add(unit4)
+      const negativeResult2 = unit3.add(unit4);
       expect(negativeResult2.value).toBe(unitValue3 + unitValue4);
 
-      const negativeResult3 = unit3.add(unit1)
+      const negativeResult3 = unit3.add(unit1);
       expect(negativeResult3.value).toBe(unitValue3 + unitValue1);
     });
   });
@@ -77,10 +77,10 @@ describe("BigUnit Class Methods", () => {
       expect(negativeResult.value).toBe(unitValue1 - unitValue3);
       expect(zeroResult.value).toBe(unitValue1);
 
-      const negativeResult2 = unit3.sub(unit4)
+      const negativeResult2 = unit3.sub(unit4);
       expect(negativeResult2.value).toBe(unitValue3 - unitValue4);
 
-      const negativeResult3 = unit3.sub(unit1)
+      const negativeResult3 = unit3.sub(unit1);
       expect(negativeResult3.value).toBe(unitValue3 - unitValue1);
     });
   });
@@ -234,7 +234,7 @@ describe("BigUnit Class Methods", () => {
 
       expect(negativeResult.value).toBe(unitValue1 % unitValue3);
 
-      const negativeResult2 = unit3.mod(unit1)
+      const negativeResult2 = unit3.mod(unit1);
       expect(negativeResult2.value).toBe(unitValue3 % unitValue1);
     });
 
@@ -472,45 +472,44 @@ describe("BigUnit Class Methods with high precision", () => {
       const result = unit1.add(unit2);
       expect(result.value).toBe(10200000000000000000000000n); // e.g., 102.00000000000000000000000
       expect(result.precision).toBe(precision);
-    })
-  })
-  
+    });
+  });
+
   describe("sub method with high precision", () => {
     test("should subtract two BigUnit instances with high precision", () => {
       const result = unit1.sub(unit2);
       expect(result.value).toBe(9800000000000000000000000n); // e.g., 98.00000000000000000000000
       expect(result.precision).toBe(precision);
-    })
-  })
+    });
+  });
 
   describe("mul method with high precision", () => {
     test("should multiply two BigUnit instances with high precision", () => {
       const result = unit1.mul(unit2);
       expect(result.value).toBe(20000000000000000000000000n); // e.g., 200.00000000000000000000000
       expect(result.precision).toBe(precision);
-    })
-  })
+    });
+  });
 
   describe("div method with high precision", () => {
     test("should divide two BigUnit instances with high precision", () => {
       const result = unit1.div(unit2);
       expect(result.value).toBe(5000000000000000000000000n); // e.g., 50.00000000000000000000000
       expect(result.precision).toBe(precision);
-    })
-  })
+    });
+  });
 
   describe("mod method with high precision", () => {
     test("should mod two BigUnit instances with high precision", () => {
       const result = unit1.mod(unit2);
       expect(result.value).toBe(0n); // e.g., 0.00000000000000000000000
       expect(result.precision).toBe(precision);
-    })
+    });
 
     test("should mod two BigUnit instances with high precision (units swapped)", () => {
       const result = unit2.mod(unit1);
       expect(result.value).toBe(200000000000000000000000n); // e.g., 2.00000000000000000000000
       expect(result.precision).toBe(precision);
-    })
-  })
-
-})
+    });
+  });
+});

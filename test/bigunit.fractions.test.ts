@@ -32,7 +32,6 @@ describe("BigUnit Class fraction handling methods", () => {
       expect(result1.value).toBe(expectedValue1);
     });
 
-
     test("should handle negative bigunits with percent correctly", () => {
       const percentage1 = 10; // 10%
       const result1 = negativeBigUnit.percent(percentage1);

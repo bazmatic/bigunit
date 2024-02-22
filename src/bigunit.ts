@@ -96,7 +96,7 @@ export class BigUnit {
     // Multiply the values and then adjust the result to account for the precision
     const resultValue =
       (thisUnitAtHighestPrecision.value * otherUnitAtHighestPrecision.value) /
-      (10n ** BigInt(thisUnitAtHighestPrecision.precision));
+      10n ** BigInt(thisUnitAtHighestPrecision.precision);
 
     // Return a new BigUnit with the result value and the highest precision
     return new BigUnit(resultValue, thisUnitAtHighestPrecision.precision);
@@ -359,7 +359,7 @@ export class BigUnit {
     }
 
     // Calculate the scaling factor as a bigint
-    // TODO: Check behaviour when using high precision bigunits e.g. precision of 23 
+    // TODO: Check behaviour when using high precision bigunits e.g. precision of 23
     const scalingFactor = 10n ** BigInt(Math.abs(this.precision - precision));
 
     // Scale the value up or down based on the new precision
@@ -465,14 +465,14 @@ export class BigUnit {
   public format(targetPrecision: number): string {
     BigUnit.validatePrecision(targetPrecision);
     // if < 0 absolute value
-    // TODO: Check behaviour when using high precision bigunits e.g. precision of 23 
+    // TODO: Check behaviour when using high precision bigunits e.g. precision of 23
     let scaledValue =
       bigintAbs(this.value) *
       BigInt(10n ** BigInt(Math.max(targetPrecision - this.precision, 0)));
 
     // Apply rounding when scaling down
     if (this.precision > targetPrecision) {
-      // TODO: Check behaviour when using high precision bigunits e.g. precision of 23 
+      // TODO: Check behaviour when using high precision bigunits e.g. precision of 23
       const divisor = BigInt(10 ** (this.precision - targetPrecision));
       const halfDivisor = divisor / BigInt(2);
       const remainder = scaledValue % divisor;
