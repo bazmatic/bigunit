@@ -440,6 +440,8 @@ describe("BigUnit Class Methods with Differing Precision", () => {
     });
   });
 
+  //TODO: We seem to be missing a test for division
+
   describe("mod method with differing precision", () => {
     test("should mod two BigUnit instances and use the precision of the first instance", () => {
       const result1 = unitHighPrecision.mod(unitLowPrecision);
@@ -459,3 +461,56 @@ describe("BigUnit Class Methods with Differing Precision", () => {
     });
   });
 });
+
+describe("BigUnit Class Methods with high precision", () => {
+  const precision = 23;
+  const unit1 = new BigUnit(10000000000000000000000000n, precision); // e.g., 100.00000000000000000000000
+  const unit2 = new BigUnit(200000000000000000000000n, precision); // e.g., 2.00000000000000000000000
+
+  describe("add method with high precision", () => {
+    test("should add two BigUnit instances with high precision", () => {
+      const result = unit1.add(unit2);
+      expect(result.value).toBe(10200000000000000000000000n); // e.g., 102.00000000000000000000000
+      expect(result.precision).toBe(precision);
+    })
+  })
+  
+  describe("sub method with high precision", () => {
+    test("should subtract two BigUnit instances with high precision", () => {
+      const result = unit1.sub(unit2);
+      expect(result.value).toBe(9800000000000000000000000n); // e.g., 98.00000000000000000000000
+      expect(result.precision).toBe(precision);
+    })
+  })
+
+  describe("mul method with high precision", () => {
+    test("should multiply two BigUnit instances with high precision", () => {
+      const result = unit1.mul(unit2);
+      expect(result.value).toBe(20000000000000000000000000n); // e.g., 200.00000000000000000000000
+      expect(result.precision).toBe(precision);
+    })
+  })
+
+  describe("div method with high precision", () => {
+    test("should divide two BigUnit instances with high precision", () => {
+      const result = unit1.div(unit2);
+      expect(result.value).toBe(5000000000000000000000000n); // e.g., 50.00000000000000000000000
+      expect(result.precision).toBe(precision);
+    })
+  })
+
+  describe("mod method with high precision", () => {
+    test("should mod two BigUnit instances with high precision", () => {
+      const result = unit1.mod(unit2);
+      expect(result.value).toBe(0n); // e.g., 0.00000000000000000000000
+      expect(result.precision).toBe(precision);
+    })
+
+    test("should mod two BigUnit instances with high precision (units swapped)", () => {
+      const result = unit2.mod(unit1);
+      expect(result.value).toBe(200000000000000000000000n); // e.g., 2.00000000000000000000000
+      expect(result.precision).toBe(precision);
+    })
+  })
+
+})
