@@ -12,7 +12,8 @@ Represents a type that can be converted to a `BigUnit` if a precision value is a
 
 Arithmetic operations return another BigUnit instance with the precision of the highest of the two numbers. To change to another precision, append `asPrecision(myPrecision)`. 
 If the parameter passed into an arithmetic function is not an instance of `BigUnit`, it will be converted to a `BigUnit` via `BigUnit.from()`. For example, assuming `myUnit` is a `BigUnit` instance with a precision of 5,
-`myUnit.add(2)` will add `2` units to myBigUnit. `myBigUnit.add(BigUnit.from(2n))` will add `0.00002` units to myBigUnit.
+`myUnit.add(2)` will add `2` units to myBigUnit. `myBigUnit.add(BigUnit.from(2n))` will add `0.00002` units to myBigUnit. The exception to this is when the parameter is a `bigint`. In this case, the precision must be passed as a parameter.
+This improves clarity and prevents errors when working with different precisions.
 
 ### constructor(value: bigint, precision: number, name?: string)`
 Constructs a new instance of `BigUnit` from a `bigint`. BigUnit instances can also be instantiated with the static factory methods `from`, `fromBigInt`, `fromNumber`, `fromDecimalString`, `fromValueString`, and `fromObject`.
