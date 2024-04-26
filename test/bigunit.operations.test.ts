@@ -1,5 +1,5 @@
 import { BigUnit } from "../src/bigunit";
-import { DivisionByZeroError } from "../src/errors";
+import { DivisionByZeroError, MissingPrecisionError } from "../src/errors";
 import { bigintCloseTo } from "../src/utils";
 
 describe("BigUnit Class Methods", () => {
@@ -9,10 +9,10 @@ describe("BigUnit Class Methods", () => {
   const unitValue2 = 500n;
   const unitValue3 = -500n;
   const unitValue4 = -1000n;
-  const unit1 = new BigUnit(unitValue1, precision);
-  const unit2 = new BigUnit(unitValue2, precision);
-  const unit3 = new BigUnit(unitValue3, precision);
-  const unit4 = new BigUnit(unitValue4, precision);
+  const unit1 = new BigUnit(unitValue1, precision); //10.00
+  const unit2 = new BigUnit(unitValue2, precision); //5.00
+  const unit3 = new BigUnit(unitValue3, precision); //-5.00
+  const unit4 = new BigUnit(unitValue4, precision); //-10.00
 
   const unit5 = new BigUnit(unitValue1, highPrecision);
   const unit6 = new BigUnit(unitValue2, highPrecision);
@@ -33,6 +33,16 @@ describe("BigUnit Class Methods", () => {
       const result2 = unit7.add(unit6);
       expect(result2.value).toBe(50000000500n);
       expect(result2.precision).toBe(highPrecision);
+    });
+
+    test("require precision if other unit is a bigint", () => {
+      // Expect to throw a MissingPrecisionError
+      expect(() => {
+        unit1.add(1000n);
+      }).toThrow(MissingPrecisionError)
+
+      const result = unit1.add(new BigUnit(1000n, precision));
+      expect(result.value).toBe(unitValue1 + 1000n);
     });
 
     test("should handle negative values and zero correctly", () => {
@@ -67,6 +77,16 @@ describe("BigUnit Class Methods", () => {
       const result2 = unit7.sub(unit6);
       expect(result2.value).toBe(49999999500n);
       expect(result2.precision).toBe(highPrecision);
+    });
+
+    test("require precision if other unit is a bigint", () => {
+      // Expect to throw a MissingPrecisionError
+      expect(() => {
+        unit1.sub(1000n);
+      }).toThrow(MissingPrecisionError)
+
+      const result = unit1.sub(new BigUnit(1000n, precision));
+      expect(result.value).toBe(unitValue1 - 1000n);
     });
 
     it("should handle negative values and zero correctly", () => {
@@ -148,6 +168,16 @@ describe("BigUnit Class Methods", () => {
         expect(result.precision).toBe(expectedPrecision);
       },
     );
+
+    test("require precision if other unit is a bigint", () => {
+      // Expect to throw a MissingPrecisionError
+      expect(() => {
+        unit1.mul(1000n);
+      }).toThrow(MissingPrecisionError)
+
+      const result = unit1.mul(new BigUnit(1000n, precision));
+      expect(result.toNumber()).toBe(100);
+    });
   });
 
   describe("div method", () => {
@@ -217,6 +247,16 @@ describe("BigUnit Class Methods", () => {
         expect(result.toNumber()).toBe(expectedNumberValue);
         expect(result.precision).toBe(expectedPrecision);
       });
+    });
+    test("require precision if other unit is a bigint", () => {
+      // Expect to throw a MissingPrecisionError
+      expect(() => {
+        unit1.div(200n);
+      }).toThrow(MissingPrecisionError)
+
+      // 10 / 2 = 5
+      const result = unit1.div(new BigUnit(200n, precision));
+      expect(result.toNumber()).toBe(5);
     });
   });
 

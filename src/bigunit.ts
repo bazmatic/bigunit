@@ -37,6 +37,15 @@ export class BigUnit {
     }
   }
 
+  public makeOther(other: BigUnitish, otherPrecision?: number): BigUnit {
+    if (typeof other === "bigint" && otherPrecision === undefined) {
+      throw new MissingPrecisionError();
+    }
+    const otherUnit =
+      other instanceof BigUnit ? other : BigUnit.from(other, otherPrecision ?? this.precision);
+    return otherUnit;
+  }
+
   /**
    * @description Add the other value to this value
    * @param other
@@ -44,8 +53,7 @@ export class BigUnit {
    */
   public add(other: BigUnitish): BigUnit {
     // Ensure the other value is a BigUnit
-    const otherUnit =
-      other instanceof BigUnit ? other : BigUnit.from(other, this.precision);
+    const otherUnit = this.makeOther(other);
 
     // Determine the highest precision of the two units and convert both units to the highest precision
     const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
@@ -63,11 +71,10 @@ export class BigUnit {
    * @param other
    * @returns new BigUnit with the result value in the highest precision
    */
-  public sub(other: BigUnitish): BigUnit {
+  public sub(other: BigUnitish, otherPrecision?: number): BigUnit {   
     // Ensure the other value is a BigUnit
-    const otherUnit =
-      other instanceof BigUnit ? other : BigUnit.from(other, this.precision);
-
+    const otherUnit = this.makeOther(other, otherPrecision);
+    
     // Determine the highest precision of the two units and convert both units to the highest precision
     const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
       BigUnit.asHighestPrecision(this, otherUnit);
@@ -84,10 +91,9 @@ export class BigUnit {
    * @param other
    * @returns new BigUnit with the result value in the highest precision
    */
-  public mul(other: BigUnitish): BigUnit {
+  public mul(other: BigUnitish, otherPrecision?: number): BigUnit {
     // Ensure the other value is a BigUnit
-    const otherUnit =
-      other instanceof BigUnit ? other : BigUnit.from(other, this.precision);
+    const otherUnit = this.makeOther(other, otherPrecision);
 
     // Determine the highest precision of the two units and convert both units to the highest precision
     const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
@@ -109,8 +115,7 @@ export class BigUnit {
    */
   public div(other: BigUnitish): BigUnit {
     // Ensure the other value is a BigUnit
-    const otherUnit =
-      other instanceof BigUnit ? other : BigUnit.from(other, this.precision);
+    const otherUnit = this.makeOther(other);
 
     // Determine the highest precision of the two units and convert both units to the highest precision
     const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
@@ -135,8 +140,7 @@ export class BigUnit {
    */
   public mod(other: BigUnitish): BigUnit {
     // Ensure the other value is a BigUnit
-    const otherUnit =
-      other instanceof BigUnit ? other : BigUnit.from(other, this.precision);
+    const otherUnit = this.makeOther(other);
 
     // Determine the highest precision of the two units and convert both units to the highest precision
     const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
@@ -207,19 +211,24 @@ export class BigUnit {
   }
 
   /**
+   * @description Remove previously added percentage from this value. 
+   * This is sometimes referred to as "backing out" a percentage. 
+   * @param percent
+   * @returns new BigUnit with the result value in the same precision
+   */
+  public percentBackout(percent: number): BigUnit {
+    return this.div(BigUnit.from(1).percent(percent));
+  }
+
+  /**
    * @description Equality check
    * @param other
    * @returns True if the values are equal, false otherwise
    */
-  public eq(other: BigUnitish): boolean {
-    if (other instanceof BigUnit) {
-      const highestPrecision = Math.max(this.precision, other.precision);
-      return (
-        this.asPrecision(highestPrecision).value ===
-        other.asPrecision(highestPrecision).value
-      );
-    }
-    return this.value === BigUnit.from(other, this.precision).value;
+  public eq(other: BigUnitish, otherPrecision?: number): boolean {
+    const otherUnit = this.makeOther(other, otherPrecision); 
+    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] = BigUnit.asHighestPrecision(this, otherUnit);
+    return thisUnitAtHighestPrecision.value === otherUnitAtHighestPrecision.value;
   }
 
   /**
@@ -227,15 +236,11 @@ export class BigUnit {
    * @param other
    * @returns True if the other value is greater than this value, false otherwise
    */
-  public gt(other: BigUnitish): boolean {
-    if (other instanceof BigUnit) {
-      const highestPrecision = Math.max(this.precision, other.precision);
-      return (
-        this.asPrecision(highestPrecision).value >
-        other.asPrecision(highestPrecision).value
-      );
-    }
-    return this.value > BigUnit.from(other, this.precision).value;
+  public gt(other: BigUnitish, otherPrecision?: number): boolean {
+    const otherUnit = this.makeOther(other, otherPrecision); 
+    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] = BigUnit.asHighestPrecision(this, otherUnit);
+ 
+    return thisUnitAtHighestPrecision.value > otherUnitAtHighestPrecision.value;
   }
 
   /**
@@ -243,15 +248,11 @@ export class BigUnit {
    * @param other
    * @returns True if the other value is less than this value, false otherwise
    */
-  public lt(other: BigUnitish): boolean {
-    if (other instanceof BigUnit) {
-      const highestPrecision = Math.max(this.precision, other.precision);
-      return (
-        this.asPrecision(highestPrecision).value <
-        other.asPrecision(highestPrecision).value
-      );
-    }
-    return this.value < BigUnit.from(other, this.precision).value;
+  public lt(other: BigUnitish, otherPrecision?: number): boolean {
+    const otherUnit = this.makeOther(other, otherPrecision); 
+    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] = BigUnit.asHighestPrecision(this, otherUnit);
+ 
+    return thisUnitAtHighestPrecision.value < otherUnitAtHighestPrecision.value;
   }
 
   /**
@@ -259,15 +260,11 @@ export class BigUnit {
    * @param other
    * @returns True if the other value is greater than or equal to this value, false otherwise
    */
-  public gte(other: BigUnitish): boolean {
-    if (other instanceof BigUnit) {
-      const highestPrecision = Math.max(this.precision, other.precision);
-      return (
-        this.asPrecision(highestPrecision).value >=
-        other.asPrecision(highestPrecision).value
-      );
-    }
-    return this.value >= BigUnit.from(other, this.precision).value;
+  public gte(other: BigUnitish, otherPrecision?: number): boolean {
+    const otherUnit = this.makeOther(other, otherPrecision); 
+    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] = BigUnit.asHighestPrecision(this, otherUnit);
+ 
+    return thisUnitAtHighestPrecision.value >= otherUnitAtHighestPrecision.value;
   }
 
   /**
@@ -275,15 +272,11 @@ export class BigUnit {
    * @param other
    * @returns True if the other value is less than or equal to this value, false otherwise
    */
-  public lte(other: BigUnitish): boolean {
-    if (other instanceof BigUnit) {
-      const highestPrecision = Math.max(this.precision, other.precision);
-      return (
-        this.asPrecision(highestPrecision).value <=
-        other.asPrecision(highestPrecision).value
-      );
-    }
-    return this.value <= BigUnit.from(other, this.precision).value;
+  public lte(other: BigUnitish, otherPrecision?: number): boolean {
+    const otherUnit = this.makeOther(other, otherPrecision); 
+    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] = BigUnit.asHighestPrecision(this, otherUnit);
+ 
+    return thisUnitAtHighestPrecision.value <= otherUnitAtHighestPrecision.value;
   }
 
   /**
@@ -308,6 +301,15 @@ export class BigUnit {
    */
   public isNegative(): boolean {
     return this.value < 0n;
+  }
+
+  /**
+   * @description Output a zero value BigUnit
+   * @param precision The precision of the zero value, default to 0
+   * @returns 
+   */
+  public static zero(precision?: number): BigUnit {
+    return BigUnit.from(0, precision ?? 0);
   }
 
   /**
