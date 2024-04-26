@@ -9,6 +9,13 @@ import { bigintAbs, numberToDecimalString } from "./utils";
 
 export * as utils from "./utils";
 
+export enum RoundingMethod {
+  Round = "Round",
+  Floor = "Floor",
+  Ceil = "Ceil",
+  None = "None", // Truncation
+}
+
 export interface IBigUnitObject {
   value: string;
   precision: number;
@@ -42,7 +49,9 @@ export class BigUnit {
       throw new MissingPrecisionError();
     }
     const otherUnit =
-      other instanceof BigUnit ? other : BigUnit.from(other, otherPrecision ?? this.precision);
+      other instanceof BigUnit
+        ? other
+        : BigUnit.from(other, otherPrecision ?? this.precision);
     return otherUnit;
   }
 
@@ -71,10 +80,10 @@ export class BigUnit {
    * @param other
    * @returns new BigUnit with the result value in the highest precision
    */
-  public sub(other: BigUnitish, otherPrecision?: number): BigUnit {   
+  public sub(other: BigUnitish, otherPrecision?: number): BigUnit {
     // Ensure the other value is a BigUnit
     const otherUnit = this.makeOther(other, otherPrecision);
-    
+
     // Determine the highest precision of the two units and convert both units to the highest precision
     const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
       BigUnit.asHighestPrecision(this, otherUnit);
@@ -211,8 +220,8 @@ export class BigUnit {
   }
 
   /**
-   * @description Remove previously added percentage from this value. 
-   * This is sometimes referred to as "backing out" a percentage. 
+   * @description Remove previously added percentage from this value.
+   * This is sometimes referred to as "backing out" a percentage.
    * @param percent
    * @returns new BigUnit with the result value in the same precision
    */
@@ -226,9 +235,12 @@ export class BigUnit {
    * @returns True if the values are equal, false otherwise
    */
   public eq(other: BigUnitish, otherPrecision?: number): boolean {
-    const otherUnit = this.makeOther(other, otherPrecision); 
-    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] = BigUnit.asHighestPrecision(this, otherUnit);
-    return thisUnitAtHighestPrecision.value === otherUnitAtHighestPrecision.value;
+    const otherUnit = this.makeOther(other, otherPrecision);
+    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
+      BigUnit.asHighestPrecision(this, otherUnit);
+    return (
+      thisUnitAtHighestPrecision.value === otherUnitAtHighestPrecision.value
+    );
   }
 
   /**
@@ -237,9 +249,10 @@ export class BigUnit {
    * @returns True if the other value is greater than this value, false otherwise
    */
   public gt(other: BigUnitish, otherPrecision?: number): boolean {
-    const otherUnit = this.makeOther(other, otherPrecision); 
-    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] = BigUnit.asHighestPrecision(this, otherUnit);
- 
+    const otherUnit = this.makeOther(other, otherPrecision);
+    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
+      BigUnit.asHighestPrecision(this, otherUnit);
+
     return thisUnitAtHighestPrecision.value > otherUnitAtHighestPrecision.value;
   }
 
@@ -249,9 +262,10 @@ export class BigUnit {
    * @returns True if the other value is less than this value, false otherwise
    */
   public lt(other: BigUnitish, otherPrecision?: number): boolean {
-    const otherUnit = this.makeOther(other, otherPrecision); 
-    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] = BigUnit.asHighestPrecision(this, otherUnit);
- 
+    const otherUnit = this.makeOther(other, otherPrecision);
+    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
+      BigUnit.asHighestPrecision(this, otherUnit);
+
     return thisUnitAtHighestPrecision.value < otherUnitAtHighestPrecision.value;
   }
 
@@ -261,10 +275,13 @@ export class BigUnit {
    * @returns True if the other value is greater than or equal to this value, false otherwise
    */
   public gte(other: BigUnitish, otherPrecision?: number): boolean {
-    const otherUnit = this.makeOther(other, otherPrecision); 
-    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] = BigUnit.asHighestPrecision(this, otherUnit);
- 
-    return thisUnitAtHighestPrecision.value >= otherUnitAtHighestPrecision.value;
+    const otherUnit = this.makeOther(other, otherPrecision);
+    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
+      BigUnit.asHighestPrecision(this, otherUnit);
+
+    return (
+      thisUnitAtHighestPrecision.value >= otherUnitAtHighestPrecision.value
+    );
   }
 
   /**
@@ -273,10 +290,13 @@ export class BigUnit {
    * @returns True if the other value is less than or equal to this value, false otherwise
    */
   public lte(other: BigUnitish, otherPrecision?: number): boolean {
-    const otherUnit = this.makeOther(other, otherPrecision); 
-    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] = BigUnit.asHighestPrecision(this, otherUnit);
- 
-    return thisUnitAtHighestPrecision.value <= otherUnitAtHighestPrecision.value;
+    const otherUnit = this.makeOther(other, otherPrecision);
+    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
+      BigUnit.asHighestPrecision(this, otherUnit);
+
+    return (
+      thisUnitAtHighestPrecision.value <= otherUnitAtHighestPrecision.value
+    );
   }
 
   /**
@@ -306,7 +326,7 @@ export class BigUnit {
   /**
    * @description Output a zero value BigUnit
    * @param precision The precision of the zero value, default to 0
-   * @returns 
+   * @returns
    */
   public static zero(precision?: number): BigUnit {
     return BigUnit.from(0, precision ?? 0);
@@ -354,23 +374,67 @@ export class BigUnit {
    * @param precision
    * @returns
    */
-  public asPrecision(precision: number): BigUnit {
-    // Check if precision is an integer
-    if (precision % 1 !== 0) {
-      throw new InvalidPrecisionError(precision);
+  // public asPrecision(precision: number): BigUnit {
+  //   // Check if precision is an integer
+  //   if (precision % 1 !== 0) {
+  //     throw new InvalidPrecisionError(precision);
+  //   }
+
+  //   // Calculate the scaling factor as a bigint
+  //   // TODO: Check behaviour when using high precision bigunits e.g. precision of 23
+  //   const scalingFactor = 10n ** BigInt(Math.abs(this.precision - precision));
+
+  //   // Scale the value up or down based on the new precision
+  //   const newValue =
+  //     this.precision < precision
+  //       ? this.value * scalingFactor
+  //       : this.value / scalingFactor;
+
+  //   // Return a new BigUnit with the scaled value and new precision
+  //   return new BigUnit(newValue, precision, this.name);
+  // }
+
+  public asPrecision(
+    precision: number,
+    roundingMethod: RoundingMethod = RoundingMethod.None,
+  ): BigUnit {
+    // Ensure precision is an integer
+    BigUnit.validatePrecision(precision);
+
+    const scalingFactor = 10n ** BigInt(Math.abs(this.precision - precision));
+    let newValue: bigint;
+
+    if (this.precision < precision) {
+      newValue = this.value * scalingFactor; // Scaling up, no rounding needed
+    } else if (this.precision > precision) {
+      const downScaleFactor = 10n ** BigInt(this.precision - precision);
+      switch (roundingMethod) {
+        case RoundingMethod.Round:
+          const halfDownScale = downScaleFactor / 2n;
+          newValue = (this.value + halfDownScale) / downScaleFactor;
+          break;
+        case RoundingMethod.Floor:
+          newValue = this.value / downScaleFactor; // Equivalent to Math.floor for positive numbers
+          if (this.value < 0n && this.value % downScaleFactor !== 0n) {
+            newValue -= 1n; // Adjust for negative numbers
+          }
+          break;
+        case RoundingMethod.Ceil:
+          newValue = this.value / downScaleFactor; // Start with truncation
+          if (this.value > 0n && this.value % downScaleFactor !== 0n) {
+            newValue += 1n; // Adjust for positive numbers
+          }
+          break;
+        case RoundingMethod.None:
+          newValue = this.value / downScaleFactor; // Simple truncation
+          break;
+        default:
+          throw new Error("Invalid rounding method");
+      }
+    } else {
+      newValue = this.value; // No change in precision, no rounding needed
     }
 
-    // Calculate the scaling factor as a bigint
-    // TODO: Check behaviour when using high precision bigunits e.g. precision of 23
-    const scalingFactor = 10n ** BigInt(Math.abs(this.precision - precision));
-
-    // Scale the value up or down based on the new precision
-    const newValue =
-      this.precision < precision
-        ? this.value * scalingFactor
-        : this.value / scalingFactor;
-
-    // Return a new BigUnit with the scaled value and new precision
     return new BigUnit(newValue, precision, this.name);
   }
 
