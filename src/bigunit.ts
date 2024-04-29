@@ -60,9 +60,9 @@ export class BigUnit {
    * @param other
    * @returns BigUnit with the result value in the highest precision
    */
-  public add(other: BigUnitish): BigUnit {
+  public add(other: BigUnitish, otherPrecision?: number): BigUnit {
     // Ensure the other value is a BigUnit
-    const otherUnit = this.makeOther(other);
+    const otherUnit = this.makeOther(other, otherPrecision);
 
     // Determine the highest precision of the two units and convert both units to the highest precision
     const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
@@ -374,26 +374,6 @@ export class BigUnit {
    * @param precision
    * @returns
    */
-  // public asPrecision(precision: number): BigUnit {
-  //   // Check if precision is an integer
-  //   if (precision % 1 !== 0) {
-  //     throw new InvalidPrecisionError(precision);
-  //   }
-
-  //   // Calculate the scaling factor as a bigint
-  //   // TODO: Check behaviour when using high precision bigunits e.g. precision of 23
-  //   const scalingFactor = 10n ** BigInt(Math.abs(this.precision - precision));
-
-  //   // Scale the value up or down based on the new precision
-  //   const newValue =
-  //     this.precision < precision
-  //       ? this.value * scalingFactor
-  //       : this.value / scalingFactor;
-
-  //   // Return a new BigUnit with the scaled value and new precision
-  //   return new BigUnit(newValue, precision, this.name);
-  // }
-
   public asPrecision(
     precision: number,
     roundingMethod: RoundingMethod = RoundingMethod.None,
