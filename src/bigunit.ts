@@ -10,7 +10,7 @@ import { bigintAbs, numberToDecimalString } from "./utils";
 export * as utils from "./utils";
 
 export enum RoundingMethod {
-  Round = "Round",
+  Nearest = "Nearest",
   Floor = "Floor",
   Ceil = "Ceil",
   None = "None", // Truncation
@@ -389,7 +389,7 @@ export class BigUnit {
     } else if (this.precision > precision) {
       const downScaleFactor = 10n ** BigInt(this.precision - precision);
       switch (roundingMethod) {
-        case RoundingMethod.Round:
+        case RoundingMethod.Nearest:
           const halfDownScale = downScaleFactor / 2n;
           newValue = (this.value + halfDownScale) / downScaleFactor;
           break;

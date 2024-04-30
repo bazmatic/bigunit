@@ -30,23 +30,23 @@ describe("BigUnit Class Precision Conversion Methods", () => {
   });
 
   describe("asOtherPrecision with rounding", () => {
-    test("should round down when the digit after precision is less than 5", () => {
+    test("nearest: should round down when the digit after precision is less than 5", () => {
       const unit = BigUnit.from(123.4541, 4); // The next digit after the third decimal is less than 5
-      const newUnit = unit.asPrecision(3, RoundingMethod.Round);
+      const newUnit = unit.asPrecision(3, RoundingMethod.Nearest);
       expect(newUnit.precision).toBe(3);
       expect(newUnit.toBigInt()).toBe(BigInt(123454)); // Should round down to 123.454
       expect(newUnit.toNumber()).toBeCloseTo(123.454);
     });
 
-    test("should round up when the digit after precision is 5 or more", () => {
+    test("nearest: should round up when the digit after precision is 5 or more", () => {
       const unit = BigUnit.from(123.4555, 4); // The next digit after the third decimal is 5
-      const newUnit = unit.asPrecision(3, RoundingMethod.Round);
+      const newUnit = unit.asPrecision(3, RoundingMethod.Nearest);
       expect(newUnit.precision).toBe(3);
       expect(newUnit.toBigInt()).toBe(BigInt(123456)); // Should round up to 123.456
       expect(newUnit.toNumber()).toBeCloseTo(123.456);
     });
 
-    test("should round up when converting to a lower precision using RoundingMethod.Ceil", () => {
+    test("ceil: should round up when converting to a lower precision using RoundingMethod.Ceil", () => {
       const unit = BigUnit.from(123.4512, 4); // A value where the next significant digit after truncation is not zero
       const newUnit = unit.asPrecision(3, RoundingMethod.Ceil);
       expect(newUnit.precision).toBe(3);
@@ -54,7 +54,7 @@ describe("BigUnit Class Precision Conversion Methods", () => {
       expect(newUnit.toNumber()).toBeCloseTo(123.452);
     });
 
-    test("should round down when converting to a lower precision using RoundingMethod.Floor", () => {
+    test("floor: should round down when converting to a lower precision using RoundingMethod.Floor", () => {
       const unit = BigUnit.from(123.4567, 4); // A value where the next significant digit after truncation would normally round up
       const newUnit = unit.asPrecision(3, RoundingMethod.Floor);
       expect(newUnit.precision).toBe(3);
@@ -62,7 +62,7 @@ describe("BigUnit Class Precision Conversion Methods", () => {
       expect(newUnit.toNumber()).toBeCloseTo(123.456);
     });
 
-    test("should truncate when converting to a lower precision using RoundingMethod.Trunc", () => {
+    test("none: should truncate when converting to a lower precision using RoundingMethod.Trunc", () => {
       const unit = BigUnit.from(123.4599, 4); // A value that would normally round up
       const newUnit = unit.asPrecision(3, RoundingMethod.None);
       expect(newUnit.precision).toBe(3);
