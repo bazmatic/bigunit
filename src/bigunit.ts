@@ -774,6 +774,10 @@ export class BigUnitFactory {
     BigUnit.validatePrecision(precision);
   }
 
+  public zero(): BigUnit {
+    return BigUnit.zero(this.precision);
+  }
+
   public from(value: BigUnitish): BigUnit {
     return BigUnit.from(value, this.precision, this.name);
   }
