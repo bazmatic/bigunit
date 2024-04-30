@@ -39,7 +39,7 @@ describe("BigUnit Class Methods", () => {
       // Expect to throw a MissingPrecisionError
       expect(() => {
         unit1.add(1000n);
-      }).toThrow(MissingPrecisionError)
+      }).toThrow(MissingPrecisionError);
 
       const result = unit1.add(new BigUnit(1000n, precision));
       expect(result.value).toBe(unitValue1 + 1000n);
@@ -83,7 +83,7 @@ describe("BigUnit Class Methods", () => {
       // Expect to throw a MissingPrecisionError
       expect(() => {
         unit1.sub(1000n);
-      }).toThrow(MissingPrecisionError)
+      }).toThrow(MissingPrecisionError);
 
       const result = unit1.sub(new BigUnit(1000n, precision));
       expect(result.value).toBe(unitValue1 - 1000n);
@@ -173,7 +173,7 @@ describe("BigUnit Class Methods", () => {
       // Expect to throw a MissingPrecisionError
       expect(() => {
         unit1.mul(1000n);
-      }).toThrow(MissingPrecisionError)
+      }).toThrow(MissingPrecisionError);
 
       const result = unit1.mul(new BigUnit(1000n, precision));
       expect(result.toNumber()).toBe(100);
@@ -252,7 +252,7 @@ describe("BigUnit Class Methods", () => {
       // Expect to throw a MissingPrecisionError
       expect(() => {
         unit1.div(200n);
-      }).toThrow(MissingPrecisionError)
+      }).toThrow(MissingPrecisionError);
 
       // 10 / 2 = 5
       const result = unit1.div(new BigUnit(200n, precision));

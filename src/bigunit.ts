@@ -42,7 +42,9 @@ export class BigUnit {
       throw new MissingPrecisionError();
     }
     const otherUnit =
-      other instanceof BigUnit ? other : BigUnit.from(other, otherPrecision ?? this.precision);
+      other instanceof BigUnit
+        ? other
+        : BigUnit.from(other, otherPrecision ?? this.precision);
     return otherUnit;
   }
 
@@ -71,10 +73,10 @@ export class BigUnit {
    * @param other
    * @returns new BigUnit with the result value in the highest precision
    */
-  public sub(other: BigUnitish, otherPrecision?: number): BigUnit {   
+  public sub(other: BigUnitish, otherPrecision?: number): BigUnit {
     // Ensure the other value is a BigUnit
     const otherUnit = this.makeOther(other, otherPrecision);
-    
+
     // Determine the highest precision of the two units and convert both units to the highest precision
     const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
       BigUnit.asHighestPrecision(this, otherUnit);
@@ -211,8 +213,8 @@ export class BigUnit {
   }
 
   /**
-   * @description Remove previously added percentage from this value. 
-   * This is sometimes referred to as "backing out" a percentage. 
+   * @description Remove previously added percentage from this value.
+   * This is sometimes referred to as "backing out" a percentage.
    * @param percent
    * @returns new BigUnit with the result value in the same precision
    */
@@ -226,9 +228,12 @@ export class BigUnit {
    * @returns True if the values are equal, false otherwise
    */
   public eq(other: BigUnitish, otherPrecision?: number): boolean {
-    const otherUnit = this.makeOther(other, otherPrecision); 
-    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] = BigUnit.asHighestPrecision(this, otherUnit);
-    return thisUnitAtHighestPrecision.value === otherUnitAtHighestPrecision.value;
+    const otherUnit = this.makeOther(other, otherPrecision);
+    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
+      BigUnit.asHighestPrecision(this, otherUnit);
+    return (
+      thisUnitAtHighestPrecision.value === otherUnitAtHighestPrecision.value
+    );
   }
 
   /**
@@ -237,9 +242,10 @@ export class BigUnit {
    * @returns True if the other value is greater than this value, false otherwise
    */
   public gt(other: BigUnitish, otherPrecision?: number): boolean {
-    const otherUnit = this.makeOther(other, otherPrecision); 
-    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] = BigUnit.asHighestPrecision(this, otherUnit);
- 
+    const otherUnit = this.makeOther(other, otherPrecision);
+    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
+      BigUnit.asHighestPrecision(this, otherUnit);
+
     return thisUnitAtHighestPrecision.value > otherUnitAtHighestPrecision.value;
   }
 
@@ -249,9 +255,10 @@ export class BigUnit {
    * @returns True if the other value is less than this value, false otherwise
    */
   public lt(other: BigUnitish, otherPrecision?: number): boolean {
-    const otherUnit = this.makeOther(other, otherPrecision); 
-    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] = BigUnit.asHighestPrecision(this, otherUnit);
- 
+    const otherUnit = this.makeOther(other, otherPrecision);
+    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
+      BigUnit.asHighestPrecision(this, otherUnit);
+
     return thisUnitAtHighestPrecision.value < otherUnitAtHighestPrecision.value;
   }
 
@@ -261,10 +268,13 @@ export class BigUnit {
    * @returns True if the other value is greater than or equal to this value, false otherwise
    */
   public gte(other: BigUnitish, otherPrecision?: number): boolean {
-    const otherUnit = this.makeOther(other, otherPrecision); 
-    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] = BigUnit.asHighestPrecision(this, otherUnit);
- 
-    return thisUnitAtHighestPrecision.value >= otherUnitAtHighestPrecision.value;
+    const otherUnit = this.makeOther(other, otherPrecision);
+    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
+      BigUnit.asHighestPrecision(this, otherUnit);
+
+    return (
+      thisUnitAtHighestPrecision.value >= otherUnitAtHighestPrecision.value
+    );
   }
 
   /**
@@ -273,10 +283,13 @@ export class BigUnit {
    * @returns True if the other value is less than or equal to this value, false otherwise
    */
   public lte(other: BigUnitish, otherPrecision?: number): boolean {
-    const otherUnit = this.makeOther(other, otherPrecision); 
-    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] = BigUnit.asHighestPrecision(this, otherUnit);
- 
-    return thisUnitAtHighestPrecision.value <= otherUnitAtHighestPrecision.value;
+    const otherUnit = this.makeOther(other, otherPrecision);
+    const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
+      BigUnit.asHighestPrecision(this, otherUnit);
+
+    return (
+      thisUnitAtHighestPrecision.value <= otherUnitAtHighestPrecision.value
+    );
   }
 
   /**
@@ -306,7 +319,7 @@ export class BigUnit {
   /**
    * @description Output a zero value BigUnit
    * @param precision The precision of the zero value, default to 0
-   * @returns 
+   * @returns
    */
   public static zero(precision?: number): BigUnit {
     return BigUnit.from(0, precision ?? 0);
