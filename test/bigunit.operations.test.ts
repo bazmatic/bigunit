@@ -35,6 +35,13 @@ describe("BigUnit Class Methods", () => {
       expect(result2.precision).toBe(highPrecision);
     });
 
+    test("should add two BigUnit instances, respecting a precision override", () => {
+      const unitA = BigUnit.fromNumber(1000, 10);
+      const unitB = BigUnit.fromNumber(1000.001, 10);
+      const result = unitA.add(unitB, 2);
+      expect(result.toNumber()).toBe(2000.0);
+    });
+
     test("require precision if other unit is a bigint", () => {
       // Expect to throw a MissingPrecisionError
       expect(() => {
@@ -77,6 +84,13 @@ describe("BigUnit Class Methods", () => {
       const result2 = unit7.sub(unit6);
       expect(result2.value).toBe(49999999500n);
       expect(result2.precision).toBe(highPrecision);
+    });
+
+    test("should subtract two BigUnit instances, respecting a precision override", () => {
+      const unitA = BigUnit.fromNumber(1000, 10);
+      const unitB = BigUnit.fromNumber(100.001, 10);
+      const result = unitA.sub(unitB, 2);
+      expect(result.toNumber()).toBe(900.0);
     });
 
     test("require precision if other unit is a bigint", () => {
@@ -169,6 +183,13 @@ describe("BigUnit Class Methods", () => {
       },
     );
 
+    test("should multiply two BigUnit instances, respecting a precision override", () => {
+      const unitA = BigUnit.fromNumber(1000, 10);
+      const unitB = BigUnit.fromNumber(1.001, 10);
+      const result = unitA.mul(unitB, 2);
+      expect(result.toNumber()).toBe(1000.0);
+    });
+
     test("require precision if other unit is a bigint", () => {
       // Expect to throw a MissingPrecisionError
       expect(() => {
@@ -248,6 +269,14 @@ describe("BigUnit Class Methods", () => {
         expect(result.precision).toBe(expectedPrecision);
       });
     });
+
+    test("should divide two BigUnit instances, respecting a precision override", () => {
+      const unitA = BigUnit.fromNumber(1000, 10);
+      const unitB = BigUnit.fromNumber(2.001, 10);
+      const result = unitA.div(unitB, 2);
+      expect(result.toNumber()).toBe(500.0);
+    });
+
     test("require precision if other unit is a bigint", () => {
       // Expect to throw a MissingPrecisionError
       expect(() => {
@@ -404,6 +433,10 @@ describe("BigUnit Class Methods - percent and fraction", () => {
 
       expect(result.value).toBe(expectedValue);
     });
+  });
+
+  describe("percentBackout method", () => {
+    test("should calculate the percent backout correctly with a valid percentage", () => {});
   });
 
   describe("BigUnit Class Methods - min and max", () => {
