@@ -226,14 +226,14 @@ export class BigUnit {
    * @returns new BigUnit with the result value in the same precision
    */
   public percentBackout(percent: number, otherPrecision?: number): BigUnit {
-    //return this.div(BigUnit.from(1, this.precision).percent(percent), otherPrecision);
-    // Break the above into distinct steps for better understanding
-    const percentUnit = BigUnit.from(percent, this.precision);
-    const oneUnit = BigUnit.from(1, this.precision);
-    const percentValue = this.mul(percentUnit);
+    // Calculate 1 + percent/100 to adjust the base by the given percent
+    const precision = otherPrecision ?? this.precision;
+    const adjustmentFactor = BigUnit.from(1 + percent / 100, precision);
+  
+    // Divide the current value by the adjustment factor to reverse the percentage
     return this.div(
-      oneUnit.add(percentValue, otherPrecision ?? this.precision),
-      otherPrecision ?? this.precision,
+      adjustmentFactor,
+      precision
     );
   }
 

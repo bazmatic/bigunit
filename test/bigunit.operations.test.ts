@@ -436,7 +436,23 @@ describe("BigUnit Class Methods - percent and fraction", () => {
   });
 
   describe("percentBackout method", () => {
-    test("should calculate the percent backout correctly with a valid percentage", () => {});
+    test("should calculate the percent backout correctly with a valid percentage", () => {
+      const amountWithGst = BigUnit.fromNumber(110.0, 4); // Make sure the precision matches throughout
+      const result = amountWithGst.percentBackout(10.0);
+      expect(result.toNumber()).toBeCloseTo(100.0); // Use toBeCloseTo for floating point precision issues
+    });
+
+    test("should handle zero percent correctly", () => {
+      const amountWithGst = BigUnit.fromNumber(110.0, 4);
+      const result = amountWithGst.percentBackout(0.0);
+      expect(result.toNumber()).toBeCloseTo(110.0);
+    });
+
+    test("should handle precision override correctly", () => {
+      const amountWithGst = BigUnit.fromNumber(110.0011, 4);
+      const result = amountWithGst.percentBackout(10.0, 2);
+      expect(result.toNumber()).toBeCloseTo(100.0);
+    });
   });
 
   describe("BigUnit Class Methods - min and max", () => {
