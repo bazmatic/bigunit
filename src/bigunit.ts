@@ -50,7 +50,7 @@ export class BigUnit {
     }
     const otherUnit =
       other instanceof BigUnit
-        ? other
+        ? other.asPrecision(otherPrecision ?? other.precision)
         : BigUnit.from(other, otherPrecision ?? this.precision);
     return otherUnit;
   }
@@ -122,9 +122,9 @@ export class BigUnit {
    * @param other
    * @returns new BigUnit with the result value in the highest precision
    */
-  public div(other: BigUnitish): BigUnit {
+  public div(other: BigUnitish, otherPrecision?: number): BigUnit {
     // Ensure the other value is a BigUnit
-    const otherUnit = this.makeOther(other);
+    const otherUnit = this.makeOther(other, otherPrecision);
 
     // Determine the highest precision of the two units and convert both units to the highest precision
     const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
@@ -147,9 +147,9 @@ export class BigUnit {
    * @param other
    * @returns new BigUnit with the result value in the highest precision
    */
-  public mod(other: BigUnitish): BigUnit {
+  public mod(other: BigUnitish, otherPrecision?: number): BigUnit {
     // Ensure the other value is a BigUnit
-    const otherUnit = this.makeOther(other);
+    const otherUnit = this.makeOther(other, otherPrecision);
 
     // Determine the highest precision of the two units and convert both units to the highest precision
     const [thisUnitAtHighestPrecision, otherUnitAtHighestPrecision] =
@@ -225,8 +225,16 @@ export class BigUnit {
    * @param percent
    * @returns new BigUnit with the result value in the same precision
    */
-  public percentBackout(percent: number): BigUnit {
-    return this.div(BigUnit.from(1).percent(percent));
+  public percentBackout(percent: number, otherPrecision?: number): BigUnit {
+    // Calculate 1 + percent/100 to adjust the base by the given percent
+    const precision = otherPrecision ?? this.precision;
+    const adjustmentFactor = BigUnit.from(1 + percent / 100, precision);
+  
+    // Divide the current value by the adjustment factor to reverse the percentage
+    return this.div(
+      adjustmentFactor,
+      precision
+    );
   }
 
   /**
