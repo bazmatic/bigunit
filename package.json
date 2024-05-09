@@ -1,6 +1,6 @@
 {
   "name": "bigunit",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "main": "dist/bigunit.js",
   "license": "MIT",
   "author": "Barry Earsman",
