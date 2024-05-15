@@ -182,7 +182,7 @@ describe("BigUnit Class Methods", () => {
     );
 
     test("should allow doing operations with BigUnit without precision", () => {
-      const unitA = BigUnit.from("82.1", 10);
+      const unitA = BigUnit.from(82.1, 10);
       expect(() => unitA.mul(99)).not.toThrow();
       expect(() => unitA.div(99)).not.toThrow();
       expect(() => unitA.add(99)).not.toThrow();
@@ -351,7 +351,7 @@ describe("BigUnit Class Methods", () => {
       expect(() => {
         unit1.mod(1000n);
       }).toThrow(MissingPrecisionError);
-      
+
       const result = unit1.mul(new BigUnit(1000n, precision));
       expect(result.toNumber()).toBe(100);
     });
