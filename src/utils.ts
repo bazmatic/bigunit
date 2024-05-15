@@ -1,4 +1,6 @@
-// Helper function to convert a number to a decimal string to avoid precision loss.
+/**
+ * Convert a number to a decimal string to avoid precision loss.
+ */
 export function numberToDecimalString(num: number): string {
   // Check if the number is in scientific notation
   const numString = num.toString();
@@ -20,6 +22,9 @@ export function numberToDecimalString(num: number): string {
   }
 }
 
+/**
+ * Return true if the two bigints are within the tolerance of each other.
+ */
 export function bigintCloseTo(
   a: bigint,
   b: bigint,
@@ -28,6 +33,9 @@ export function bigintCloseTo(
   return a >= b - tolerance && a <= b + tolerance;
 }
 
+/**
+ * Return the absolute value of a bigint.
+ */
 export function bigintAbs(bigintValue) {
   return bigintValue < 0n ? -bigintValue : bigintValue;
 }
