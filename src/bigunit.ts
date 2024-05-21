@@ -233,7 +233,7 @@ export class BigUnit {
     // Divide the current value by the adjustment factor to reverse the percentage
     return this.div(
       adjustmentFactor,
-      precision
+      precision 
     );
   }
 

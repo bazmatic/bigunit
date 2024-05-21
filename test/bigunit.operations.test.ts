@@ -172,9 +172,7 @@ describe("BigUnit Class Methods", () => {
         const result = unit1.mul(unit2);
 
         // Convert expected number to BigInt representation
-        const expectedValue = BigInt(
-          Math.round(+expectedNum * 10 ** +expectedPrecision),
-        );
+        const expectedValue = BigInt(Math.round(+expectedNum * 10 ** +expectedPrecision));
 
         expect(result).toBeInstanceOf(BigUnit);
         expect(result.value).toBe(expectedValue);
@@ -183,17 +181,175 @@ describe("BigUnit Class Methods", () => {
       },
     );
 
-    test("should multiply two BigUnit instances, respecting a precision override", () => {
-      const unitA = BigUnit.fromNumber(1000, 10);
-      const unitB = BigUnit.fromNumber(1.001, 10);
-      const result = unitA.mul(unitB, 2);
-      expect(result.toNumber()).toBe(1000.0);
+    test("should allow doing operations with BigUnit without precision", () => {
+      const unitA = BigUnit.from(82.1, 10);
+      expect(() => unitA.mul(99)).not.toThrow();
+      expect(() => unitA.div(99)).not.toThrow();
+      expect(() => unitA.add(99)).not.toThrow();
+      expect(() => unitA.sub(99)).not.toThrow();
+      expect(() => unitA.percentBackout(99)).not.toThrow();
+      expect(() => unitA.mod(99)).not.toThrow();
+    });
+
+    describe("should do operations respecting a precision override", () => {
+      describe("multiply", () => {
+        const mulRespectingPrecisionOverride = [
+          // num1, precision1, num2, precision2, overrideprecision, expectedString
+          [100.1, 5, 1.23456, 5, 1, "120.12000"], // = 100.10000 * 1.2
+          // different precission between 2 BigUnits
+          [1.23456, 5, 10.999, 3, 2, "13.56781"], // = 1.23456 * 10.99
+          // zero multiply a number
+          [0, 9, 0.5, 4, 3, "0.000000000"], // = 1.001001001 * 0.565
+          // has a negative number
+          [1.00010001, 9, -0.5656, 4, 10, "-0.5656565656"], // = 1.00010001 * 0.5656
+        ];
+        test.each(mulRespectingPrecisionOverride)(
+          "rodo: should multiply two BigUnit instances, number %f with precision %i and number %f with precision %i, respecting a precision override of %i and result in %s",
+          (num1, precision1, num2, precision2, overrideprecision, expectedString) => {
+            const unitA = BigUnit.from(num1, +precision1);
+            const unitB = BigUnit.from(num2, +precision2);
+            const result = unitA.mul(unitB, +overrideprecision);
+            expect(result.toString()).toBe(expectedString);
+          },
+        );
+      });
+
+      describe("divide", () => {
+        const divRespectingPrecisionOverride = [
+          // num1, precision1, num2, precision2, overrideprecision, expectedString
+          [120.1, 5, 1.23456, 5, 1, "100.08333"], // 120.1 / 1.2 = 100.08333333 => "100.08333"
+          // zero divide a number
+          [0, 4, 5.555, 2, 2, "0.0000"],
+          // override precision is higher
+          [555, 2, 5.55, 2, 5, "100.00000"],
+          // override precision is lower
+          [555, 2, 5.55, 2, 1, "100.90"],
+          // has a negative number
+          [-5, 2, 0.125, 3, 5, "-40.00000"],
+        ];
+        test.each(divRespectingPrecisionOverride)(
+          "rodo: should divide two BigUnit instances, number %f with precision %i and number %f with precision %i, respecting a precision override of %i and result in %s",
+          (num1, precision1, num2, precision2, overrideprecision, expectedString) => {
+            const unitA = BigUnit.from(num1, +precision1);
+            const unitB = BigUnit.from(num2, +precision2);
+            const result = unitA.div(unitB, +overrideprecision);
+            expect(result.toString()).toBe(expectedString);
+          },
+        );
+      });
+
+      describe("addition", () => {
+        const addRespectingPrecisionOverride = [
+          // num1, precision1, num2, precision2, overrideprecision, expectedString
+          // override precision is lower
+          [100.1, 5, 0.91234, 5, 1, "101.00000"],
+          // override precision is higher
+          [10.9, 3, 1.23, 2, 4, "12.1300"],
+          // override precision is 0
+          [1.2, 1, 10.99, 2, 0, "11.2"],
+          // has a negative number
+          [-5, 2, 1.23, 2, 2, "-3.77"],
+        ];
+        test.each(addRespectingPrecisionOverride)(
+          "rodo: should add two BigUnit instances, number %f with precision %i and number %f with precision %i, respecting a precision override of %i and result in %s",
+          (num1, precision1, num2, precision2, overrideprecision, expectedString) => {
+            const unitA = BigUnit.from(num1, +precision1);
+            const unitB = BigUnit.from(num2, +precision2);
+            const result = unitA.add(unitB, +overrideprecision);
+            expect(result.toString()).toBe(expectedString);
+          },
+        );
+      });
+
+      describe("subtraction", () => {
+        const subRespectingPrecisionOverride = [
+          // num1, precision1, num2, precision2, overrideprecision, expectedString
+          // override precision is lower
+          [100.1, 5, 0.91234, 5, 1, "99.20000"],
+          // override precision is higher
+          [10.9, 3, 1.23, 2, 4, "9.6700"],
+          // override precision is 0
+          [1.2, 1, 10.99, 2, 0, "-8.8"],
+          // has a negative number
+          [-5, 2, 1.23, 2, 2, "-6.23"],
+          // a rather high precision
+          [0.000000000001, 12, 0.0000000000001, 13, 11, "0.000000000001"],
+        ];
+        test.each(subRespectingPrecisionOverride)(
+          "rodo: should subtract two BigUnit instances, number %f with precision %i and number %f with precision %i, respecting a precision override of %i and result in %s",
+          (num1, precision1, num2, precision2, overrideprecision, expectedString) => {
+            const unitA = BigUnit.from(num1, +precision1);
+            const unitB = BigUnit.from(num2, +precision2);
+            const result = unitA.sub(unitB, +overrideprecision);
+            expect(result.toString()).toBe(expectedString);
+          },
+        );
+      });
+
+      describe("percentBackout", () => {
+        const percentBackoutRespectingPrecisionOverride = [
+          // num1, precision1, num2, overrideprecision, expectedString
+          // override precision is lower
+          [100.1, 5, 0.1, 4, "100.00000"],
+          // override precision is higher
+          [15.00015, 5, 50.0012, 2, "10.00010"], // = 15.00015 / (1 + 0.500012) = 15.00015 / 1.500012 => 15.00015 / 1.5
+          // override precision is 0
+          [2.2, 1, 10.9, 2, "2.00"],
+          // has a negative number
+          [18.00018, 5, -0.5, 1, "20.00020"], // = 18.00018 / (1 - 0.5/100) = 18.00018 / 0.995 => 18.00018 / 0.9
+          // a rather high precision
+          [0.000000000002, 12, 0.000000000005, 11, "0.000000000002"],
+        ];
+        test.each(percentBackoutRespectingPrecisionOverride)(
+          "rodo: should percentBackout two BigUnit instances, number %f with precision %i and number %f with precision %i, respecting a precision override of %i and result in %s",
+          (num1, precision1, num2, overrideprecision, expectedString) => {
+            const unitA = BigUnit.from(num1, +precision1);
+            const result = unitA.percentBackout(+num2, +overrideprecision);
+            expect(result.toString()).toBe(expectedString);
+          },
+        );
+      });
+
+      describe("mod", () => {
+        const modRespectingPrecisionOverride = [
+          // num1, precision1, num2, overrideprecision, expectedString
+          // override precision is lower
+          [100.1, 5, 1, 5, 5, "0.10000"],
+          // override precision is higher
+          [10.9, 3, 1.0, 3, 6, "0.900000"],
+          // override precision is 0
+          [1.2, 1, 1.11, 2, 0, "0.2"],
+          // has a negative number, high precision
+          [-5, 2, 0.999999999999, 12, 13, "-0.0000000000050"],
+        ];
+        test.each(modRespectingPrecisionOverride)(
+          "rodo: should mod two BigUnit instances, number %f with precision %i and number %f with precision %i, respecting a precision override of %i and result in %s",
+          (num1, precision1, num2, precision2, overrideprecision, expectedString) => {
+            const unitA = BigUnit.from(num1, +precision1);
+            const unitB = BigUnit.from(num2, +precision2);
+            const result = unitA.mod(+unitB, +overrideprecision);
+            expect(result.toString()).toBe(expectedString);
+          },
+        );
+      });
     });
 
     test("require precision if other unit is a bigint", () => {
       // Expect to throw a MissingPrecisionError
       expect(() => {
         unit1.mul(1000n);
+      }).toThrow(MissingPrecisionError);
+      expect(() => {
+        unit1.div(1000n);
+      }).toThrow(MissingPrecisionError);
+      expect(() => {
+        unit1.add(1000n);
+      }).toThrow(MissingPrecisionError);
+      expect(() => {
+        unit1.sub(1000n);
+      }).toThrow(MissingPrecisionError);
+      expect(() => {
+        unit1.mod(1000n);
       }).toThrow(MissingPrecisionError);
 
       const result = unit1.mul(new BigUnit(1000n, precision));
@@ -256,12 +412,7 @@ describe("BigUnit Class Methods", () => {
         const result = unit1.div(unit2);
 
         // Convert expected number to BigInt representation
-        const expectedValue = BigInt(
-          Math.round(
-            (expectedNumberValue as number) *
-              10 ** (expectedPrecision as number),
-          ),
-        );
+        const expectedValue = BigInt(Math.round((expectedNumberValue as number) * 10 ** (expectedPrecision as number)));
 
         expect(result).toBeInstanceOf(BigUnit);
         expect(bigintCloseTo(result.value, expectedValue, 1n));
@@ -487,8 +638,7 @@ describe("BigUnit Class Methods with Differing Precision", () => {
 
   describe("add method with differing precision", () => {
     test("should add two BigUnit instances and use the precision of the first instance", () => {
-      const expectedValue =
-        unitHighPrecision.value + unitLowPrecision.value * 100n; // Adjusted for precision
+      const expectedValue = unitHighPrecision.value + unitLowPrecision.value * 100n; // Adjusted for precision
 
       const result1 = unitHighPrecision.add(unitLowPrecision);
       expect(result1.value).toBe(expectedValue);
@@ -502,8 +652,7 @@ describe("BigUnit Class Methods with Differing Precision", () => {
 
   describe("sub method with differing precision", () => {
     test("should subtract two BigUnit instances and use the precision of the first instance", () => {
-      const expectedValue =
-        unitHighPrecision.value - unitLowPrecision.value * 100n; // Adjusted for precision
+      const expectedValue = unitHighPrecision.value - unitLowPrecision.value * 100n; // Adjusted for precision
 
       const result1 = unitHighPrecision.sub(unitLowPrecision);
       expect(result1.value).toBe(expectedValue);
@@ -520,8 +669,7 @@ describe("BigUnit Class Methods with Differing Precision", () => {
       const result = unitHighPrecision.mul(unitLowPrecision);
       // The multiplication of the values themselves should not take precision into account, that's handled after the multiplication
       const rawProduct =
-        unitHighPrecision.value *
-        (unitLowPrecision.value * BigInt(10 ** (precisionHigh - precisionLow)));
+        unitHighPrecision.value * (unitLowPrecision.value * BigInt(10 ** (precisionHigh - precisionLow)));
       // Adjust the raw product by dividing it by 10^precisionHigh to maintain the precision of the first instance
       const expectedValue = rawProduct / BigInt(10 ** precisionHigh);
       expect(result.value).toBe(expectedValue);
@@ -535,10 +683,8 @@ describe("BigUnit Class Methods with Differing Precision", () => {
     test("should mod two BigUnit instances and use the precision of the first instance", () => {
       const result1 = unitHighPrecision.mod(unitLowPrecision);
       // Mod operation should adjust the second unit to the precision of the first
-      const adjustedUnitLowPrecisionValue1 =
-        unitLowPrecision.value * BigInt(10 ** (precisionHigh - precisionLow));
-      const expectedValue1 =
-        unitHighPrecision.value % adjustedUnitLowPrecisionValue1;
+      const adjustedUnitLowPrecisionValue1 = unitLowPrecision.value * BigInt(10 ** (precisionHigh - precisionLow));
+      const expectedValue1 = unitHighPrecision.value % adjustedUnitLowPrecisionValue1;
       expect(result1.value).toBe(expectedValue1);
       expect(result1.precision).toBe(precisionHigh);
 
