@@ -195,13 +195,14 @@ describe("BigUnit Class Methods", () => {
       describe("multiply", () => {
         const mulRespectingPrecisionOverride = [
           // num1, precision1, num2, precision2, overrideprecision, expectedString
+          // two numbers with the same precision
           [100.1, 5, 1.23456, 5, 1, "120.12000"], // = 100.10000 * 1.2
-          // different precission between 2 BigUnits
+          // two numbers with the different precision
           [1.23456, 5, 10.999, 3, 2, "13.56781"], // = 1.23456 * 10.99
-          // zero multiply a number
-          [0, 9, 0.5, 4, 3, "0.000000000"], // = 1.001001001 * 0.565
-          // has a negative number
-          [1.00010001, 9, -0.5656, 4, 10, "-0.5656565656"], // = 1.00010001 * 0.5656
+          // zero multiplied by a number
+          [0, 9, 0.5, 4, 3, "0.000000000"], // = 0.000000000 * 0.500
+          // has a negative number and override precision is larger than either inputs precision
+          [1.00010001, 9, -0.5656, 4, 10, "-0.5656565656"], // = 1.000100010 * 0.5656000000
         ];
         test.each(mulRespectingPrecisionOverride)(
           "rodo: should multiply two BigUnit instances, number %f with precision %i and number %f with precision %i, respecting a precision override of %i and result in %s",
@@ -217,15 +218,15 @@ describe("BigUnit Class Methods", () => {
       describe("divide", () => {
         const divRespectingPrecisionOverride = [
           // num1, precision1, num2, precision2, overrideprecision, expectedString
-          [120.1, 5, 1.23456, 5, 1, "100.08333"], // 120.1 / 1.2 = 100.08333333 => "100.08333"
-          // zero divide a number
+          [120.1, 5, 1.23456, 5, 1, "100.08333"], // 120.10000 / 1.2 = 100.08333333 => "100.08333"
+          // zero divided by a number
           [0, 4, 5.555, 2, 2, "0.0000"],
           // override precision is higher
           [555, 2, 5.55, 2, 5, "100.00000"],
           // override precision is lower
-          [555, 2, 5.55, 2, 1, "100.90"],
+          [555, 2, 5.55, 2, 1, "100.90"], // 555.00 / 5.5
           // has a negative number
-          [-5, 2, 0.125, 3, 5, "-40.00000"],
+          [-5, 2, 0.125, 3, 5, "-40.00000"], // -5.00 / 0.12500
         ];
         test.each(divRespectingPrecisionOverride)(
           "rodo: should divide two BigUnit instances, number %f with precision %i and number %f with precision %i, respecting a precision override of %i and result in %s",
@@ -288,17 +289,28 @@ describe("BigUnit Class Methods", () => {
 
       describe("percentBackout", () => {
         const percentBackoutRespectingPrecisionOverride = [
+          // NOTE: percentageBackout should return as the precision of the 
           // num1, precision1, num2, overrideprecision, expectedString
-          // override precision is lower
-          [100.1, 5, 0.1, 4, "100.00000"],
-          // override precision is higher
-          [15.00015, 5, 50.0012, 2, "10.00010"], // = 15.00015 / (1 + 0.500012) = 15.00015 / 1.500012 => 15.00015 / 1.5
+          // override precision is higher precision than num2
+          [100.1, 2, 0.1, 4, "100.00"],
+          // override precision is lower precision than num2
+          [15.00015, 5, 50.0012, 2, "10.00010"],
+          //override precision is lower than precision1
+          [15.00015, 5, 50.0012, 2, "10.00010"],
+          //override precision is higher than precision1
+          [1002.5, 1, 0.25, 2, "1000.0"],
           // override precision is 0
-          [2.2, 1, 10.9, 2, "2.00"],
+          [2.2, 1, 10.9, 0, "2.0"],
           // has a negative number
-          [18.00018, 5, -0.5, 1, "20.00020"], // = 18.00018 / (1 - 0.5/100) = 18.00018 / 0.995 => 18.00018 / 0.9
+          [-150, 0, -50, 0, "100"],
+          // another combination of negative numbers
+          [150, 0, -50, 0, "-100"],
+          // final combination of negative numbers
+          [-150, 0, 50, 0, "-100"],
+          // has a more complex negative number
+          [3.33333, 5, -0.1, 1, "-3.33000"],
           // a rather high precision
-          [0.000000000002, 12, 0.000000000005, 11, "0.000000000002"],
+          [12.000000000006, 12, 0.00000000005, 11, "12.000000000000"],
         ];
         test.each(percentBackoutRespectingPrecisionOverride)(
           "rodo: should percentBackout two BigUnit instances, number %f with precision %i and number %f with precision %i, respecting a precision override of %i and result in %s",

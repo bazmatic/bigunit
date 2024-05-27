@@ -225,16 +225,15 @@ export class BigUnit {
    * @param percent
    * @returns new BigUnit with the result value in the same precision
    */
-  public percentBackout(percent: number, otherPrecision?: number): BigUnit {
-    // Calculate 1 + percent/100 to adjust the base by the given percent
-    const precision = otherPrecision ?? this.precision;
-    const adjustmentFactor = BigUnit.from(1 + percent / 100, precision);
-  
+  public percentBackout(percent: number, percentagePrecision?: number): BigUnit {
+    // Calculate 1 + ( percent / 100 ) to adjust the base by the given percent (for positive percentages)
+    const precision = percentagePrecision ?? this.precision;
+    const percentageAsDecimal = BigUnit.from(percent, precision).div(100, precision+2);
+    // If percent is positive, we need to add 1, if it is negative, we need to subtract 1
+    const adjustmentFactor = percent >= 0 ? percentageAsDecimal.add(1) : percentageAsDecimal.sub(1);
+
     // Divide the current value by the adjustment factor to reverse the percentage
-    return this.div(
-      adjustmentFactor,
-      precision 
-    );
+    return this.div(adjustmentFactor).asPrecision(this.precision);
   }
 
   /**
