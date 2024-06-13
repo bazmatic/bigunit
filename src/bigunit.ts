@@ -28,6 +28,7 @@ export interface IBigUnitDTO extends IBigUnitObject {
   decimalValue: string;
   name?: string;
 }
+
 export class BigUnit {
   constructor(
     public value: bigint,
@@ -191,8 +192,10 @@ export class BigUnit {
    * @param fraction
    * @returns new BigUnit with the result value in the same precision
    */
-  public fraction(numerator: number, denominator: number): BigUnit {
-    if (isNaN(numerator) || isNaN(denominator)) {
+  public fraction(numerator: BigUnitish, denominator: BigUnitish): BigUnit {
+    const numeratorNumber = Number(numerator);
+    const denominatorNumber = Number(denominator);
+    if (isNaN(numeratorNumber) || isNaN(denominatorNumber)) {
       throw new InvalidFractionError(
         "Numerator and denominator must be valid numbers",
       );
@@ -203,8 +206,9 @@ export class BigUnit {
       throw new DivisionByZeroError();
     }
 
-    const bigUnitNumerator = BigUnit.from(numerator, this.precision);
-    const bigUnitDenominator = BigUnit.from(denominator, this.precision);
+    const bigUnitNumerator = BigUnit.from(numeratorNumber, this.precision);
+    const bigUnitDenominator = BigUnit.from(denominatorNumber, this.precision);
+
     const resultValue = this.mul(bigUnitNumerator).div(bigUnitDenominator);
     // Return a new BigUnit with the result value and the same precision
     return resultValue;
@@ -215,7 +219,7 @@ export class BigUnit {
    * @param percent
    * @returns new BigUnit with the result value in the same precision
    */
-  public percent(percent: number): BigUnit {
+  public percent(percent: BigUnitish): BigUnit {
     return this.fraction(percent, 100);
   }
 
